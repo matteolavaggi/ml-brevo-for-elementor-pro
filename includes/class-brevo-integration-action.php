@@ -216,7 +216,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'need_help_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('Need help? <a href="https://plugins.ml.be/support/?ref=plugin-widget" target="_blank">Check out our support page.</a>', 'brevo-elementor-integration'),
+				'raw' => __('Need help? <a href="https://matteolavaggi.it/wordpress/brevo-elementor-integration/" target="_blank">Check out our support page.</a>', 'brevo-elementor-integration'),
 			]
 		);
 

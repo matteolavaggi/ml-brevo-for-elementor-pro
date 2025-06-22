@@ -138,18 +138,10 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 		);
 
 		$widget->add_control(
-			'pro_unsubscribe_version_note',
-			[
-				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('Need more attributes? <a href="https://plugins.ml.be/product/brevo-pro-integration-for-elementor-forms/?ref=plugin-widget" target="_blank">Check out our Pro version.</a>', 'brevo-elementor-integration'),
-			]
-		);
-
-		$widget->add_control(
 			'need_unsubscribe_help_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('Need help? <a href="https://plugins.ml.be/support/?ref=plugin-widget" target="_blank">Check out our support page.</a>', 'brevo-elementor-integration'),
+				'raw' => __('Need help? <a href="https://matteolavaggi.it/wordpress/brevo-elementor-integration/" target="_blank">Check out our support page.</a>', 'brevo-elementor-integration'),
 			]
 		);
 
