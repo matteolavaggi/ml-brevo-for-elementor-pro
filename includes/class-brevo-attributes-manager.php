@@ -62,7 +62,12 @@ class Brevo_Attributes_Manager {
 			return $cached_attributes;
 		}
 
-		// Fetch from Brevo API
+		// Cache miss - fetch from Brevo API
+		$logger = Brevo_Debug_Logger::get_instance();
+		$logger->info( 'Cache miss - fetching attributes from API', 'CACHE', 'fetch_attributes', array(
+			'api_key_hash' => md5( $api_key )
+		) );
+		
 		$endpoint = self::API_BASE_URL . '/contacts/attributes';
 		
 		// Debug logging

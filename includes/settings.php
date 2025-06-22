@@ -19,6 +19,10 @@ add_action( 'wp_ajax_brevo_clear_cache', 'brevo_handle_clear_cache' );
 add_action( 'wp_ajax_brevo_refresh_lists', 'brevo_handle_refresh_lists' );
 add_action( 'wp_ajax_brevo_update_list_settings', 'brevo_handle_list_settings_update' );
 
+// Handle AJAX requests for debug functionality
+add_action( 'wp_ajax_brevo_clear_debug_logs', 'brevo_handle_clear_debug_logs' );
+add_action( 'wp_ajax_brevo_download_debug_log', 'brevo_handle_download_debug_log' );
+
 function brevo_handle_refresh_fields() {
 	$logger = Brevo_Debug_Logger::get_instance();
 	$logger->info( 'Refresh fields request initiated', 'ADMIN', 'refresh_fields' );
@@ -179,6 +183,64 @@ function brevo_handle_list_settings_update() {
 	wp_send_json_success( array( 'message' => 'List settings updated successfully' ) );
 }
 
+function brevo_handle_clear_debug_logs() {
+	// Verify nonce
+	if ( ! wp_verify_nonce( $_POST['nonce'], 'brevo_admin_nonce' ) ) {
+		wp_die( 'Security check failed' );
+	}
+
+	// Check permissions
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( 'Insufficient permissions' );
+	}
+
+	$logger = Brevo_Debug_Logger::get_instance();
+	$logger->clear_all_logs();
+
+	wp_send_json_success( array( 'message' => 'All debug logs cleared successfully' ) );
+}
+
+function brevo_handle_download_debug_log() {
+	// Verify nonce
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'brevo_download_log' ) ) {
+		wp_die( 'Security check failed' );
+	}
+
+	// Check permissions
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( 'Insufficient permissions' );
+	}
+
+	$filename = sanitize_file_name( $_GET['file'] ?? '' );
+	if ( empty( $filename ) ) {
+		wp_die( 'No file specified' );
+	}
+
+	$logger = Brevo_Debug_Logger::get_instance();
+	$log_files = $logger->get_log_files();
+	
+	$file_path = '';
+	foreach ( $log_files as $log_file ) {
+		if ( basename( $log_file ) === $filename ) {
+			$file_path = $log_file;
+			break;
+		}
+	}
+
+	if ( empty( $file_path ) || ! file_exists( $file_path ) ) {
+		wp_die( 'File not found' );
+	}
+
+	// Set headers for download
+	header( 'Content-Type: text/plain' );
+	header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+	header( 'Content-Length: ' . filesize( $file_path ) );
+
+	// Output file contents
+	readfile( $file_path );
+	exit;
+}
+
 // Add global site setting API Key option
 class MlbrevoFree {
 	private $ml_brevo_free_options;
@@ -216,29 +278,318 @@ class MlbrevoFree {
 	public function ml_brevo_create_admin_page() {
 		$this->ml_brevo_options = get_option( 'ml_brevo_option_name' ); 
 		$api_key = $this->ml_brevo_options['global_api_key_ml_brevo'] ?? '';
+		
+		// Get current tab
+		$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'settings';
 		?>
 
 		<div class="wrap">
 			<h1>ML Brevo for Elementor Pro v2.0</h1>
 			
+			<?php $this->render_navigation_tabs( $current_tab ); ?>
+			
 			<div id="brevo-admin-notices"></div>
 
-			<form method="post" action="options.php" id="brevo-settings-form">
-				<?php
-					settings_fields( 'ml_brevo_option_group' );
-					do_settings_sections( 'ml-brevo-admin' );
-				?>
-				
-				<?php $this->render_field_management_section( $api_key ); ?>
-				
-				<?php $this->render_lists_management_section( $api_key ); ?>
-				
-				<?php submit_button(); ?>
-			</form>
+			<?php if ( $current_tab === 'settings' ): ?>
+				<form method="post" action="options.php" id="brevo-settings-form">
+					<?php
+						settings_fields( 'ml_brevo_option_group' );
+						do_settings_sections( 'ml-brevo-admin' );
+					?>
+					
+					<?php $this->render_field_management_section( $api_key ); ?>
+					
+					<?php $this->render_lists_management_section( $api_key ); ?>
+					
+					<?php submit_button(); ?>
+				</form>
+			<?php elseif ( $current_tab === 'debug' ): ?>
+				<?php $this->render_debug_tab(); ?>
+			<?php endif; ?>
 		</div>
 		
 		<?php wp_nonce_field( 'brevo_admin_nonce', 'brevo_nonce' ); ?>
 	<?php }
+
+	/**
+	 * Render navigation tabs
+	 */
+	public function render_navigation_tabs( $current_tab ) {
+		$tabs = array(
+			'settings' => array(
+				'title' => __( 'Settings & Configuration', 'ml-brevo-for-elementor-pro' ),
+				'icon' => 'admin-settings'
+			),
+			'debug' => array(
+				'title' => __( 'Debug Logs', 'ml-brevo-for-elementor-pro' ),
+				'icon' => 'admin-tools'
+			)
+		);
+		?>
+		<nav class="nav-tab-wrapper wp-clearfix brevo-nav-tabs">
+			<?php foreach ( $tabs as $tab_key => $tab_data ): ?>
+				<a href="<?php echo admin_url( 'options-general.php?page=ml-brevo-free&tab=' . $tab_key ); ?>" 
+				   class="nav-tab <?php echo $current_tab === $tab_key ? 'nav-tab-active' : ''; ?>">
+					<span class="dashicons dashicons-<?php echo esc_attr( $tab_data['icon'] ); ?>"></span>
+					<?php echo esc_html( $tab_data['title'] ); ?>
+				</a>
+			<?php endforeach; ?>
+		</nav>
+		<?php
+	}
+
+	/**
+	 * Render debug tab content
+	 */
+	public function render_debug_tab() {
+		$logger = Brevo_Debug_Logger::get_instance();
+		
+		// Get current parameters
+		$current_file = isset( $_GET['file'] ) ? sanitize_text_field( $_GET['file'] ) : '';
+		$current_level = isset( $_GET['level'] ) ? sanitize_text_field( $_GET['level'] ) : '';
+		$current_component = isset( $_GET['component'] ) ? sanitize_text_field( $_GET['component'] ) : '';
+		$current_page = isset( $_GET['paged'] ) ? max( 1, intval( $_GET['paged'] ) ) : 1;
+		$entries_per_page = 50;
+
+		// Get log files
+		$log_files = $logger->get_log_files();
+		$selected_file = $current_file && file_exists( $current_file ) ? $current_file : ( $log_files[0] ?? '' );
+
+		// Get log entries
+		$all_entries = array();
+		if ( $selected_file ) {
+			$all_entries = $logger->read_log_entries( $selected_file, 1000 ); // Get more for filtering
+		}
+
+		// Filter entries
+		$filtered_entries = $this->filter_debug_entries( $all_entries, $current_level, $current_component );
+
+		// Paginate entries
+		$total_entries = count( $filtered_entries );
+		$offset = ( $current_page - 1 ) * $entries_per_page;
+		$entries = array_slice( $filtered_entries, $offset, $entries_per_page );
+
+		// Calculate pagination
+		$total_pages = ceil( $total_entries / $entries_per_page );
+
+		?>
+		<div class="brevo-debug-section">
+			<?php if ( ! $logger->is_enabled() ): ?>
+				<div class="notice notice-warning">
+					<p>
+						<?php _e( 'Debug logging is currently disabled.', 'ml-brevo-for-elementor-pro' ); ?>
+						<a href="<?php echo admin_url( 'options-general.php?page=ml-brevo-free&tab=settings' ); ?>">
+							<?php _e( 'Enable it in settings tab', 'ml-brevo-for-elementor-pro' ); ?>
+						</a>
+					</p>
+				</div>
+			<?php endif; ?>
+
+			<!-- Debug Log Controls -->
+			<div class="brevo-debug-controls">
+				<div class="brevo-debug-info">
+					<h3><?php _e( 'Log Information', 'ml-brevo-for-elementor-pro' ); ?></h3>
+					<p>
+						<strong><?php _e( 'Debug Status:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<?php echo $logger->is_enabled() ? 
+							'<span style="color: green;">' . __( 'Enabled', 'ml-brevo-for-elementor-pro' ) . '</span>' : 
+							'<span style="color: red;">' . __( 'Disabled', 'ml-brevo-for-elementor-pro' ) . '</span>'; ?>
+					</p>
+					<p>
+						<strong><?php _e( 'Debug Level:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<?php echo esc_html( $logger->get_debug_level() ); ?>
+					</p>
+					<p>
+						<strong><?php _e( 'Total Log Size:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<?php echo size_format( $logger->get_total_log_size() ); ?>
+					</p>
+					<p>
+						<strong><?php _e( 'Log Files:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<?php echo count( $log_files ); ?>
+					</p>
+				</div>
+
+				<div class="brevo-debug-actions">
+					<h3><?php _e( 'Actions', 'ml-brevo-for-elementor-pro' ); ?></h3>
+					<p>
+						<button type="button" id="clear-debug-logs-btn" class="button button-secondary">
+							<?php _e( 'Clear All Logs', 'ml-brevo-for-elementor-pro' ); ?>
+						</button>
+						<?php if ( $selected_file ): ?>
+							<a href="<?php echo wp_nonce_url( 
+								admin_url( 'admin-ajax.php?action=brevo_download_debug_log&file=' . urlencode( basename( $selected_file ) ) ), 
+								'brevo_download_log' 
+							); ?>" class="button button-secondary">
+								<?php _e( 'Download Current Log', 'ml-brevo-for-elementor-pro' ); ?>
+							</a>
+						<?php endif; ?>
+					</p>
+				</div>
+			</div>
+
+			<!-- Filters -->
+			<div class="brevo-debug-filters">
+				<form method="get" action="">
+					<input type="hidden" name="page" value="ml-brevo-free">
+					<input type="hidden" name="tab" value="debug">
+					
+					<div class="filter-group">
+						<label for="file-filter"><?php _e( 'Log File:', 'ml-brevo-for-elementor-pro' ); ?></label>
+						<select name="file" id="file-filter">
+							<?php foreach ( $log_files as $file ): ?>
+								<option value="<?php echo esc_attr( $file ); ?>" <?php selected( $selected_file, $file ); ?>>
+									<?php echo esc_html( basename( $file ) ); ?>
+									(<?php echo size_format( filesize( $file ) ); ?>)
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</div>
+
+					<div class="filter-group">
+						<label for="level-filter"><?php _e( 'Level:', 'ml-brevo-for-elementor-pro' ); ?></label>
+						<select name="level" id="level-filter">
+							<option value=""><?php _e( 'All Levels', 'ml-brevo-for-elementor-pro' ); ?></option>
+							<option value="ERROR" <?php selected( $current_level, 'ERROR' ); ?>><?php _e( 'ERROR', 'ml-brevo-for-elementor-pro' ); ?></option>
+							<option value="WARNING" <?php selected( $current_level, 'WARNING' ); ?>><?php _e( 'WARNING', 'ml-brevo-for-elementor-pro' ); ?></option>
+							<option value="INFO" <?php selected( $current_level, 'INFO' ); ?>><?php _e( 'INFO', 'ml-brevo-for-elementor-pro' ); ?></option>
+							<option value="DEBUG" <?php selected( $current_level, 'DEBUG' ); ?>><?php _e( 'DEBUG', 'ml-brevo-for-elementor-pro' ); ?></option>
+						</select>
+					</div>
+
+					<div class="filter-group">
+						<label for="component-filter"><?php _e( 'Component:', 'ml-brevo-for-elementor-pro' ); ?></label>
+						<select name="component" id="component-filter">
+							<option value=""><?php _e( 'All Components', 'ml-brevo-for-elementor-pro' ); ?></option>
+							<?php
+							$components = $this->get_unique_debug_components( $all_entries );
+							foreach ( $components as $component ):
+							?>
+								<option value="<?php echo esc_attr( $component ); ?>" <?php selected( $current_component, $component ); ?>>
+									<?php echo esc_html( $component ); ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</div>
+
+					<div class="filter-group">
+						<input type="submit" class="button button-primary" value="<?php _e( 'Filter', 'ml-brevo-for-elementor-pro' ); ?>">
+						<a href="<?php echo admin_url( 'options-general.php?page=ml-brevo-free&tab=debug' ); ?>" class="button button-secondary">
+							<?php _e( 'Reset', 'ml-brevo-for-elementor-pro' ); ?>
+						</a>
+					</div>
+				</form>
+			</div>
+
+			<!-- Pagination -->
+			<?php if ( $total_pages > 1 ): ?>
+				<div class="brevo-debug-pagination">
+					<?php
+					$base_url = add_query_arg( array(
+						'page' => 'ml-brevo-free',
+						'tab' => 'debug',
+						'file' => $current_file,
+						'level' => $current_level,
+						'component' => $current_component
+					), admin_url( 'options-general.php' ) );
+					
+					$pagination_args = array(
+						'base' => add_query_arg( 'paged', '%#%', $base_url ),
+						'format' => '',
+						'prev_text' => __( '&laquo; Previous' ),
+						'next_text' => __( 'Next &raquo;' ),
+						'total' => $total_pages,
+						'current' => $current_page,
+						'show_all' => false,
+						'type' => 'plain',
+					);
+					echo paginate_links( $pagination_args );
+					?>
+					<p class="brevo-debug-pagination-info">
+						<?php printf( 
+							__( 'Showing %d-%d of %d entries', 'ml-brevo-for-elementor-pro' ),
+							$offset + 1,
+							min( $offset + $entries_per_page, $total_entries ),
+							$total_entries
+						); ?>
+					</p>
+				</div>
+			<?php endif; ?>
+
+			<!-- Log Entries Table -->
+			<?php if ( empty( $entries ) ): ?>
+				<div class="notice notice-info inline">
+					<p><?php _e( 'No log entries found.', 'ml-brevo-for-elementor-pro' ); ?></p>
+				</div>
+			<?php else: ?>
+				<table class="wp-list-table widefat fixed striped brevo-debug-table">
+					<thead>
+						<tr>
+							<th style="width: 140px;"><?php _e( 'Timestamp', 'ml-brevo-for-elementor-pro' ); ?></th>
+							<th style="width: 80px;"><?php _e( 'Level', 'ml-brevo-for-elementor-pro' ); ?></th>
+							<th style="width: 100px;"><?php _e( 'Component', 'ml-brevo-for-elementor-pro' ); ?></th>
+							<th style="width: 120px;"><?php _e( 'Action', 'ml-brevo-for-elementor-pro' ); ?></th>
+							<th><?php _e( 'Message', 'ml-brevo-for-elementor-pro' ); ?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ( $entries as $entry ): ?>
+							<tr class="brevo-log-entry brevo-log-<?php echo esc_attr( strtolower( $entry['level'] ) ); ?>">
+								<td><?php echo esc_html( $entry['timestamp'] ); ?></td>
+								<td>
+									<span class="brevo-log-level brevo-level-<?php echo esc_attr( strtolower( $entry['level'] ) ); ?>">
+										<?php echo esc_html( $entry['level'] ); ?>
+									</span>
+								</td>
+								<td><?php echo esc_html( $entry['component'] ); ?></td>
+								<td><?php echo esc_html( $entry['action'] ); ?></td>
+								<td>
+									<div class="brevo-log-message">
+										<?php echo esc_html( $entry['message'] ); ?>
+										<?php if ( ! empty( $entry['context'] ) ): ?>
+											<details class="brevo-log-context">
+												<summary><?php _e( 'Context', 'ml-brevo-for-elementor-pro' ); ?></summary>
+												<pre><?php echo esc_html( $entry['context'] ); ?></pre>
+											</details>
+										<?php endif; ?>
+									</div>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Filter debug log entries
+	 */
+	private function filter_debug_entries( $entries, $level = '', $component = '' ) {
+		if ( empty( $level ) && empty( $component ) ) {
+			return $entries;
+		}
+
+		return array_filter( $entries, function( $entry ) use ( $level, $component ) {
+			$level_match = empty( $level ) || $entry['level'] === $level;
+			$component_match = empty( $component ) || $entry['component'] === $component;
+			return $level_match && $component_match;
+		} );
+	}
+
+	/**
+	 * Get unique components from debug entries
+	 */
+	private function get_unique_debug_components( $entries ) {
+		$components = array();
+		foreach ( $entries as $entry ) {
+			if ( ! empty( $entry['component'] ) && ! in_array( $entry['component'], $components ) ) {
+				$components[] = $entry['component'];
+			}
+		}
+		sort( $components );
+		return $components;
+	}
 
 	/**
 	 * Render the field management section
@@ -871,6 +1222,46 @@ class MlbrevoFree {
 				});
 			}
 
+			// Clear debug logs button
+			$('#clear-debug-logs-btn').on('click', function() {
+				if (!confirm('Are you sure you want to clear all debug logs? This action cannot be undone.')) {
+					return;
+				}
+				
+				var button = $(this);
+				button.prop('disabled', true).text('Clearing Logs...');
+
+				$.post(ajaxUrl, {
+					action: 'brevo_clear_debug_logs',
+					nonce: nonce
+				})
+				.done(function(response) {
+					if (response.success) {
+						showNotice(response.data.message, 'success');
+						location.reload(); // Reload to show empty logs
+					} else {
+						showNotice(response.data.message, 'error');
+					}
+				})
+				.fail(function() {
+					showNotice('Clear logs request failed. Please try again.', 'error');
+				})
+				.always(function() {
+					button.prop('disabled', false).text('Clear All Logs');
+				});
+			});
+
+			// Auto-refresh debug logs every 30 seconds if on debug tab
+			if (window.location.href.indexOf('tab=debug') !== -1) {
+				setInterval(function() {
+					var currentUrl = window.location.href;
+					if (currentUrl.indexOf('tab=debug') !== -1 && !currentUrl.match(/[?&]paged=/)) {
+						// Only auto-refresh if we're on the first page
+						location.reload();
+					}
+				}, 30000);
+			}
+
 			// Initial status update
 			updateFieldStatuses();
 		});
@@ -995,6 +1386,192 @@ class MlbrevoFree {
 		.brevo-api-key-field .description {
 			margin-top: 8px;
 			font-style: italic;
+		}
+
+		/* Navigation Tabs */
+		.brevo-nav-tabs {
+			margin-bottom: 20px;
+		}
+
+		.brevo-nav-tabs .nav-tab {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.brevo-nav-tabs .nav-tab .dashicons {
+			font-size: 16px;
+			width: 16px;
+			height: 16px;
+		}
+
+		/* Debug Section */
+		.brevo-debug-section {
+			background: #fff;
+			border: 1px solid #ccd0d4;
+			box-shadow: 0 1px 1px rgba(0,0,0,.04);
+			padding: 20px;
+		}
+
+		.brevo-debug-controls {
+			display: flex;
+			gap: 30px;
+			margin-bottom: 20px;
+			padding: 15px;
+			background: #f8f9fa;
+			border: 1px solid #e1e5e9;
+			border-radius: 4px;
+		}
+
+		.brevo-debug-info h3,
+		.brevo-debug-actions h3 {
+			margin-top: 0;
+			margin-bottom: 10px;
+			color: #23282d;
+		}
+
+		.brevo-debug-info p {
+			margin: 5px 0;
+		}
+
+		.brevo-debug-filters {
+			margin-bottom: 20px;
+			padding: 15px;
+			background: #f8f9fa;
+			border: 1px solid #e1e5e9;
+			border-radius: 4px;
+		}
+
+		.brevo-debug-filters form {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 15px;
+			align-items: end;
+		}
+
+		.brevo-debug-filters .filter-group {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+
+		.brevo-debug-filters label {
+			font-weight: 600;
+			color: #23282d;
+		}
+
+		.brevo-debug-filters select {
+			min-width: 150px;
+		}
+
+		.brevo-debug-table {
+			margin-top: 15px;
+		}
+
+		.brevo-debug-table th {
+			background: #f1f1f1;
+		}
+
+		.brevo-log-entry.brevo-log-error {
+			background-color: #ffeaea;
+		}
+
+		.brevo-log-entry.brevo-log-warning {
+			background-color: #fff8e1;
+		}
+
+		.brevo-log-entry.brevo-log-info {
+			background-color: #e3f2fd;
+		}
+
+		.brevo-log-entry.brevo-log-debug {
+			background-color: #f3e5f5;
+		}
+
+		.brevo-log-level {
+			display: inline-block;
+			padding: 2px 6px;
+			border-radius: 3px;
+			font-size: 11px;
+			font-weight: 600;
+			color: #fff;
+		}
+
+		.brevo-level-error {
+			background-color: #d32f2f;
+		}
+
+		.brevo-level-warning {
+			background-color: #f57c00;
+		}
+
+		.brevo-level-info {
+			background-color: #1976d2;
+		}
+
+		.brevo-level-debug {
+			background-color: #7b1fa2;
+		}
+
+		.brevo-log-message {
+			font-family: 'Courier New', monospace;
+			font-size: 13px;
+		}
+
+		.brevo-log-context {
+			margin-top: 8px;
+		}
+
+		.brevo-log-context summary {
+			cursor: pointer;
+			color: #0073aa;
+			font-size: 12px;
+		}
+
+		.brevo-log-context pre {
+			background: #f6f7f7;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			padding: 10px;
+			margin: 5px 0 0 0;
+			font-size: 11px;
+			max-height: 200px;
+			overflow-y: auto;
+		}
+
+		.brevo-debug-pagination {
+			margin: 20px 0;
+			text-align: center;
+		}
+
+		.brevo-debug-pagination-info {
+			margin-top: 10px;
+			color: #666;
+			font-size: 13px;
+		}
+
+		/* Responsive design */
+		@media (max-width: 768px) {
+			.brevo-debug-controls {
+				flex-direction: column;
+				gap: 15px;
+			}
+
+			.brevo-debug-filters form {
+				flex-direction: column;
+				align-items: stretch;
+			}
+
+			.brevo-debug-filters .filter-group {
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-between;
+			}
+
+			.brevo-debug-filters select {
+				min-width: auto;
+				flex: 1;
+			}
 		}
 		";
 	}

@@ -425,16 +425,29 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 	 * @param \ElementorPro\Modules\Forms\Classes\Ajax_Handler $ajax_handler
 	 */
 	public function run( $record, $ajax_handler ) {
+		$logger = Brevo_Debug_Logger::get_instance();
+		$logger->info( 'Form submission started', 'FORM', 'submit', array(
+			'form_id' => $record->get_form_settings( 'form_name' ) ?: 'unknown',
+			'timestamp' => current_time( 'timestamp' )
+		) );
+
 		$settings = $record->get( 'form_settings' );
 
 		// Validate and set API key
 		$api_key = $this->get_api_key( $settings );
 		if ( ! $api_key ) {
+			$logger->error( 'Form submission failed: No API key available', 'FORM', 'submit' );
 			return;
 		}
 
+		$logger->debug( 'API key retrieved successfully', 'FORM', 'submit', array(
+			'api_key_hash' => md5( $api_key ),
+			'uses_global_key' => $settings['brevo_use_global_api_key'] === 'yes'
+		) );
+
 		// Validate required settings
 		if ( ! $this->validate_required_settings( $settings ) ) {
+			$logger->error( 'Form submission failed: Invalid settings', 'FORM', 'submit' );
 			return;
 		}
 
@@ -445,29 +458,64 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			$fields[ $id ] = $field['value'];
 		}
 
+		$logger->debug( 'Form data extracted', 'FORM', 'submit', array(
+			'field_count' => count( $fields ),
+			'field_ids' => array_keys( $fields )
+		) );
+
 		// Validate email field
 		$email = $this->get_email_value( $settings, $fields );
 		if ( ! $email ) {
+			$logger->error( 'Form submission failed: No valid email provided', 'FORM', 'submit' );
 			return;
 		}
 
+		$logger->info( 'Email validated', 'FORM', 'submit', array(
+			'email' => $email,
+			'email_field_id' => $settings['brevo_email_field']
+		) );
+
 		// Check GDPR compliance
 		if ( ! $this->check_gdpr_compliance( $settings, $fields ) ) {
+			$logger->warning( 'Form submission stopped: GDPR compliance check failed', 'FORM', 'submit', array(
+				'email' => $email,
+				'gdpr_enabled' => $settings['brevo_gdpr_checkbox'] === 'yes'
+			) );
 			return;
 		}
 
 		// Build dynamic attributes from form data
 		$attributes = $this->build_dynamic_attributes( $settings, $fields );
 
+		$logger->debug( 'Attributes built from form data', 'FORM', 'submit', array(
+			'email' => $email,
+			'attributes_count' => count( $attributes ),
+			'attributes' => $attributes
+		) );
+
 		// Check if email exists (if configured)
 		$email_exists = $this->check_email_exists( $settings, $email, $api_key );
 
 		// Process double opt-in or direct contact creation
 		if ( $settings['brevo_double_optin'] === 'yes' && ! $email_exists ) {
+			$logger->info( 'Processing double opt-in', 'FORM', 'submit', array(
+				'email' => $email,
+				'template_id' => $settings['brevo_double_optin_template']
+			) );
 			$this->process_double_optin( $settings, $email, $attributes, $api_key );
 		} else {
+			$logger->info( 'Processing direct contact creation', 'FORM', 'submit', array(
+				'email' => $email,
+				'list_id' => $settings['brevo_list'],
+				'email_exists' => $email_exists
+			) );
 			$this->process_contact_creation( $settings, $email, $attributes, $api_key );
 		}
+
+		$logger->info( 'Form submission completed', 'FORM', 'submit', array(
+			'email' => $email,
+			'success' => true
+		) );
 	}
 
 	/**
@@ -477,27 +525,38 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 	 * @return string|false
 	 */
 	private function get_api_key( $settings ) {
+		$logger = Brevo_Debug_Logger::get_instance();
+		
 		if ( $settings['brevo_use_global_api_key'] === 'yes' ) {
+			$logger->debug( 'Attempting to use global API key', 'FORM', 'get_api_key' );
 			$ml_brevo_options = get_option( 'ml_brevo_option_name', array() );
 			$api_key = $ml_brevo_options['global_api_key_ml_brevo'] ?? '';
 			
 			if ( empty( $api_key ) ) {
+				$logger->error( 'Global API key not set in settings', 'FORM', 'get_api_key' );
 				if ( WP_DEBUG ) {
 					error_log( 'Brevo Integration: Global API Key not set.' );
 				}
 				return false;
 			}
 			
+			$logger->debug( 'Global API key retrieved successfully', 'FORM', 'get_api_key', array(
+				'api_key_hash' => md5( $api_key )
+			) );
 			return $api_key;
 		}
 
 		if ( empty( $settings['brevo_api'] ) ) {
+			$logger->error( 'Form-specific API key not set', 'FORM', 'get_api_key' );
 			if ( WP_DEBUG ) {
 				error_log( 'Brevo Integration: API Key not set.' );
 			}
 			return false;
 		}
 
+		$logger->debug( 'Form-specific API key retrieved successfully', 'FORM', 'get_api_key', array(
+			'api_key_hash' => md5( $settings['brevo_api'] )
+		) );
 		return $settings['brevo_api'];
 	}
 
@@ -684,16 +743,28 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 	 * @return bool
 	 */
 	private function check_email_exists( $settings, $email, $api_key ) {
+		$logger = Brevo_Debug_Logger::get_instance();
+		
 		if ( $settings['brevo_double_optin_check_if_email_exists'] !== 'yes' ) {
+			$logger->debug( 'Email exists check skipped (not enabled)', 'API', 'check_email_exists', array(
+				'email' => $email
+			) );
 			return false;
 		}
 
 		$request_url = 'https://api.brevo.com/v3/contacts/' . urlencode( $email );
 		
+		$logger->info( 'Checking if email exists in Brevo', 'API', 'check_email_exists', array(
+			'email' => $email,
+			'endpoint' => $request_url,
+			'api_key_hash' => md5( $api_key )
+		) );
+		
 		if ( WP_DEBUG ) {
 			error_log( 'Brevo Integration: Checking email exists - ' . $request_url );
 		}
 
+		$start_time = microtime( true );
 		$response = wp_remote_get( $request_url, array(
 			'timeout' => 45,
 			'headers' => array(
@@ -703,7 +774,17 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		) );
 
 		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_body = wp_remote_retrieve_body( $response );
+		$execution_time = microtime( true ) - $start_time;
 		$exists = ( $response_code === 200 );
+
+		$logger->info( 'Email exists check completed', 'API', 'check_email_exists', array(
+			'email' => $email,
+			'response_code' => $response_code,
+			'exists' => $exists,
+			'execution_time' => $execution_time,
+			'response_body' => $response_body
+		) );
 
 		if ( WP_DEBUG ) {
 			error_log( 'Brevo Integration: Email exists check - Code: ' . $response_code . ', Exists: ' . ( $exists ? 'yes' : 'no' ) );
@@ -721,6 +802,8 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 	 * @param string $api_key
 	 */
 	private function process_double_optin( $settings, $email, $attributes, $api_key ) {
+		$logger = Brevo_Debug_Logger::get_instance();
+		
 		$redirect_url = ! empty( $settings['brevo_double_optin_redirect_url'] ) 
 			? $settings['brevo_double_optin_redirect_url'] 
 			: get_site_url();
@@ -733,10 +816,20 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'email' => $email,
 		);
 
+		$logger->info( 'Sending double opt-in request to Brevo', 'API', 'double_optin', array(
+			'email' => $email,
+			'list_id' => (int) $settings['brevo_list'],
+			'template_id' => (int) $settings['brevo_double_optin_template'],
+			'redirect_url' => $redirect_url,
+			'attributes_count' => count( $attributes ),
+			'api_key_hash' => md5( $api_key )
+		) );
+
 		if ( WP_DEBUG ) {
 			error_log( 'Brevo Integration: Double opt-in request - ' . wp_json_encode( $body ) );
 		}
 
+		$start_time = microtime( true );
 		$response = wp_remote_post( 'https://api.brevo.com/v3/contacts/doubleOptinConfirmation', array(
 			'method' => 'POST',
 			'timeout' => 45,
@@ -748,9 +841,28 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'body' => wp_json_encode( $body ),
 		) );
 
+		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_body = wp_remote_retrieve_body( $response );
+		$execution_time = microtime( true ) - $start_time;
+
+		if ( is_wp_error( $response ) ) {
+			$logger->error( 'Double opt-in request failed', 'API', 'double_optin', array(
+				'email' => $email,
+				'error_message' => $response->get_error_message(),
+				'error_code' => $response->get_error_code(),
+				'execution_time' => $execution_time
+			) );
+		} else {
+			$logger->info( 'Double opt-in request completed', 'API', 'double_optin', array(
+				'email' => $email,
+				'response_code' => $response_code,
+				'execution_time' => $execution_time,
+				'response_body' => $response_body,
+				'success' => $response_code >= 200 && $response_code < 300
+			) );
+		}
+
 		if ( WP_DEBUG ) {
-			$response_code = wp_remote_retrieve_response_code( $response );
-			$response_body = wp_remote_retrieve_body( $response );
 			error_log( 'Brevo Integration: Double opt-in response - Code: ' . $response_code . ', Body: ' . $response_body );
 		}
 	}
@@ -764,6 +876,8 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 	 * @param string $api_key
 	 */
 	private function process_contact_creation( $settings, $email, $attributes, $api_key ) {
+		$logger = Brevo_Debug_Logger::get_instance();
+		
 		$body = array(
 			'attributes' => $attributes,
 			'updateEnabled' => true,
@@ -771,10 +885,20 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'email' => $email,
 		);
 
+		$logger->info( 'Sending contact creation request to Brevo', 'API', 'create_contact', array(
+			'email' => $email,
+			'list_id' => (int) $settings['brevo_list'],
+			'attributes_count' => count( $attributes ),
+			'attributes' => $attributes,
+			'update_enabled' => true,
+			'api_key_hash' => md5( $api_key )
+		) );
+
 		if ( WP_DEBUG ) {
 			error_log( 'Brevo Integration: Contact creation request - ' . wp_json_encode( $body ) );
 		}
 
+		$start_time = microtime( true );
 		$response = wp_remote_post( 'https://api.brevo.com/v3/contacts', array(
 			'method' => 'POST',
 			'timeout' => 45,
@@ -786,9 +910,28 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'body' => wp_json_encode( $body ),
 		) );
 
+		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_body = wp_remote_retrieve_body( $response );
+		$execution_time = microtime( true ) - $start_time;
+
+		if ( is_wp_error( $response ) ) {
+			$logger->error( 'Contact creation request failed', 'API', 'create_contact', array(
+				'email' => $email,
+				'error_message' => $response->get_error_message(),
+				'error_code' => $response->get_error_code(),
+				'execution_time' => $execution_time
+			) );
+		} else {
+			$logger->info( 'Contact creation request completed', 'API', 'create_contact', array(
+				'email' => $email,
+				'response_code' => $response_code,
+				'execution_time' => $execution_time,
+				'response_body' => $response_body,
+				'success' => $response_code >= 200 && $response_code < 300
+			) );
+		}
+
 		if ( WP_DEBUG ) {
-			$response_code = wp_remote_retrieve_response_code( $response );
-			$response_body = wp_remote_retrieve_body( $response );
 			error_log( 'Brevo Integration: Contact creation response - Code: ' . $response_code . ', Body: ' . $response_body );
 		}
 	}
