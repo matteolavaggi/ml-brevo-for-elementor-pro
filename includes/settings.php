@@ -17,7 +17,6 @@ add_action( 'wp_ajax_brevo_clear_cache', 'brevo_handle_clear_cache' );
 
 // Handle AJAX requests for lists management
 add_action( 'wp_ajax_brevo_refresh_lists', 'brevo_handle_refresh_lists' );
-add_action( 'wp_ajax_brevo_update_list_settings', 'brevo_handle_list_settings_update' );
 
 // Handle AJAX requests for debug functionality
 add_action( 'wp_ajax_brevo_clear_debug_logs', 'brevo_handle_clear_debug_logs' );
@@ -157,31 +156,7 @@ function brevo_handle_refresh_lists() {
 	) );
 }
 
-function brevo_handle_list_settings_update() {
-	// Verify nonce
-	if ( ! wp_verify_nonce( $_POST['nonce'], 'brevo_admin_nonce' ) ) {
-		wp_die( 'Security check failed' );
-	}
 
-	// Check permissions
-	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( 'Insufficient permissions' );
-	}
-
-	$selected_lists = array();
-	if ( isset( $_POST['selected_lists'] ) && is_array( $_POST['selected_lists'] ) ) {
-		foreach ( $_POST['selected_lists'] as $list_id ) {
-			$list_id = intval( $list_id );
-			if ( $list_id > 0 ) {
-				$selected_lists[] = $list_id;
-			}
-		}
-	}
-
-	update_option( 'brevo_selected_lists', $selected_lists );
-
-	wp_send_json_success( array( 'message' => 'List settings updated successfully' ) );
-}
 
 function brevo_handle_clear_debug_logs() {
 	// Verify nonce
@@ -734,20 +709,12 @@ class MlbrevoFree {
 		?>
 		<div class="brevo-lists-management">
 			<h2><?php _e( 'Available Brevo Lists', 'ml-brevo-for-elementor-pro' ); ?></h2>
-			<p><?php _e( 'Select which lists should be available for Elementor forms. Selected lists will be used as default options for form submissions.', 'ml-brevo-for-elementor-pro' ); ?></p>
+			<p><?php _e( 'This table shows all your Brevo contact lists for reference. You can select specific lists directly in your Elementor forms using the list dropdown selector.', 'ml-brevo-for-elementor-pro' ); ?></p>
 			
 			<div class="brevo-lists-controls">
 				<button type="button" id="refresh-lists-btn" class="button button-secondary" 
 					<?php echo empty( $api_key ) ? 'disabled' : ''; ?>>
 					<?php _e( 'Refresh Lists from Brevo', 'ml-brevo-for-elementor-pro' ); ?>
-				</button>
-				
-				<button type="button" id="select-all-lists-btn" class="button button-secondary">
-					<?php _e( 'Select All Lists', 'ml-brevo-for-elementor-pro' ); ?>
-				</button>
-				
-				<button type="button" id="deselect-all-lists-btn" class="button button-secondary">
-					<?php _e( 'Deselect All Lists', 'ml-brevo-for-elementor-pro' ); ?>
 				</button>
 			</div>
 
@@ -771,7 +738,6 @@ class MlbrevoFree {
 
 		$attributes_manager = Brevo_Attributes_Manager::get_instance();
 		$lists = $attributes_manager->fetch_lists( $api_key );
-		$selected_lists = get_option( 'brevo_selected_lists', array() );
 		$cache_info = $attributes_manager->get_lists_cache_info( $api_key );
 
 		if ( is_wp_error( $lists ) ) {
@@ -807,14 +773,10 @@ class MlbrevoFree {
 		<table class="wp-list-table widefat fixed striped" id="brevo-lists-table">
 			<thead>
 				<tr>
-					<th class="check-column">
-						<input type="checkbox" id="select-all-lists-checkbox">
-					</th>
 					<th><?php _e( 'List ID', 'ml-brevo-for-elementor-pro' ); ?></th>
 					<th><?php _e( 'List Name', 'ml-brevo-for-elementor-pro' ); ?></th>
 					<th><?php _e( 'Subscribers', 'ml-brevo-for-elementor-pro' ); ?></th>
 					<th><?php _e( 'Created', 'ml-brevo-for-elementor-pro' ); ?></th>
-					<th><?php _e( 'Status', 'ml-brevo-for-elementor-pro' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -830,8 +792,6 @@ class MlbrevoFree {
 					$unique_subscribers = isset( $list_data['uniqueSubscribers'] ) ? intval( $list_data['uniqueSubscribers'] ) : 0;
 					$created_at = isset( $list_data['createdAt'] ) ? sanitize_text_field( $list_data['createdAt'] ) : '';
 					
-					$is_selected = in_array( $list_id, $selected_lists );
-					
 					// Format creation date
 					$created_display = '';
 					if ( ! empty( $created_at ) ) {
@@ -842,10 +802,6 @@ class MlbrevoFree {
 					}
 				?>
 				<tr>
-					<td class="check-column">
-						<input type="checkbox" name="brevo_lists[]" value="<?php echo esc_attr( $list_id ); ?>" 
-							   <?php checked( $is_selected ); ?> class="list-checkbox">
-					</td>
 					<td>
 						<strong><?php echo esc_html( $list_id ); ?></strong>
 					</td>
@@ -860,11 +816,6 @@ class MlbrevoFree {
 						); ?>
 					</td>
 					<td><?php echo esc_html( $created_display ); ?></td>
-					<td>
-						<span class="brevo-list-status <?php echo $is_selected ? 'selected' : 'not-selected'; ?>">
-							<?php echo $is_selected ? __( 'Selected', 'ml-brevo-for-elementor-pro' ) : __( 'Not Selected', 'ml-brevo-for-elementor-pro' ); ?>
-						</span>
-					</td>
 				</tr>
 				<?php endforeach; ?>
 			</tbody>
@@ -1187,40 +1138,7 @@ class MlbrevoFree {
 				});
 			});
 
-			// Select all lists checkbox
-			$('#select-all-lists-checkbox').on('change', function() {
-				$('.list-checkbox').prop('checked', this.checked);
-				updateListStatuses();
-			});
 
-			// Individual list checkboxes
-			$(document).on('change', '.list-checkbox', function() {
-				updateListStatuses();
-			});
-
-			// Select all lists button
-			$('#select-all-lists-btn').on('click', function() {
-				$('.list-checkbox').prop('checked', true);
-				updateListStatuses();
-			});
-
-			// Deselect all lists button
-			$('#deselect-all-lists-btn').on('click', function() {
-				$('.list-checkbox').prop('checked', false);
-				updateListStatuses();
-			});
-
-			function updateListStatuses() {
-				$('.list-checkbox').each(function() {
-					var row = $(this).closest('tr');
-					var statusCell = row.find('.brevo-list-status');
-					if (this.checked) {
-						statusCell.removeClass('not-selected').addClass('selected').text('Selected');
-					} else {
-						statusCell.removeClass('selected').addClass('not-selected').text('Not Selected');
-					}
-				});
-			}
 
 			// Clear debug logs button
 			$('#clear-debug-logs-btn').on('click', function() {
@@ -1353,14 +1271,12 @@ class MlbrevoFree {
 			color: #c2185b;
 		}
 
-		.brevo-status.enabled,
-		.brevo-list-status.selected {
+		.brevo-status.enabled {
 			color: #0a7c42;
 			font-weight: 600;
 		}
 
-		.brevo-status.disabled,
-		.brevo-list-status.not-selected {
+		.brevo-status.disabled {
 			color: #d93638;
 		}
 
