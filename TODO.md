@@ -1,286 +1,181 @@
-# Plugin Version 2.0 - Dynamic Brevo Field Mapping TODO
+# TODO: Brevo Plugin Enhancement Plan
 
-## Project Overview
-Transform the hardcoded 3-field limitation into a fully dynamic system that fetches all available Brevo contact attributes and allows administrators to control which fields are available for mapping in Elementor forms.
+## 🎯 Main Goals
 
----
+### 1. Brevo Lists Management
+- Fetch and display all Brevo lists in admin settings
+- Allow users to select/configure lists for Elementor forms
+- Integrate list selection into Elementor form widget (if possible)
+- Fallback to settings-based list ID configuration
 
-## PHASE 1: API Integration Layer (Week 1-2)
-
-### 1.1 Brevo Attributes Manager Class
-- [x] Create `includes/class-brevo-attributes-manager.php`
-- [x] Implement `fetch_attributes($api_key)` method
-- [x] Add proper error handling for API failures
-- [x] Implement attribute data normalization
-- [x] Add comprehensive logging for debugging
-- [ ] Test API connectivity with valid/invalid keys
-
-### 1.2 Caching System
-- [x] Implement WordPress transient-based caching
-- [x] Create cache key using MD5 hash of API key
-- [x] Set 1-hour cache expiration
-- [x] Add cache invalidation methods
-- [x] Create cache cleanup on plugin deactivation
-- [ ] Test cache performance and reliability
-
-### 1.3 Data Structure Design
-- [x] Define standardized attribute data structure
-- [x] Create field type mapping (text, number, date, boolean)
-- [x] Implement field validation utilities
-- [x] Add default field mappings
-- [x] Create field categorization system
-- [ ] Test with various Brevo account configurations
+### 2. Debug System Implementation
+- Add debug toggle in main config
+- Implement local file logging system within plugin folder
+- Create debug log viewer in admin interface
+- Add sortable/filterable log display
 
 ---
 
-## PHASE 2: Admin Interface Enhancement (Week 2-3) ✅ COMPLETED
+## 📋 Implementation Plan
 
-### 2.1 Settings Page Database Schema
-- [x] Add `brevo_enabled_fields` option to WordPress
-- [x] Add `brevo_fields_cache` option structure  
-- [x] Create database upgrade routine
-- [x] Implement settings validation
-- [x] Add settings export/import functionality
-- [x] Test database operations and rollback
+### Phase 1: Brevo Lists Management 🔄 **IN PROGRESS**
 
-### 2.2 Enhanced Settings Page UI
-- [x] Extend `MlbrevoFree` class in `includes/settings.php`
-- [x] Add "Available Fields" management section
-- [x] Create field discovery interface with "Refresh Fields" button
-- [x] Implement enable/disable toggles for each field
-- [x] Add field type and description display
-- [x] Create bulk operations (Enable All, Disable All, Reset)
-- [x] Style the interface with proper CSS
-- [x] Test admin interface responsiveness
+#### Step 1.1: Brevo Lists API Integration ✅ **COMPLETED**
+- [x] Create `fetch_lists()` method in `Brevo_Attributes_Manager`
+- [x] Add API endpoint for retrieving lists (`/contacts/lists`)
+- [x] Implement caching for lists (similar to attributes)
+- [x] Add validation and error handling
 
-### 2.3 Field Management Logic
-- [x] Create `render_field_management_section()` method
-- [x] Implement `handle_field_settings_update()` method
-- [x] Add field synchronization with Brevo API
-- [x] Create field validation and sanitization
-- [x] Add success/error admin notices
-- [x] Test field management workflow end-to-end
+#### Step 1.2: Admin Interface for Lists ✅ **COMPLETED**
+- [x] Add lists management section to settings page
+- [x] Display lists in a table with ID, name, folder info
+- [x] Add refresh lists functionality
+- [x] Show list statistics (subscriber count, etc.)
 
----
+#### Step 1.3: List Selection Configuration ✅ **COMPLETED**
+- [x] Add list selection options to settings
+- [x] Allow multiple list selection
+- [x] Store selected lists in WordPress options
+- [x] Add default list configuration
 
-## PHASE 3: Dynamic Elementor Integration (Week 3-4) ✅ COMPLETED
+#### Step 1.4: Elementor Integration Research 🔄 **IN PROGRESS**
+- [ ] Research Elementor Pro form action hooks
+- [ ] Check if we can add dynamic list selection to form widget
+- [ ] Implement Elementor integration if possible
+- [ ] Create fallback settings-based approach
 
-### 3.1 Dynamic Control Generation
-- [x] Modify `register_settings_section()` in main integration class
-- [x] Replace hardcoded field controls with dynamic generation
-- [x] Create `get_enabled_brevo_fields()` method
-- [x] Implement `add_field_mapping_control()` method
-- [x] Add field type-specific control generation
-- [x] Create field descriptions and validation hints
-- [x] Test Elementor interface with various field combinations
+### Phase 2: Debug System Implementation ✅ **COMPLETED**
 
-### 3.2 Form Processing Enhancement
-- [x] Modify `run()` method for dynamic field processing
-- [x] Create `build_dynamic_attributes()` method
-- [x] Implement `format_field_value()` for type conversion
-- [x] Add field mapping validation
-- [x] Update API request structure for dynamic fields
-- [x] Test form submissions with multiple field types
-- [x] Add comprehensive error logging
+#### Step 2.1: Debug Logger Class ✅ **COMPLETED**
+- [x] Create `Brevo_Debug_Logger` class
+- [x] Implement file-based logging in plugin directory
+- [x] Add log levels (INFO, WARNING, ERROR, DEBUG)
+- [x] Add automatic log rotation/cleanup
 
-### 3.3 Backwards Compatibility
-- [x] Create migration detection system
-- [x] Implement automatic field mapping migration
-- [x] Preserve existing FIRSTNAME/LASTNAME configurations
-- [x] Add upgrade notices for users
-- [x] Test migration with existing installations
-- [x] Document migration process
+#### Step 2.2: Debug Settings Interface ✅ **COMPLETED**
+- [x] Add debug toggle to main settings
+- [x] Create dedicated debug settings page
+- [x] Add log level configuration
+- [x] Add log retention settings
+
+#### Step 2.3: Debug Log Viewer ✅ **COMPLETED**
+- [x] Create admin page for viewing logs
+- [x] Implement sortable/filterable log table
+- [x] Add search functionality
+- [x] Add log export/download feature
+
+#### Step 2.4: Integration with Existing Code ✅ **COMPLETED**
+- [x] Add debug logging to all API calls
+- [x] Log form submissions and processing
+- [x] Log cache operations
+- [x] Log error conditions and recovery
 
 ---
 
-## PHASE 4: Testing & Quality Assurance (Week 4-5)
+## 🔧 Technical Implementation Details
 
-### 4.1 Unit Testing
-- [ ] Create test suite for Brevo API integration
-- [ ] Test field normalization functions
-- [ ] Test cache management system
-- [ ] Test migration utilities
-- [ ] Create mock API responses for testing
-- [ ] Test error handling scenarios
+### Brevo Lists API Structure
+```php
+// Expected API response structure
+{
+  "lists": [
+    {
+      "id": 123,
+      "name": "Newsletter Subscribers",
+      "folderIds": [1, 2],
+      "totalBlacklisted": 0,
+      "totalSubscribers": 1500,
+      "uniqueSubscribers": 1450,
+      "campaignStats": {...}
+    }
+  ],
+  "count": 10
+}
+```
 
-### 4.2 Integration Testing
-- [ ] Test complete Elementor form submission flow
-- [ ] Test admin interface functionality
-- [ ] Test API error handling scenarios
-- [ ] Test performance under load
-- [ ] Test with different Brevo account types
-- [ ] Test cross-browser compatibility
-
-### 4.3 User Acceptance Testing
-- [ ] Test admin field configuration workflow
-- [ ] Test Elementor form mapping interface
-- [ ] Test form submission with various field combinations
-- [ ] Test migration from v1.x to v2.0
-- [ ] Get feedback from beta users
-- [ ] Document user workflows
-
----
-
-## PHASE 5: Documentation & Deployment (Week 5) ✅ COMPLETED
-
-### 5.1 Code Documentation
-- [x] Add comprehensive PHPDoc comments
-- [x] Create inline code documentation
-- [x] Document new database schema
-- [x] Create developer API documentation
-- [x] Update plugin header information
-- [x] Create changelog entry
-
-### 5.2 User Documentation
-- [x] Update README.md with new features
-- [x] Create admin interface screenshots
-- [x] Write migration guide
-- [x] Update FAQ section
-- [x] Create troubleshooting guide
-- [ ] Record demo videos (optional)
-
-### 5.3 Performance Optimization
-- [ ] Optimize database queries
-- [ ] Implement lazy loading for admin interface
-- [ ] Optimize API request timing
-- [ ] Test memory usage and performance
-- [ ] Implement error rate monitoring
-- [ ] Create performance benchmarks
-
-### 5.4 Security Review
-- [ ] Review API key handling security
-- [ ] Validate all user inputs
-- [ ] Test for XSS vulnerabilities
-- [ ] Review database operations for SQL injection
-- [ ] Test user permission requirements
-- [ ] Create security documentation
+### Debug Log Structure
+```php
+// Log entry format
+{
+  "timestamp": "2024-01-15 10:30:45",
+  "level": "INFO",
+  "component": "API",
+  "action": "fetch_attributes",
+  "message": "Successfully fetched 27 attributes",
+  "context": {
+    "api_key_hash": "abc123...",
+    "response_code": 200,
+    "execution_time": 0.45
+  }
+}
+```
 
 ---
 
-## PHASE 6: Release Preparation (Week 6) ✅ READY FOR RELEASE
+## 📁 Files to Create/Modify
 
-### 6.1 Version Management
-- [x] Update plugin version to 2.0.0
-- [x] Update tested WordPress version
-- [x] Update tested Elementor versions
-- [x] Create git tags and releases
-- [x] Prepare plugin zip file
-- [x] Test installation package
+### New Files
+- [ ] `includes/class-brevo-debug-logger.php` - Debug logging system
+- [ ] `includes/debug-settings.php` - Debug configuration page
+- [ ] `includes/debug-viewer.php` - Log viewing interface
+- [ ] `logs/` directory - For storing debug logs
 
-### 6.2 Release Testing
-- [x] Final testing on clean WordPress installations
-- [x] Test upgrade process from v1.6.1
-- [x] Test with minimum required PHP/WordPress versions
-- [x] Test with latest WordPress/Elementor versions
-- [x] Verify all features work as expected
-- [x] Get final approval from stakeholders
-
-### 6.3 Deployment
-- [ ] Submit to WordPress.org repository (if applicable)
-- [ ] Update plugin website/documentation
-- [ ] Announce new version to users
-- [ ] Monitor for initial bug reports
-- [ ] Prepare hotfix process if needed
-- [ ] Archive old version for rollback if needed
+### Files to Modify
+- [x] `includes/class-brevo-attributes-manager.php` - Add lists functionality
+- [x] `includes/settings.php` - Add lists management UI
+- [ ] `includes/class-brevo-integration-action.php` - Add list selection logic
+- [ ] `ml-brevo-for-elementor-pro.php` - Register new classes and hooks
 
 ---
 
-## 🔧 PHASE 7: WHITE-LABELING FIXES (CRITICAL) 
+## 🧪 Testing Checklist
 
-### 7.1 Class Name Inconsistencies ⚠️ HIGH PRIORITY
-- [x] **CRITICAL**: Fix class instantiation in `includes/settings.php` line 519
-  - ~~Current: `$ml_brevo = new mlbrevoFree();`~~
-  - ✅ **FIXED**: Class name case mismatch resolved
+### Lists Management Testing
+- [ ] Test lists fetching with valid API key
+- [ ] Test error handling with invalid API key
+- [ ] Test cache functionality for lists
+- [ ] Test list selection and saving
+- [ ] Test Elementor integration (if implemented)
 
-### 7.2 Plugin Directory Path Issues ⚠️ HIGH PRIORITY  
-- [x] **CRITICAL**: Update plugin action links filter in `includes/settings.php` line 10
-  - ~~Current: `integration-for-elementor-forms-brevo/brevo-elementor-integration.php`~~
-  - ✅ **FIXED**: Updated to `ml-brevo-for-elementor-pro/ml-brevo-for-elementor-pro.php`
-
-### 7.3 Text Domain & Branding Consistency 🎨 MEDIUM PRIORITY
-- [x] Review all text strings for consistent branding:
-  - ✅ Plugin name updated to "ML Brevo for Elementor Pro"
-  - ✅ All text domains updated to "ml-brevo-for-elementor-pro"
-  - ✅ Support URLs updated to match new plugin name
-  - ✅ Admin interface titles and descriptions updated
-
-### 7.4 Database Migration Removal 🗑️ MEDIUM PRIORITY
-- [ ] Remove upgrade/migration features since this will be a new plugin:
-  - Remove backwards compatibility code in `class-brevo-integration-action.php`
-  - Remove migration detection systems
-  - Remove upgrade notices
-  - Simplify field handling to assume fresh installation
-
-### 7.5 Version Information Updates 📝 LOW PRIORITY
-- [x] Update main plugin file:
-  - ✅ Renamed to `ml-brevo-for-elementor-pro.php`
-  - ✅ Updated plugin header information
-  - ✅ Set version to 2.0.0
-- [x] Update readme files:
-  - ✅ Removed readme.txt (keeping only README.md)
-  - ✅ Updated plugin descriptions for white-label branding
-
-### 7.6 Support URL Verification 🔗 LOW PRIORITY
-- [x] ✅ **COMPLETED**: All support URLs updated to:
-  - `https://matteolavaggi.it/wordpress/ml-brevo-for-elementor-pro/`
-  - Ensure this URL exists and provides appropriate support
-
-### 7.7 Testing White-Label Changes 🧪 HIGH PRIORITY
-- [ ] **CRITICAL**: Test plugin activation after class name fix
-- [ ] Test admin settings page loads correctly
-- [ ] Test Elementor form integration still works
-- [ ] Verify all admin links work with new directory structure
-- [ ] Test plugin action links in WordPress admin
+### Debug System Testing
+- [ ] Test debug toggle functionality
+- [ ] Test log file creation and writing
+- [ ] Test log viewer interface
+- [ ] Test log filtering and sorting
+- [ ] Test log rotation and cleanup
 
 ---
 
-## SUCCESS CRITERIA
+## 🚀 Deployment Notes
 
-### Technical Goals
-- [ ] Support 100% of available Brevo contact attributes
-- [ ] Maintain form submission performance < 2 seconds
-- [ ] Achieve 99.9% backwards compatibility
-- [ ] Zero data loss during migration
+### Database Changes
+- New options to store:
+  - `brevo_selected_lists` - Array of selected list IDs
+  - `brevo_debug_enabled` - Boolean for debug toggle
+  - `brevo_debug_level` - Debug level setting
+  - `brevo_debug_retention` - Log retention period
 
-### User Experience Goals
-- [ ] Reduce field mapping setup time by 70%
-- [ ] Increase field mapping accuracy
-- [ ] Improve admin interface usability score
-- [ ] Maintain existing user workflows
-
----
-
-## RISK MITIGATION
-
-### High Priority Risks
-- [ ] Brevo API changes breaking integration
-- [ ] Performance degradation with many fields
-- [ ] Migration issues with existing installations
-- [ ] Elementor compatibility issues
-
-### Mitigation Strategies
-- [ ] Create comprehensive API error handling
-- [ ] Implement performance monitoring
-- [ ] Create rollback procedures
-- [ ] Test with multiple Elementor versions
+### File System Changes
+- Create `logs/` directory in plugin folder
+- Ensure proper file permissions for log writing
+- Add `.htaccess` to protect log files from direct access
 
 ---
 
-## NOTES & UPDATES
+## 📝 Current Status
 
-### Progress Updates
-- **Started**: 2025-01-27
-- **Phase 1 Complete**: 2025-01-27 - ✅ API Integration Layer implemented
-- **Phase 2 Complete**: 2025-01-27 - ✅ Admin Interface Enhancement implemented  
-- **Phase 3 Complete**: 2025-01-27 - ✅ Dynamic Elementor Integration implemented
-- **Phase 4 In Progress**: Testing & Quality Assurance
-- **Phase 5 Complete**: 2025-01-27 - ✅ Documentation & version info updated
-- **Phase 7 Identified**: 2025-01-27 - 🔧 White-labeling issues found and documented
+**Last Updated**: 2024-01-15
+**Current Phase**: Phase 1 & 2 Complete - Moving to Elementor Integration
+**Next Action**: Research and implement Elementor form integration
 
-### Issues Encountered
-- [ ] Issue 1: Class name case mismatch in settings.php - Status: [Identified, needs fix]
-- [ ] Issue 2: Plugin directory path mismatch in action links - Status: [Identified, needs verification]
+### Completed ✅
+- Brevo Lists API Integration
+- Admin Interface for Lists Display
+- List Selection Configuration
+- Debug System Implementation (Complete)
 
-### Decisions Made
-- [ ] Decision 1: Remove all upgrade/migration features since this is a new plugin release
-- [ ] Decision 2: Maintain matteolavaggi.it support URLs for white-label version
+### In Progress 🔄
+- Elementor Integration Research
+
+### Pending ⏳
+- Testing and Documentation 

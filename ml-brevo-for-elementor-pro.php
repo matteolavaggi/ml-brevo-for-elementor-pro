@@ -27,6 +27,8 @@ define( 'BREVO_ELEMENTOR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 //load plugins functionallity and settings
 require dirname(__FILE__).'/includes/class-brevo-attributes-manager.php';
+require dirname(__FILE__).'/includes/class-brevo-debug-logger.php';
+require dirname(__FILE__).'/includes/debug-viewer.php';
 require dirname(__FILE__).'/init-brevo-integration-action.php';
 require dirname(__FILE__).'/includes/settings.php';
 
