@@ -543,29 +543,101 @@ msgid "Change your site language in Settings > General > Site Language"
 msgstr ""
 
 #: includes/settings.php:270
-msgid "Automatizza la tua strategia di vendita e marketing con Twins Agency!"
+msgid "Automate your sales and marketing strategy with Twins Agency!"
 msgstr ""
 
 #: includes/settings.php:273
-msgid "Sfrutta al massimo le potenzialità di Brevo (ex Sendinblue) per ottimizzare la gestione dei lead, le campagne email e l'intero customer journey. Con le nostre automazioni personalizzate e l'integrazione dei migliori strumenti di intelligenza artificiale, ti aiuteremo a:"
+msgid "Make the most of Brevo's (formerly Sendinblue) potential to optimize lead management, email campaigns, and the entire customer journey. With our custom automations and integration of the best artificial intelligence tools, we will help you:"
 msgstr ""
 
 #: includes/settings.php:276
-msgid "Ridurre il lavoro manuale e aumentare l'efficienza operativa."
+msgid "Reduce manual work and increase operational efficiency."
 msgstr ""
 
 #: includes/settings.php:277
-msgid "Centralizzare i dati dei clienti per una visione unificata e completa."
+msgid "Centralize customer data for a unified and complete view."
 msgstr ""
 
 #: includes/settings.php:278
-msgid "Massimizzare le conversioni e migliorare l'engagement dei tuoi clienti."
+msgid "Maximize conversions and improve customer engagement."
 msgstr ""
 
 #: includes/settings.php:281
-msgid "Contattaci oggi stesso per scoprire come Twins Agency può supportare la crescita della tua azienda attraverso le automazioni Brevo e l'intelligenza artificiale."
+msgid "Contact us today to discover how Twins Agency can support your business growth through Brevo automations and artificial intelligence."
 msgstr ""
 
 #: includes/settings.php:284
-msgid "Contattaci subito"
+msgid "Contact us now"
+msgstr ""
+
+#: includes/settings.php:1019
+msgid "Documentation"
+msgstr ""
+
+#: includes/settings.php:1020
+msgid "Access the complete documentation for ML Brevo for Elementor Pro plugin."
+msgstr ""
+
+#: includes/settings.php:1025
+msgid "Plugin Documentation"
+msgstr ""
+
+#: includes/settings.php:1026
+msgid "Download the complete documentation PDF file for detailed setup instructions, troubleshooting, and usage examples."
+msgstr ""
+
+#: includes/settings.php:1033
+msgid "Download Documentation PDF"
+msgstr ""
+
+#: includes/settings.php:1039
+msgid "View Online"
+msgstr ""
+
+#: includes/settings.php:1045
+msgid "Documentation file not found"
+msgstr ""
+
+#: includes/settings.php:1046
+msgid "The readme.pdf file is not present in the plugin directory. Please contact support or check the plugin installation."
+msgstr ""
+
+#: includes/settings.php:1052
+msgid "Quick Links"
+msgstr ""
+
+#: includes/settings.php:1057
+msgid "Brevo API Documentation"
+msgstr ""
+
+#: includes/settings.php:1063
+msgid "Elementor Pro Documentation"
+msgstr ""
+
+#: includes/settings.php:1069
+msgid "Debug Logs (Troubleshooting)"
+msgstr ""
+
+#: includes/settings.php:1076
+msgid "Need Help?"
+msgstr ""
+
+#: includes/settings.php:1077
+msgid "If you need additional support or have questions about the plugin:"
+msgstr ""
+
+#: includes/settings.php:1079
+msgid "1. Check the documentation PDF for detailed instructions"
+msgstr ""
+
+#: includes/settings.php:1080
+msgid "2. Enable debug logging to troubleshoot issues"
+msgstr ""
+
+#: includes/settings.php:1081
+msgid "3. Verify your Brevo API key and account settings"
+msgstr ""
+
+#: includes/settings.php:1082
+msgid "4. Contact plugin support with debug logs if needed"
 msgstr "" 

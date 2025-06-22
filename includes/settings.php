@@ -224,6 +224,9 @@ class MlbrevoFree {
 		add_action( 'admin_menu', array( $this, 'ml_brevo_add_plugin_page' ) );
 		add_action( 'admin_init', array( $this, 'ml_brevo_page_init' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+		
+		// Remove WordPress footer text on plugin pages
+		add_filter( 'admin_footer_text', array( $this, 'remove_admin_footer_text' ) );
 	}
 
 	/**
@@ -307,22 +310,22 @@ class MlbrevoFree {
 		<div class="brevo-promotional-banner">
 			<div class="brevo-promo-content">
 				<h3>
-					<?php _e( 'Automatizza la tua strategia di vendita e marketing con Twins Agency!', 'ml-brevo-for-elementor-pro' ); ?>
+					<?php _e( 'Automate your sales and marketing strategy with Twins Agency!', 'ml-brevo-for-elementor-pro' ); ?>
 				</h3>
 				<p>
-					<?php _e( 'Sfrutta al massimo le potenzialità di Brevo (ex Sendinblue) per ottimizzare la gestione dei lead, le campagne email e l\'intero customer journey. Con le nostre automazioni personalizzate e l\'integrazione dei migliori strumenti di intelligenza artificiale, ti aiuteremo a:', 'ml-brevo-for-elementor-pro' ); ?>
+					<?php _e( 'Make the most of Brevo\'s (formerly Sendinblue) potential to optimize lead management, email campaigns, and the entire customer journey. With our custom automations and integration of the best artificial intelligence tools, we will help you:', 'ml-brevo-for-elementor-pro' ); ?>
 				</p>
 				<ul class="brevo-promo-benefits">
-					<li><?php _e( 'Ridurre il lavoro manuale e aumentare l\'efficienza operativa.', 'ml-brevo-for-elementor-pro' ); ?></li>
-					<li><?php _e( 'Centralizzare i dati dei clienti per una visione unificata e completa.', 'ml-brevo-for-elementor-pro' ); ?></li>
-					<li><?php _e( 'Massimizzare le conversioni e migliorare l\'engagement dei tuoi clienti.', 'ml-brevo-for-elementor-pro' ); ?></li>
+					<li><?php _e( 'Reduce manual work and increase operational efficiency.', 'ml-brevo-for-elementor-pro' ); ?></li>
+					<li><?php _e( 'Centralize customer data for a unified and complete view.', 'ml-brevo-for-elementor-pro' ); ?></li>
+					<li><?php _e( 'Maximize conversions and improve customer engagement.', 'ml-brevo-for-elementor-pro' ); ?></li>
 				</ul>
 				<p>
-					<?php _e( 'Contattaci oggi stesso per scoprire come Twins Agency può supportare la crescita della tua azienda attraverso le automazioni Brevo e l\'intelligenza artificiale.', 'ml-brevo-for-elementor-pro' ); ?>
+					<?php _e( 'Contact us today to discover how Twins Agency can support your business growth through Brevo automations and artificial intelligence.', 'ml-brevo-for-elementor-pro' ); ?>
 				</p>
 				<div class="brevo-promo-cta">
 					<a href="<?php echo esc_url( $contact_url ); ?>" target="_blank" class="button button-primary button-hero">
-						<?php _e( 'Contattaci subito', 'ml-brevo-for-elementor-pro' ); ?>
+						<?php _e( 'Contact us now', 'ml-brevo-for-elementor-pro' ); ?>
 					</a>
 				</div>
 			</div>
@@ -466,8 +469,124 @@ class MlbrevoFree {
 		$compiler = new ML_Brevo_Translation_Compiler();
 		$stats = $compiler->get_translation_stats();
 		$needs_compilation = $compiler->needs_compilation();
+		
+		// Debug information
+		$current_locale = get_locale();
+		$expected_file = 'ml-brevo-for-elementor-pro-' . $current_locale . '.po';
+		$file_path = BREVO_ELEMENTOR_PLUGIN_PATH . 'languages/' . $expected_file;
+		$file_exists = file_exists($file_path);
+		
+		// Test translation loading
+		$test_translation = __('Settings & Configuration', 'ml-brevo-for-elementor-pro');
+		$is_translated = ($test_translation !== 'Settings & Configuration');
+		
 		?>
 		<div class="brevo-translations-section">
+			<?php 
+			// Show debug information only if debug logging is enabled
+			$debug_enabled = get_option('debug_enabled_ml_brevo', false);
+			if ($debug_enabled): 
+			?>
+			<!-- Debug Information -->
+			<div class="notice notice-info" style="margin: 20px 0; padding: 15px;">
+				<h3 style="margin-top: 0;">🔍 Translation Debug Information</h3>
+				<table class="widefat" style="margin-top: 10px;">
+					<tr>
+						<td><strong>Current WordPress Locale:</strong></td>
+						<td><code><?php echo esc_html($current_locale); ?></code></td>
+					</tr>
+					<tr>
+						<td><strong>Expected Translation File:</strong></td>
+						<td><code><?php echo esc_html($expected_file); ?></code></td>
+					</tr>
+					<tr>
+						<td><strong>File Exists:</strong></td>
+						<td>
+							<?php if ($file_exists): ?>
+								<span style="color: green;">✓ YES</span>
+							<?php else: ?>
+								<span style="color: red;">✗ NO</span>
+							<?php endif; ?>
+						</td>
+					</tr>
+					<tr>
+						<td><strong>Translation Active:</strong></td>
+						<td>
+							<?php if ($is_translated): ?>
+								<span style="color: green;">✓ YES</span>
+							<?php else: ?>
+								<span style="color: red;">✗ NO (showing English)</span>
+							<?php endif; ?>
+						</td>
+					</tr>
+					<tr>
+						<td><strong>Test Translation:</strong></td>
+						<td><code><?php echo esc_html($test_translation); ?></code></td>
+					</tr>
+					<tr>
+						<td><strong>Text Domain:</strong></td>
+						<td><code>ml-brevo-for-elementor-pro</code></td>
+					</tr>
+
+					<tr>
+						<td><strong>Domain Path:</strong></td>
+						<td><code><?php echo esc_html(BREVO_ELEMENTOR_PLUGIN_PATH . 'languages/'); ?></code></td>
+					</tr>
+				</table>
+				<?php 
+				// Check for MO file
+				$mo_file = str_replace('.po', '.mo', $file_path);
+				$mo_exists = file_exists($mo_file);
+				?>
+				<tr>
+					<td><strong>MO File Path:</strong></td>
+					<td><code><?php echo esc_html(str_replace(BREVO_ELEMENTOR_PLUGIN_PATH, '', $mo_file)); ?></code></td>
+				</tr>
+				<tr>
+					<td><strong>MO File Exists:</strong></td>
+					<td>
+						<?php if ($mo_exists): ?>
+							<span style="color: green;">✓ YES</span>
+						<?php else: ?>
+							<span style="color: red;">✗ NO</span>
+						<?php endif; ?>
+					</td>
+				</tr>
+				</table>
+				
+				<?php if (!$is_translated && $file_exists && !$mo_exists): ?>
+					<p style="color: #d63638; margin-top: 10px;">
+						<strong>⚠️ Issue Detected:</strong> PO file exists but MO file is missing. WordPress only reads MO files for translations.
+					</p>
+					<form method="post" action="" style="margin-top: 10px;">
+						<?php wp_nonce_field( 'compile_brevo_translations' ); ?>
+						<input type="submit" name="compile_brevo_translations" class="button button-primary" 
+							   value="🔧 Compile Translation Now" style="margin-right: 10px;">
+						<span class="description">This will create the missing MO file.</span>
+					</form>
+				<?php elseif (!$is_translated && $file_exists && $mo_exists): ?>
+					<p style="color: #d63638; margin-top: 10px;">
+						<strong>⚠️ Issue Detected:</strong> Both PO and MO files exist but translations are not loading. 
+						This might be a caching issue or the MO file is corrupted.
+					</p>
+					<form method="post" action="" style="margin-top: 10px;">
+						<?php wp_nonce_field( 'compile_brevo_translations' ); ?>
+						<input type="submit" name="compile_brevo_translations" class="button button-primary" 
+							   value="🔄 Recompile Translation" style="margin-right: 10px;">
+						<span class="description">This will recreate the MO file.</span>
+					</form>
+				<?php elseif (!$file_exists): ?>
+					<p style="color: #d63638; margin-top: 10px;">
+						<strong>⚠️ Issue Detected:</strong> No translation file found for your locale (<?php echo esc_html($current_locale); ?>).
+					</p>
+				<?php else: ?>
+					<p style="color: #00a32a; margin-top: 10px;">
+						<strong>✓ Translations are working correctly!</strong>
+					</p>
+				<?php endif; ?>
+			</div>
+			<?php endif; // End debug section ?>
+			
 			<div class="brevo-translations-header">
 				<h2><?php _e( 'Translation Management', 'ml-brevo-for-elementor-pro' ); ?></h2>
 				<p><?php _e( 'Manage and compile plugin translations for better performance.', 'ml-brevo-for-elementor-pro' ); ?></p>
@@ -1966,6 +2085,17 @@ class MlbrevoFree {
 			<?php _e( 'Number of days to keep log files. Older logs will be automatically deleted. Range: 1-90 days.', 'ml-brevo-for-elementor-pro' ); ?>
 		</p>
 		<?php
+	}
+	
+	/**
+	 * Remove WordPress footer text on plugin pages
+	 */
+	public function remove_admin_footer_text( $footer_text ) {
+		$screen = get_current_screen();
+		if ( $screen && strpos( $screen->id, 'ml-brevo-free' ) !== false ) {
+			return '';
+		}
+		return $footer_text;
 	}
 
 }

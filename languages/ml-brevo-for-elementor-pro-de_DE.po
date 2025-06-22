@@ -330,23 +330,23 @@ msgstr "Englisch (Standard)"
 msgid "Change your site language in Settings > General > Site Language"
 msgstr "Ändern Sie Ihre Website-Sprache unter Einstellungen > Allgemein > Website-Sprache"
 
-msgid "Automatizza la tua strategia di vendita e marketing con Twins Agency!"
+msgid "Automate your sales and marketing strategy with Twins Agency!"
 msgstr "Automatisieren Sie Ihre Verkaufs- und Marketingstrategie mit Twins Agency!"
 
-msgid "Sfrutta al massimo le potenzialità di Brevo (ex Sendinblue) per ottimizzare la gestione dei lead, le campagne email e l'intero customer journey. Con le nostre automazioni personalizzate e l'integrazione dei migliori strumenti di intelligenza artificiale, ti aiuteremo a:"
+msgid "Make the most of Brevo's (formerly Sendinblue) potential to optimize lead management, email campaigns, and the entire customer journey. With our custom automations and integration of the best artificial intelligence tools, we will help you:"
 msgstr "Nutzen Sie das volle Potenzial von Brevo (ehemals Sendinblue), um Lead-Management, E-Mail-Kampagnen und die gesamte Customer Journey zu optimieren. Mit unseren maßgeschneiderten Automatisierungen und der Integration der besten KI-Tools helfen wir Ihnen dabei:"
 
-msgid "Ridurre il lavoro manuale e aumentare l'efficienza operativa."
+msgid "Reduce manual work and increase operational efficiency."
 msgstr "Manuelle Arbeit zu reduzieren und die operative Effizienz zu steigern."
 
-msgid "Centralizzare i dati dei clienti per una visione unificata e completa."
+msgid "Centralize customer data for a unified and complete view."
 msgstr "Kundendaten zu zentralisieren für eine einheitliche und vollständige Sicht."
 
-msgid "Massimizzare le conversioni e migliorare l'engagement dei tuoi clienti."
+msgid "Maximize conversions and improve customer engagement."
 msgstr "Conversions zu maximieren und das Engagement Ihrer Kunden zu verbessern."
 
-msgid "Contattaci oggi stesso per scoprire come Twins Agency può supportare la crescita della tua azienda attraverso le automazioni Brevo e l'intelligenza artificiale."
+msgid "Contact us today to discover how Twins Agency can support your business growth through Brevo automations and artificial intelligence."
 msgstr "Kontaktieren Sie uns noch heute, um zu erfahren, wie Twins Agency das Wachstum Ihres Unternehmens durch Brevo-Automatisierungen und künstliche Intelligenz unterstützen kann."
 
-msgid "Contattaci subito"
+msgid "Contact us now"
 msgstr "Kontaktieren Sie uns jetzt" 

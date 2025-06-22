@@ -330,23 +330,77 @@ msgstr "Inglese (predefinito)"
 msgid "Change your site language in Settings > General > Site Language"
 msgstr "Cambia la lingua del tuo sito in Impostazioni > Generali > Lingua del sito"
 
-msgid "Automatizza la tua strategia di vendita e marketing con Twins Agency!"
+msgid "Automate your sales and marketing strategy with Twins Agency!"
 msgstr "Automatizza la tua strategia di vendita e marketing con Twins Agency!"
 
-msgid "Sfrutta al massimo le potenzialità di Brevo (ex Sendinblue) per ottimizzare la gestione dei lead, le campagne email e l'intero customer journey. Con le nostre automazioni personalizzate e l'integrazione dei migliori strumenti di intelligenza artificiale, ti aiuteremo a:"
+msgid "Make the most of Brevo's (formerly Sendinblue) potential to optimize lead management, email campaigns, and the entire customer journey. With our custom automations and integration of the best artificial intelligence tools, we will help you:"
 msgstr "Sfrutta al massimo le potenzialità di Brevo (ex Sendinblue) per ottimizzare la gestione dei lead, le campagne email e l'intero customer journey. Con le nostre automazioni personalizzate e l'integrazione dei migliori strumenti di intelligenza artificiale, ti aiuteremo a:"
 
-msgid "Ridurre il lavoro manuale e aumentare l'efficienza operativa."
+msgid "Reduce manual work and increase operational efficiency."
 msgstr "Ridurre il lavoro manuale e aumentare l'efficienza operativa."
 
-msgid "Centralizzare i dati dei clienti per una visione unificata e completa."
+msgid "Centralize customer data for a unified and complete view."
 msgstr "Centralizzare i dati dei clienti per una visione unificata e completa."
 
-msgid "Massimizzare le conversioni e migliorare l'engagement dei tuoi clienti."
+msgid "Maximize conversions and improve customer engagement."
 msgstr "Massimizzare le conversioni e migliorare l'engagement dei tuoi clienti."
 
-msgid "Contattaci oggi stesso per scoprire come Twins Agency può supportare la crescita della tua azienda attraverso le automazioni Brevo e l'intelligenza artificiale."
+msgid "Contact us today to discover how Twins Agency can support your business growth through Brevo automations and artificial intelligence."
 msgstr "Contattaci oggi stesso per scoprire come Twins Agency può supportare la crescita della tua azienda attraverso le automazioni Brevo e l'intelligenza artificiale."
 
-msgid "Contattaci subito"
-msgstr "Contattaci subito" 
+msgid "Contact us now"
+msgstr "Contattaci subito"
+
+msgid "Documentation"
+msgstr "Documentazione"
+
+msgid "Access the complete documentation for ML Brevo for Elementor Pro plugin."
+msgstr "Accedi alla documentazione completa per il plugin ML Brevo for Elementor Pro."
+
+msgid "Plugin Documentation"
+msgstr "Documentazione del plugin"
+
+msgid "Download the complete documentation PDF file for detailed setup instructions, troubleshooting, and usage examples."
+msgstr "Scarica il file PDF della documentazione completa per istruzioni dettagliate di configurazione, risoluzione dei problemi ed esempi di utilizzo."
+
+msgid "Download Documentation PDF"
+msgstr "Scarica documentazione PDF"
+
+msgid "View Online"
+msgstr "Visualizza online"
+
+msgid "Documentation file not found"
+msgstr "File di documentazione non trovato"
+
+msgid "The readme.pdf file is not present in the plugin directory. Please contact support or check the plugin installation."
+msgstr "Il file readme.pdf non è presente nella directory del plugin. Contatta il supporto o verifica l'installazione del plugin."
+
+msgid "Quick Links"
+msgstr "Link rapidi"
+
+msgid "Brevo API Documentation"
+msgstr "Documentazione API Brevo"
+
+msgid "Elementor Pro Documentation"
+msgstr "Documentazione Elementor Pro"
+
+msgid "Debug Logs (Troubleshooting)"
+msgstr "Log di debug (Risoluzione problemi)"
+
+msgid "Need Help?"
+msgstr "Hai bisogno di aiuto?"
+
+msgid "If you need additional support or have questions about the plugin:"
+msgstr "Se hai bisogno di supporto aggiuntivo o hai domande sul plugin:"
+
+msgid "1. Check the documentation PDF for detailed instructions"
+msgstr "1. Controlla il PDF della documentazione per istruzioni dettagliate"
+
+msgid "2. Enable debug logging to troubleshoot issues"
+msgstr "2. Abilita il logging di debug per risolvere i problemi"
+
+msgid "3. Verify your Brevo API key and account settings"
+msgstr "3. Verifica la tua chiave API Brevo e le impostazioni dell'account"
+
+msgid "4. Contact plugin support with debug logs if needed"
+msgstr "4. Contatta il supporto del plugin con i log di debug se necessario" 

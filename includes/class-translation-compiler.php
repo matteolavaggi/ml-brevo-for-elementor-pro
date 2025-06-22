@@ -107,6 +107,19 @@ class ML_Brevo_Translation_Compiler {
      * Compile a single PO file to MO
      */
     private function compile_po_to_mo( $po_file, $mo_file ) {
+        // Debug: Check if files are accessible
+        if ( ! is_readable( $po_file ) ) {
+            error_log( "Brevo Translation Compiler: PO file not readable: {$po_file}" );
+            return false;
+        }
+        
+        $mo_dir = dirname( $mo_file );
+        if ( ! is_writable( $mo_dir ) ) {
+            error_log( "Brevo Translation Compiler: MO directory not writable: {$mo_dir}" );
+            return false;
+        }
+        
+        // Load WordPress PO/MO classes
         if ( ! class_exists( 'PO' ) ) {
             require_once ABSPATH . WPINC . '/pomo/po.php';
         }
@@ -115,16 +128,27 @@ class ML_Brevo_Translation_Compiler {
             require_once ABSPATH . WPINC . '/pomo/mo.php';
         }
         
+        // Import PO file
         $po = new PO();
         if ( ! $po->import_from_file( $po_file ) ) {
+            error_log( "Brevo Translation Compiler: Failed to import PO file: {$po_file}" );
             return false;
         }
         
+        // Create MO file
         $mo = new MO();
         $mo->headers = $po->headers;
         $mo->entries = $po->entries;
         
-        return $mo->export_to_file( $mo_file );
+        $result = $mo->export_to_file( $mo_file );
+        
+        if ( $result ) {
+            error_log( "Brevo Translation Compiler: Successfully compiled {$po_file} to {$mo_file}" );
+        } else {
+            error_log( "Brevo Translation Compiler: Failed to export MO file: {$mo_file}" );
+        }
+        
+        return $result;
     }
     
     /**
