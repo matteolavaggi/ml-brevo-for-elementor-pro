@@ -712,4 +712,20 @@ msgstr ""
 
 #: includes/settings.php:1100
 msgid "Enable or disable fields that will be available for mapping in Elementor forms."
+msgstr ""
+
+#: includes/settings.php:1349
+msgid "Global brevo API key"
+msgstr ""
+
+#: includes/settings.php:1357
+msgid "Debug Logging"
+msgstr ""
+
+#: includes/settings.php:1365
+msgid "Debug Level"
+msgstr ""
+
+#: includes/settings.php:1373
+msgid "Log Retention (days)"
 msgstr "" 

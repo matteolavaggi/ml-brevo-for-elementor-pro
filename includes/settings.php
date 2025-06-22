@@ -1347,7 +1347,7 @@ class MlbrevoFree {
 
 		add_settings_field(
 			'global_api_key_ml_brevo', // id
-			'Global brevo API key', // title
+			__( 'Global brevo API key', 'ml-brevo-for-elementor-pro' ), // title
 			array( $this, 'global_api_key_ml_brevo_callback' ), // callback
 			'ml-brevo-admin', // page
 			'ml_brevo_setting_section' // section
@@ -1355,7 +1355,7 @@ class MlbrevoFree {
 
 		add_settings_field(
 			'debug_enabled_ml_brevo', // id
-			'Debug Logging', // title
+			__( 'Debug Logging', 'ml-brevo-for-elementor-pro' ), // title
 			array( $this, 'debug_enabled_ml_brevo_callback' ), // callback
 			'ml-brevo-admin', // page
 			'ml_brevo_setting_section' // section
@@ -1363,7 +1363,7 @@ class MlbrevoFree {
 
 		add_settings_field(
 			'debug_level_ml_brevo', // id
-			'Debug Level', // title
+			__( 'Debug Level', 'ml-brevo-for-elementor-pro' ), // title
 			array( $this, 'debug_level_ml_brevo_callback' ), // callback
 			'ml-brevo-admin', // page
 			'ml_brevo_setting_section' // section
@@ -1371,7 +1371,7 @@ class MlbrevoFree {
 
 		add_settings_field(
 			'debug_retention_ml_brevo', // id
-			'Log Retention (days)', // title
+			__( 'Log Retention (days)', 'ml-brevo-for-elementor-pro' ), // title
 			array( $this, 'debug_retention_ml_brevo_callback' ), // callback
 			'ml-brevo-admin', // page
 			'ml_brevo_setting_section' // section
@@ -2001,7 +2001,7 @@ class MlbrevoFree {
 	}
 
 	public function ml_brevo_section_info() {
-		echo "Here you can find all your ml Integration for Elementor Form - brevo settings";
+		echo __( 'Here you can find all your ml Integration for Elementor Form - brevo settings', 'ml-brevo-for-elementor-pro' );
 	}
 
 	public function global_api_key_ml_brevo_callback() {

@@ -457,4 +457,16 @@ msgid "Available Brevo Fields"
 msgstr "Campi Brevo disponibili"
 
 msgid "Enable or disable fields that will be available for mapping in Elementor forms."
-msgstr "Abilita o disabilita i campi che saranno disponibili per la mappatura nei form di Elementor." 
+msgstr "Abilita o disabilita i campi che saranno disponibili per la mappatura nei form di Elementor."
+
+msgid "Global brevo API key"
+msgstr "Chiave API globale Brevo"
+
+msgid "Debug Logging"
+msgstr "Logging di debug"
+
+msgid "Debug Level"
+msgstr "Livello di debug"
+
+msgid "Log Retention (days)"
+msgstr "Conservazione log (giorni)" 
