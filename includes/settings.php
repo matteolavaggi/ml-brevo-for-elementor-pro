@@ -326,11 +326,6 @@ class MlbrevoFree {
 					</a>
 				</div>
 			</div>
-			<div class="brevo-promo-close">
-				<button type="button" class="notice-dismiss" onclick="this.parentElement.parentElement.style.display='none';">
-					<span class="screen-reader-text"><?php _e( 'Dismiss this notice.', 'ml-brevo-for-elementor-pro' ); ?></span>
-				</button>
-			</div>
 		</div>
 
 		<style>
@@ -412,29 +407,6 @@ class MlbrevoFree {
 			color: #5a67d8;
 			transform: translateY(-1px);
 			box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-		}
-		.brevo-promo-close {
-			position: absolute;
-			top: 10px;
-			right: 10px;
-			z-index: 2;
-		}
-		.brevo-promo-close .notice-dismiss {
-			background: rgba(255,255,255,0.2);
-			color: #ffffff;
-			border: none;
-			border-radius: 50%;
-			width: 30px;
-			height: 30px;
-			cursor: pointer;
-			transition: background 0.3s ease;
-		}
-		.brevo-promo-close .notice-dismiss:hover {
-			background: rgba(255,255,255,0.3);
-		}
-		.brevo-promo-close .notice-dismiss::before {
-			color: #ffffff;
-			font-size: 16px;
 		}
 		@media (max-width: 768px) {
 			.brevo-promotional-banner {

@@ -349,7 +349,4 @@ msgid "Contattaci oggi stesso per scoprire come Twins Agency può supportare la 
 msgstr "Contáctanos hoy mismo para descubrir cómo Twins Agency puede apoyar el crecimiento de tu empresa a través de las automatizaciones de Brevo y la inteligencia artificial."
 
 msgid "Contattaci subito"
-msgstr "Contáctanos ahora"
-
-msgid "Dismiss this notice."
-msgstr "Cerrar esta notificación." 
+msgstr "Contáctanos ahora" 

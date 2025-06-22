@@ -568,8 +568,4 @@ msgstr ""
 
 #: includes/settings.php:284
 msgid "Contattaci subito"
-msgstr ""
-
-#: includes/settings.php:289
-msgid "Dismiss this notice."
 msgstr "" 
