@@ -1,4 +1,4 @@
-# ML Brevo for Elementor Pro v2.1
+# ML Brevo for Elementor Pro v2.2
 ![Elementor Field ID Location](img/logo.png)
 ## Introduction
 
@@ -88,6 +88,72 @@ You would map these in the Brevo integration settings by entering the Field ID (
 
 **💡 Tip:** Use descriptive Field IDs like `first_name`, `email_address`, `phone_number` to make mapping easier and more maintainable.
 
+## Multilingual Support
+
+**ML Brevo for Elementor Pro v2.2** now includes comprehensive multilingual support with native translations for multiple languages.
+
+### Supported Languages
+
+- 🇬🇧 **English** (default)
+- 🇮🇹 **Italian** (Italiano)
+- 🇫🇷 **French** (Français)
+- 🇩🇪 **German** (Deutsch)
+- 🇪🇸 **Spanish** (Español)
+
+### How Translations Work
+
+The plugin automatically detects your WordPress site language and displays the interface in the corresponding language. All plugin interfaces are translated including:
+
+- Admin settings pages
+- Form integration controls in Elementor
+- Debug logs and error messages
+- Help text and documentation
+- Field labels and descriptions
+
+### Translation Management
+
+The plugin includes a built-in **Translation Management** system accessible from the admin interface:
+
+1. **Go to Settings > ML Brevo for Elementor Pro**
+2. **Click the "Translations" tab**
+3. **View translation status** for all supported languages
+4. **Compile translations** for optimal performance
+
+### Translation Files
+
+The plugin uses WordPress standard translation system:
+
+- **PO Files** (`.po`): Human-readable translation files that can be edited
+- **MO Files** (`.mo`): Compiled binary files that WordPress uses for performance
+- **POT File** (`.pot`): Template file containing all translatable strings
+
+### Compiling Translations
+
+For optimal performance, translation files should be compiled:
+
+1. **Navigate to Translations tab** in plugin settings
+2. **Click "Compile All Translations"** button
+3. **Verify compilation status** in the translation table
+
+The system automatically detects when translations need recompilation and provides visual indicators.
+
+### Adding Custom Translations
+
+To add or modify translations:
+
+1. **Edit the `.po` file** for your language in `/languages/` directory
+2. **Use translation tools** like Poedit for easier editing
+3. **Compile translations** using the plugin's built-in compiler
+4. **Refresh your admin page** to see changes
+
+### Language Detection
+
+The plugin automatically:
+- Detects your WordPress site language setting
+- Loads appropriate translation files
+- Falls back to English if translation is unavailable
+- Provides debug information when translations are enabled
+
 ## Frequently Asked Questions
 
 **Why is Elementor Pro required?**
@@ -103,6 +169,142 @@ Yes, all the other form widget integrations will be available.
 Yes, this plugin is designed specifically for Brevo (formerly Sendinblue). The integration will work perfectly with all Brevo features.
 
 ## Changelog
+
+## [2.2.0] - 2025-06-22
+
+### 🌍 MULTILINGUAL RELEASE - Complete Translation Support
+
+This major release introduces comprehensive multilingual support, making the plugin accessible to users worldwide with native language interfaces.
+
+### ✨ Added
+
+#### Multilingual System
+- **Complete Translation Support**: Full plugin translation for 5 languages
+  - 🇬🇧 English (default)
+  - 🇮🇹 Italian (Italiano) 
+  - 🇫🇷 French (Français)
+  - 🇩🇪 German (Deutsch)
+  - 🇪🇸 Spanish (Español)
+- **Translation Management Interface**: Built-in translation compiler and manager
+  - Real-time translation status monitoring
+  - One-click translation compilation
+  - Visual indicators for translation health
+  - Automatic detection of files needing compilation
+- **WordPress Native Integration**: Follows WordPress translation standards
+  - POT template file for translators
+  - PO files for human-readable translations  
+  - MO files for optimized WordPress performance
+  - Automatic language detection based on site settings
+
+#### Translation Management Features
+- **Admin Translation Interface**: Dedicated "Translations" tab in plugin settings
+  - Translation status dashboard with file information
+  - Compilation status for each language
+  - Last modified timestamps and file sizes
+  - Educational information about PO vs MO files
+- **Automatic Translation Compiler**: Built-in system for compiling translations
+  - Converts PO files to optimized MO files
+  - Error handling and success notifications
+  - Batch compilation for all languages
+  - Smart detection of files needing updates
+- **Debug Translation Information**: Optional debug panel for translation troubleshooting
+  - Current WordPress locale detection
+  - Translation file existence verification
+  - Text domain loading status
+  - Test translation verification
+
+#### Enhanced User Experience
+- **Promotional Banner**: Multilingual marketing banner for Twins Agency
+  - Automatically displays in user's language
+  - Professional gradient design with responsive layout
+  - UTM tracking for marketing analytics
+  - Always visible (non-dismissible) for maximum visibility
+- **Language-Aware Interface**: All plugin interfaces adapt to site language
+  - Form labels and descriptions
+  - Error messages and notifications
+  - Help text and documentation
+  - Admin navigation and buttons
+
+### 🔄 Changed
+
+#### Interface Improvements
+- **Multilingual Admin Interface**: All admin pages now support multiple languages
+  - Settings page completely translated
+  - Debug logs interface in native language
+  - Documentation section with localized content
+  - Field management with translated labels
+- **Enhanced Plugin Description**: Updated to mention multilingual support
+- **Version Bump**: Updated to v2.2.0 across all files
+
+### 🛠️ Technical Implementation
+
+#### Translation Infrastructure
+- **Text Domain Loading**: Proper WordPress text domain integration
+  - Loads on `plugins_loaded` hook
+  - Automatic language file detection
+  - Fallback to English for missing translations
+- **Translation File Structure**: Organized translation system
+  - `/languages/` directory with all translation files
+  - Consistent naming convention for all languages
+  - Complete string coverage across all plugin features
+- **Compilation System**: Robust PO to MO conversion
+  - Uses WordPress native PO/MO classes
+  - Error handling and logging
+  - File permission and accessibility checks
+  - Success/failure notifications
+
+#### Code Quality
+- **Translation Functions**: Proper use of WordPress translation functions
+  - `__()` for returned strings
+  - `_e()` for echoed strings
+  - `sprintf()` for dynamic content
+  - Consistent text domain usage
+- **String Extraction**: All user-facing strings properly marked for translation
+  - Admin interface strings
+  - Error messages and notifications
+  - Form labels and descriptions
+  - Help text and documentation
+
+### 🎨 User Experience
+
+#### Localization Features
+- **Automatic Language Detection**: Seamless language switching
+  - Respects WordPress site language setting
+  - Instant interface language updates
+  - No additional configuration required
+- **Cultural Adaptation**: Translations consider cultural context
+  - Appropriate terminology for each language
+  - Professional tone and style
+  - Technical accuracy maintained
+- **Accessibility**: Improved accessibility for non-English users
+  - Native language error messages
+  - Localized help and documentation
+  - Familiar interface terminology
+
+### 📚 Documentation
+
+#### Updated Documentation
+- **README Multilingual Section**: Comprehensive translation documentation
+  - Supported languages list
+  - Translation workflow explanation
+  - Compilation instructions
+  - Custom translation guidance
+- **Translation README**: Dedicated documentation in `/languages/` directory
+  - File structure explanation
+  - Translation workflow
+  - Contribution guidelines
+- **Inline Documentation**: Enhanced code comments for translators
+
+### 🌟 Marketing Integration
+
+#### Twins Agency Promotion
+- **Multilingual Marketing Banner**: Professional promotional content
+  - Translated marketing copy for all supported languages
+  - Consistent branding across languages
+  - UTM tracking for campaign analysis
+  - Responsive design for all devices
+
+---
 
 ## [2.1.0] - 2025-06-22
 
