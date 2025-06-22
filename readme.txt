@@ -1,6 +1,6 @@
-=== Integration for Elementor forms - Sendinblue ===
+=== Integration for Elementor forms - brevo ===
 Contributors: webtica
-Tags: sendinblue, brevo, elementor, elementor pro, forms
+Tags: brevo, brevo, elementor, elementor pro, forms
 Requires at least: 5.0
 Tested up to: 6.8.1
 Requires PHP: 7.0
@@ -8,12 +8,12 @@ Stable tag: 1.6.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Connect your Elementor Pro forms to Sendinblue/Brevo to easily capture and manage contacts from your website.
+Connect your Elementor Pro forms to brevo/Brevo to easily capture and manage contacts from your website.
 
 == Description ==
 
-A lightweight but feature packed Sendinblue / Brevo integration for Elementor forms.
-With this integration you can send your form data and contacts to Sendinblue / Brevo as easily as the standard integrations. 
+A lightweight but feature packed brevo / Brevo integration for Elementor forms.
+With this integration you can send your form data and contacts to brevo / Brevo as easily as the standard integrations. 
 Keeping performance in mind this integration doesn't add any additional scripts on page load. 
 Feel free to post any feature requests and possible issues.
 
@@ -38,8 +38,8 @@ Feel free to post any feature requests and possible issues.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Go to Pages > Add New
 4. Press the 'Edit with Elementor' button.
-5. Drag and drop the form widget of Elementor Pro from the left panel onto the content area, and find the Sendinblue action in the "Actions after submit" dropdown.
-6. Fill your Sendinblue data and Key and you are all set. All users will be added after they submit the form.
+5. Drag and drop the form widget of Elementor Pro from the left panel onto the content area, and find the brevo action in the "Actions after submit" dropdown.
+6. Fill your brevo data and Key and you are all set. All users will be added after they submit the form.
 
 == Frequently Asked Questions ==
 
@@ -53,7 +53,7 @@ Yes, all the other form widget integrations will be available.
 
 **Does this also work with Brevo?**
 
-Yes, Sendinblue has changed it name and branding to Brevo. The integration will still work.
+Yes, brevo has changed it name and branding to Brevo. The integration will still work.
 
 == Changelog ==
 
@@ -118,7 +118,7 @@ Yes, Sendinblue has changed it name and branding to Brevo. The integration will 
 
 = 1.5.0 - 2022-07-15 =
 * Added a new action after submit to unsubscribe users.
-* Skip existing emails - This will skip double optin notification mail if they are already in Sendinblue.
+* Skip existing emails - This will skip double optin notification mail if they are already in brevo.
 * Tested Elementor up to 3.6.7
 * Tested Elementor PRO up to 3.7.2
 * Tested WordPress up to 6.0.1
@@ -146,7 +146,7 @@ Yes, Sendinblue has changed it name and branding to Brevo. The integration will 
 = 1.4.0 - 2022-02-27 =
 * Elementor form fields shortcodes are now compatible
 * Added debugging when WP Debug is on
-* Added basic settings page where you can enter a global sendinblue API key
+* Added basic settings page where you can enter a global brevo API key
 * Possibility to use global or custom API key
 * Tested Elementor up to 3.5.5
 * Tested Elementor PRO up to 3.6.2
