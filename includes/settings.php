@@ -4,11 +4,11 @@
 function ml_brevo_filter_action_links( $links ) {
 
 	$links['settings'] = '<a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '">' . __( 'Settings' ) . '</a>';
-	$links['support'] = '<a href="https://matteolavaggi.it/wordpress/brevo-elementor-integration/" target="_blank">Support</a>';
+	$links['support'] = '<a href="https://matteolavaggi.it/wordpress/ml-brevo-for-elementor-pro/" target="_blank">Support</a>';
 	return $links;
 
 }
-add_filter( 'plugin_action_links_integration-for-elementor-forms-brevo/brevo-elementor-integration.php', 'ml_brevo_filter_action_links', 10, 3 );
+add_filter( 'plugin_action_links_ml-brevo-for-elementor-pro/ml-brevo-for-elementor-pro.php', 'ml_brevo_filter_action_links', 10, 3 );
 
 // Handle AJAX requests for field management
 add_action( 'wp_ajax_brevo_refresh_fields', 'brevo_handle_refresh_fields' );
@@ -96,8 +96,8 @@ class MlbrevoFree {
 
 	public function ml_brevo_add_plugin_page() {
 		add_options_page(
-			'brevo', // page_title
-			'brevo', // menu_title
+			'ML Brevo for Elementor Pro', // page_title
+			'ML Brevo for Elementor Pro', // menu_title
 			'manage_options', // capability
 			'ml-brevo-free', // menu_slug
 			array( $this, 'ml_brevo_create_admin_page' ) // function
@@ -110,7 +110,7 @@ class MlbrevoFree {
 		?>
 
 		<div class="wrap">
-			<h1>Integration for Elementor forms - Brevo (brevo) v2.0</h1>
+			<h1>ML Brevo for Elementor Pro v2.0</h1>
 			
 			<div id="brevo-admin-notices"></div>
 
@@ -135,25 +135,25 @@ class MlbrevoFree {
 	public function render_field_management_section( $api_key ) {
 		?>
 		<div class="brevo-field-management">
-			<h2><?php _e( 'Available Brevo Fields', 'brevo-elementor-integration' ); ?></h2>
-			<p><?php _e( 'Enable or disable fields that will be available for mapping in Elementor forms.', 'brevo-elementor-integration' ); ?></p>
+			<h2><?php _e( 'Available Brevo Fields', 'ml-brevo-for-elementor-pro' ); ?></h2>
+			<p><?php _e( 'Enable or disable fields that will be available for mapping in Elementor forms.', 'ml-brevo-for-elementor-pro' ); ?></p>
 			
 			<div class="brevo-field-controls">
 				<button type="button" id="refresh-fields-btn" class="button button-secondary" 
 					<?php echo empty( $api_key ) ? 'disabled' : ''; ?>>
-					<?php _e( 'Refresh Fields from Brevo', 'brevo-elementor-integration' ); ?>
+					<?php _e( 'Refresh Fields from Brevo', 'ml-brevo-for-elementor-pro' ); ?>
 				</button>
 				
 				<button type="button" id="enable-all-btn" class="button button-secondary">
-					<?php _e( 'Enable All', 'brevo-elementor-integration' ); ?>
+					<?php _e( 'Enable All', 'ml-brevo-for-elementor-pro' ); ?>
 				</button>
 				
 				<button type="button" id="disable-all-btn" class="button button-secondary">
-					<?php _e( 'Disable All', 'brevo-elementor-integration' ); ?>
+					<?php _e( 'Disable All', 'ml-brevo-for-elementor-pro' ); ?>
 				</button>
 				
 				<button type="button" id="reset-defaults-btn" class="button button-secondary">
-					<?php _e( 'Reset to Defaults', 'brevo-elementor-integration' ); ?>
+					<?php _e( 'Reset to Defaults', 'ml-brevo-for-elementor-pro' ); ?>
 				</button>
 			</div>
 
@@ -170,7 +170,7 @@ class MlbrevoFree {
 	public function render_fields_table( $api_key ) {
 		if ( empty( $api_key ) ) {
 			echo '<p class="notice notice-warning inline">' . 
-				__( 'Please set your Global API Key above and save to manage fields.', 'brevo-elementor-integration' ) . 
+				__( 'Please set your Global API Key above and save to manage fields.', 'ml-brevo-for-elementor-pro' ) . 
 				'</p>';
 			return;
 		}
@@ -182,7 +182,7 @@ class MlbrevoFree {
 
 		if ( is_wp_error( $attributes ) ) {
 			echo '<div class="notice notice-error inline">';
-			echo '<p>' . sprintf( __( 'Error fetching fields: %s', 'brevo-elementor-integration' ), $attributes->get_error_message() ) . '</p>';
+			echo '<p>' . sprintf( __( 'Error fetching fields: %s', 'ml-brevo-for-elementor-pro' ), $attributes->get_error_message() ) . '</p>';
 			echo '</div>';
 			return;
 		}
@@ -192,7 +192,7 @@ class MlbrevoFree {
 			<?php if ( $cache_info ): ?>
 				<small>
 					<?php printf( 
-						__( 'Last updated: %s (%d fields found)', 'brevo-elementor-integration' ),
+						__( 'Last updated: %s (%d fields found)', 'ml-brevo-for-elementor-pro' ),
 						human_time_diff( $cache_info['cached_at'] ) . ' ago',
 						$cache_info['count']
 					); ?>
@@ -206,10 +206,10 @@ class MlbrevoFree {
 					<th class="check-column">
 						<input type="checkbox" id="select-all-fields">
 					</th>
-					<th><?php _e( 'Field Name', 'brevo-elementor-integration' ); ?></th>
-					<th><?php _e( 'Type', 'brevo-elementor-integration' ); ?></th>
-					<th><?php _e( 'Description', 'brevo-elementor-integration' ); ?></th>
-					<th><?php _e( 'Status', 'brevo-elementor-integration' ); ?></th>
+					<th><?php _e( 'Field Name', 'ml-brevo-for-elementor-pro' ); ?></th>
+					<th><?php _e( 'Type', 'ml-brevo-for-elementor-pro' ); ?></th>
+					<th><?php _e( 'Description', 'ml-brevo-for-elementor-pro' ); ?></th>
+					<th><?php _e( 'Status', 'ml-brevo-for-elementor-pro' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -224,7 +224,7 @@ class MlbrevoFree {
 					<td>
 						<strong><?php echo esc_html( $field_name ); ?></strong>
 						<?php if ( in_array( $field_name, array( 'FIRSTNAME', 'LASTNAME', 'SMS' ) ) ): ?>
-							<span class="brevo-field-badge brevo-default-field"><?php _e( 'Default', 'brevo-elementor-integration' ); ?></span>
+							<span class="brevo-field-badge brevo-default-field"><?php _e( 'Default', 'ml-brevo-for-elementor-pro' ); ?></span>
 						<?php endif; ?>
 					</td>
 					<td>
@@ -235,7 +235,7 @@ class MlbrevoFree {
 					<td><?php echo esc_html( $field_data['description'] ); ?></td>
 					<td>
 						<span class="brevo-status <?php echo $is_enabled ? 'enabled' : 'disabled'; ?>">
-							<?php echo $is_enabled ? __( 'Enabled', 'brevo-elementor-integration' ) : __( 'Disabled', 'brevo-elementor-integration' ); ?>
+							<?php echo $is_enabled ? __( 'Enabled', 'ml-brevo-for-elementor-pro' ) : __( 'Disabled', 'ml-brevo-for-elementor-pro' ); ?>
 						</span>
 					</td>
 				</tr>
@@ -517,4 +517,4 @@ class MlbrevoFree {
 
 }
 if ( is_admin() )
-	$ml_brevo = new mlbrevoFree();
+	$ml_brevo = new MlbrevoFree();

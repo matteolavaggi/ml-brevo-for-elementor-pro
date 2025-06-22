@@ -28,7 +28,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 	 * @return string
 	 */
 	public function get_label() {
-		return __( 'brevo', 'brevo-elementor-integration' );
+		return __( 'Brevo', 'ml-brevo-for-elementor-pro' );
 	}
 
 	/**
@@ -41,9 +41,9 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 	 */
 	public function register_settings_section( $widget ) {
 		$widget->start_controls_section(
-			'section_brevo-elementor-integration',
+			'section_ml-brevo-for-elementor-pro',
 			[
-				'label' => __( 'brevo', 'brevo-elementor-integration' ),
+				'label' => __( 'Brevo', 'ml-brevo-for-elementor-pro' ),
 				'condition' => [
 					'submit_actions' => $this->get_name(),
 				],
@@ -53,7 +53,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		$widget->add_control(
 			'brevo_use_global_api_key',
 			[
-				'label' => __( 'Global brevo API key', 'brevo-elementor-integration' ),
+				'label' => __( 'Global brevo API key', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::SWITCHER,
 				'separator' => 'before'
 			]
@@ -63,7 +63,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'brevo_use_global_api_key_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('You can set your global API key <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">here.</a> this means you only need to set your brevo API key once.', 'brevo-elementor-integration'),
+				'raw' => __('You can set your global API key <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">here.</a> this means you only need to set your brevo API key once.', 'ml-brevo-for-elementor-pro'),
 				'condition' => array(
 					'brevo_use_global_api_key' => 'yes',
     			),
@@ -73,12 +73,12 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		$widget->add_control(
 			'brevo_api',
 			[
-				'label' => __( 'brevo API key', 'brevo-elementor-integration' ),
+				'label' => __( 'brevo API key', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::TEXT,
 				'placeholder' => 'xkeysib-xxxxxxxx',
 				'label_block' => true,
 				'separator' => 'before',
-				'description' => __( 'Enter your V3 API key from brevo', 'brevo-elementor-integration' ),
+				'description' => __( 'Enter your V3 API key from brevo', 'ml-brevo-for-elementor-pro' ),
 				'condition' => array(
 					'brevo_use_global_api_key!' => 'yes',
     			),
@@ -91,7 +91,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		$widget->add_control(
 			'brevo_double_optin',
 			[
-				'label' => __( 'Double Opt-in', 'brevo-elementor-integration' ),
+				'label' => __( 'Double Opt-in', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::SWITCHER,
 				'separator' => 'before'
 			]
@@ -100,11 +100,11 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		$widget->add_control(
 			'brevo_double_optin_template',
 			[
-				'label' => __( 'Double Opt-in Template ID', 'brevo-elementor-integration' ),
+				'label' => __( 'Double Opt-in Template ID', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::NUMBER,
 				'placeholder' => '5',
 				'separator' => 'before',
-				'description' => __( 'Enter your double opt-in template ID - <a href="https://help.brevo.com/hc/en-us/articles/360019540880-Create-a-double-opt-in-DOI-confirmation-template-for-brevo-form" target="_blank">More info here</a>', 'brevo-elementor-integration' ),
+				'description' => __( 'Enter your double opt-in template ID - <a href="https://help.brevo.com/hc/en-us/articles/360019540880-Create-a-double-opt-in-DOI-confirmation-template-for-brevo-form" target="_blank">More info here</a>', 'ml-brevo-for-elementor-pro' ),
     			'condition' => array(
     				'brevo_double_optin' => 'yes',
     			),
@@ -117,12 +117,12 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		$widget->add_control(
 			'brevo_double_optin_redirect_url',
 			[
-				'label' => __( 'Double Opt-in Redirect URL', 'brevo-elementor-integration' ),
+				'label' => __( 'Double Opt-in Redirect URL', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::TEXT,
 				'placeholder' => 'https://website.com/thank-you',
 				'label_block' => true,
 				'separator' => 'before',
-				'description' => __( 'Enter the url you want to redirect to after the subscriber confirms double opt-in', 'brevo-elementor-integration' ),
+				'description' => __( 'Enter the url you want to redirect to after the subscriber confirms double opt-in', 'ml-brevo-for-elementor-pro' ),
     			'condition' => array(
     				'brevo_double_optin' => 'yes',
     			),
@@ -135,8 +135,8 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		$widget->add_control(
 			'brevo_double_optin_check_if_email_exists',
 			[
-				'label' => __( 'Check if user already exists - Skip Double Opt-in', 'brevo-elementor-integration' ),
-				'description' => __( 'Note: This will skip the notification email. This will still update the users fields', 'brevo-elementor-integration' ),
+				'label' => __( 'Check if user already exists - Skip Double Opt-in', 'ml-brevo-for-elementor-pro' ),
+				'description' => __( 'Note: This will skip the notification email. This will still update the users fields', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::SWITCHER,
 				'separator' => 'before',
     			'condition' => array(
@@ -148,7 +148,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		$widget->add_control(
 			'brevo_gdpr_checkbox',
 			[
-				'label' => __( 'GDPR Checkbox', 'brevo-elementor-integration' ),
+				'label' => __( 'GDPR Checkbox', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::SWITCHER,
 				'separator' => 'before'
 			]
@@ -157,11 +157,11 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		$widget->add_control(
 			'brevo_gdpr_checkbox_field',
 			[
-				'label' => __( 'Acceptance Field ID', 'brevo-elementor-integration' ),
+				'label' => __( 'Acceptance Field ID', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::TEXT,
 				'placeholder' => 'acceptancefieldid',
 				'separator' => 'before',
-				'description' => __( 'Enter the acceptance checkbox field id - you can find this under the acceptance field advanced tab - if the acceptance checkbox is not checked then the email and extra information will not be added to the list', 'brevo-elementor-integration' ),
+				'description' => __( 'Enter the acceptance checkbox field id - you can find this under the acceptance field advanced tab - if the acceptance checkbox is not checked then the email and extra information will not be added to the list', 'ml-brevo-for-elementor-pro' ),
     			'condition' => array(
     				'brevo_gdpr_checkbox' => 'yes',
     			),
@@ -174,11 +174,11 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		$widget->add_control(
 			'brevo_list',
 			[
-				'label' => __( 'brevo List ID', 'brevo-elementor-integration' ),
+				'label' => __( 'brevo List ID', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::NUMBER,
 				'placeholder' => '5',
 				'separator' => 'before',
-				'description' => __( 'Enter your list number', 'brevo-elementor-integration' ),
+				'description' => __( 'Enter your list number', 'ml-brevo-for-elementor-pro' ),
 				'dynamic' => [
 					'active' => true,
 				],
@@ -188,12 +188,12 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		$widget->add_control(
 			'brevo_email_field',
 			[
-				'label' => __( 'Email Field ID', 'brevo-elementor-integration' ),
+				'label' => __( 'Email Field ID', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::TEXT,
 				'placeholder' => 'email',
 				'default' => 'email',
 				'separator' => 'before',
-				'description' => __( 'Enter the email field id - you can find this under the email field advanced tab', 'brevo-elementor-integration' ),
+				'description' => __( 'Enter the email field id - you can find this under the email field advanced tab', 'ml-brevo-for-elementor-pro' ),
 				'dynamic' => [
 					'active' => true,
 				],
@@ -207,7 +207,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'v2_upgrade_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('<strong>✨ New in v2.0:</strong> Dynamic field mapping now supports ALL your Brevo contact attributes! Configure available fields in <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">Settings → Brevo</a>.', 'brevo-elementor-integration'),
+				'raw' => __('<strong>✨ New in v2.0:</strong> Dynamic field mapping now supports ALL your Brevo contact attributes! Configure available fields in <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">Settings → Brevo</a>.', 'ml-brevo-for-elementor-pro'),
 				'separator' => 'before',
 			]
 		);
@@ -216,7 +216,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'need_help_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('Need help? <a href="https://matteolavaggi.it/wordpress/brevo-elementor-integration/" target="_blank">Check out our support page.</a>', 'brevo-elementor-integration'),
+				'raw' => __('Need help? <a href="https://matteolavaggi.it/wordpress/ml-brevo-for-elementor-pro/" target="_blank">Check out our support page.</a>', 'ml-brevo-for-elementor-pro'),
 			]
 		);
 
@@ -237,7 +237,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 				'brevo_no_fields_notice',
 				[
 					'type' => \Elementor\Controls_Manager::RAW_HTML,
-					'raw' => __( '<div style="padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; color: #856404;"><strong>⚠️ No fields configured:</strong> Please configure your Brevo fields in <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">Settings → Brevo</a> to enable field mapping.</div>', 'brevo-elementor-integration' ),
+					'raw' => __( '<div style="padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; color: #856404;"><strong>⚠️ No fields configured:</strong> Please configure your Brevo fields in <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">Settings → Brevo</a> to enable field mapping.</div>', 'ml-brevo-for-elementor-pro' ),
 					'separator' => 'before',
 				]
 			);
@@ -248,7 +248,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'brevo_fields_section_title',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __( '<h3 style="margin: 0 0 10px 0; color: #495057;"><span style="color: #007cba;">🔗</span> Brevo Field Mapping</h3><p style="margin: 0 0 15px 0; color: #6c757d; font-style: italic;">Map your form fields to Brevo contact attributes:</p>', 'brevo-elementor-integration' ),
+				'raw' => __( '<h3 style="margin: 0 0 10px 0; color: #495057;"><span style="color: #007cba;">🔗</span> Brevo Field Mapping</h3><p style="margin: 0 0 15px 0; color: #6c757d; font-style: italic;">Map your form fields to Brevo contact attributes:</p>', 'ml-brevo-for-elementor-pro' ),
 				'separator' => 'before',
 			]
 		);

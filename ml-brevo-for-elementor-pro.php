@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name: ML Integration for Elementor forms - Brevo
+ * Plugin Name: ML Brevo for Elementor Pro
  * Description: Integrates Elementor forms with Brevo API. Now supports ALL your Brevo contact attributes with dynamic field mapping!
  * Author: Matteo Lavaggi	
  * Author URI: https://matteolavaggi.it/
@@ -11,7 +11,7 @@
  * Requires at least: 5.0
  * Tested up to: 6.4
  * Requires PHP: 7.4
- * Text Domain: brevo-elementor-integration
+ * Text Domain: ml-brevo-for-elementor-pro
  * Domain Path: /languages
  */
 
@@ -34,7 +34,7 @@ require dirname(__FILE__).'/includes/settings.php';
 function brevo_integration_check_elementor_pro_is_active() {
 
 	if ( !is_plugin_active('elementor-pro/elementor-pro.php') ) {
-		echo "<div class='error'><p><strong>brevo Elementor integration</strong> requires <strong> Elementor Pro plugin to be installed and activated</strong> </p></div>";
+		echo "<div class='error'><p><strong>ML Brevo for Elementor Pro</strong> requires <strong> Elementor Pro plugin to be installed and activated</strong> </p></div>";
 	}
 }
 add_action('admin_notices', 'brevo_integration_check_elementor_pro_is_active');

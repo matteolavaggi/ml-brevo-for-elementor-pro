@@ -28,7 +28,7 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 	 * @return string
 	 */
 	public function get_label() {
-		return __( 'brevo Unsubscribe', 'brevo-elementor-integration' );
+		return __( 'brevo Unsubscribe', 'ml-brevo-for-elementor-pro' );
 	}
 
 	/**
@@ -43,7 +43,7 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 		$widget->start_controls_section(
 			'section_brevo_unsubscribe-elementor-integration',
 			[
-				'label' => __( 'brevo Unsubscribe', 'brevo-elementor-integration' ),
+				'label' => __( 'brevo Unsubscribe', 'ml-brevo-for-elementor-pro' ),
 				'condition' => [
 					'submit_actions' => $this->get_name(),
 				],
@@ -54,14 +54,14 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 			'unsubscribe_note_alert_delete',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('<b>PLEASE NOTE - THIS ACTION DELETES THE INPUT EMAIL IN brevo!</b>', 'brevo-elementor-integration'),
+				'raw' => __('<b>PLEASE NOTE - THIS ACTION DELETES THE INPUT EMAIL IN brevo!</b>', 'ml-brevo-for-elementor-pro'),
 			]
 		);
 
 		$widget->add_control(
 			'brevo_unsubscribe_use_global_api_key',
 			[
-				'label' => __( 'Global brevo API key', 'brevo-elementor-integration' ),
+				'label' => __( 'Global brevo API key', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::SWITCHER,
 				'separator' => 'before'
 			]
@@ -71,7 +71,7 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 			'brevo_unsubscribe_use_global_api_key_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('You can set your global API key <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">here.</a> this means you only need to set your brevo API key once.', 'brevo-elementor-integration'),
+				'raw' => __('You can set your global API key <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">here.</a> this means you only need to set your brevo API key once.', 'ml-brevo-for-elementor-pro'),
 				'condition' => array(
 					'brevo_use_global_api_key' => 'yes',
     			),
@@ -81,12 +81,12 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 		$widget->add_control(
 			'brevo_unsubscribe_api',
 			[
-				'label' => __( 'brevo API key', 'brevo-elementor-integration' ),
+				'label' => __( 'brevo API key', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::TEXT,
 				'placeholder' => 'xkeysib-xxxxxxxx',
 				'label_block' => true,
 				'separator' => 'before',
-				'description' => __( 'Enter your V3 API key from brevo', 'brevo-elementor-integration' ),
+				'description' => __( 'Enter your V3 API key from brevo', 'ml-brevo-for-elementor-pro' ),
 				'condition' => array(
 					'brevo_use_global_api_key!' => 'yes',
     			),
@@ -99,7 +99,7 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 		$widget->add_control(
 			'brevo_unsubscribe_gdpr_checkbox',
 			[
-				'label' => __( 'GDPR Checkbox', 'brevo-elementor-integration' ),
+				'label' => __( 'GDPR Checkbox', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::SWITCHER,
 				'separator' => 'before'
 			]
@@ -108,11 +108,11 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 		$widget->add_control(
 			'brevo_unsubscribe_gdpr_checkbox_field',
 			[
-				'label' => __( 'Acceptance Field ID', 'brevo-elementor-integration' ),
+				'label' => __( 'Acceptance Field ID', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::TEXT,
 				'placeholder' => 'acceptancefieldid',
 				'separator' => 'before',
-				'description' => __( 'Enter the acceptance checkbox field id - you can find this under the acceptance field advanced tab - if the acceptance checkbox is not checked then the email and extra information will not be added to the list', 'brevo-elementor-integration' ),
+				'description' => __( 'Enter the acceptance checkbox field id - you can find this under the acceptance field advanced tab - if the acceptance checkbox is not checked then the email and extra information will not be added to the list', 'ml-brevo-for-elementor-pro' ),
     			'condition' => array(
     				'brevo_gdpr_checkbox' => 'yes',
     			),
@@ -125,12 +125,12 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 		$widget->add_control(
 			'brevo_unsubscribe_email_field',
 			[
-				'label' => __( 'Email Field ID', 'brevo-elementor-integration' ),
+				'label' => __( 'Email Field ID', 'ml-brevo-for-elementor-pro' ),
 				'type' => \Elementor\Controls_Manager::TEXT,
 				'placeholder' => 'email',
 				'default' => 'email',
 				'separator' => 'before',
-				'description' => __( 'Enter the email field id - you can find this under the email field advanced tab', 'brevo-elementor-integration' ),
+				'description' => __( 'Enter the email field id - you can find this under the email field advanced tab', 'ml-brevo-for-elementor-pro' ),
 				'dynamic' => [
 					'active' => true,
 				],
@@ -141,7 +141,7 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 			'need_unsubscribe_help_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('Need help? <a href="https://matteolavaggi.it/wordpress/brevo-elementor-integration/" target="_blank">Check out our support page.</a>', 'brevo-elementor-integration'),
+				'raw' => __('Need help? <a href="https://matteolavaggi.it/wordpress/ml-brevo-for-elementor-pro/" target="_blank">Check out our support page.</a>', 'ml-brevo-for-elementor-pro'),
 			]
 		);
 

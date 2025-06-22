@@ -37,7 +37,7 @@ class Brevo_Attributes_Manager {
 	 */
 	public function fetch_attributes( $api_key ) {
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'invalid_api_key', __( 'API key is required', 'brevo-elementor-integration' ) );
+			return new WP_Error( 'invalid_api_key', __( 'API key is required', 'ml-brevo-for-elementor-pro' ) );
 		}
 
 		// Check cache first
@@ -85,7 +85,7 @@ class Brevo_Attributes_Manager {
 		// Handle HTTP errors
 		if ( $response_code < 200 || $response_code >= 300 ) {
 			$error_message = sprintf( 
-				__( 'Brevo API request failed with status %d', 'brevo-elementor-integration' ), 
+				__( 'Brevo API request failed with status %d', 'ml-brevo-for-elementor-pro' ), 
 				$response_code 
 			);
 			
@@ -101,7 +101,7 @@ class Brevo_Attributes_Manager {
 		// Parse JSON response
 		$data = json_decode( $response_body, true );
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			return new WP_Error( 'invalid_json', __( 'Invalid JSON response from Brevo API', 'brevo-elementor-integration' ) );
+			return new WP_Error( 'invalid_json', __( 'Invalid JSON response from Brevo API', 'ml-brevo-for-elementor-pro' ) );
 		}
 
 		// Normalize attributes
@@ -195,18 +195,18 @@ class Brevo_Attributes_Manager {
 	private function generate_field_description( $field_name, $attribute ) {
 		// Common field descriptions
 		$descriptions = array(
-			'FIRSTNAME'      => __( 'Contact first name', 'brevo-elementor-integration' ),
-			'LASTNAME'       => __( 'Contact last name', 'brevo-elementor-integration' ),
-			'SMS'            => __( 'Contact phone number', 'brevo-elementor-integration' ),
-			'EMAIL'          => __( 'Contact email address', 'brevo-elementor-integration' ),
-			'COMPANY'        => __( 'Contact company name', 'brevo-elementor-integration' ),
-			'WEBSITE'        => __( 'Contact website URL', 'brevo-elementor-integration' ),
-			'ADDRESS'        => __( 'Contact address', 'brevo-elementor-integration' ),
-			'BIRTH_DATE'     => __( 'Contact birth date', 'brevo-elementor-integration' ),
-			'GENDER'         => __( 'Contact gender', 'brevo-elementor-integration' ),
-			'COUNTRY'        => __( 'Contact country', 'brevo-elementor-integration' ),
-			'CITY'           => __( 'Contact city', 'brevo-elementor-integration' ),
-			'ZIPCODE'        => __( 'Contact postal code', 'brevo-elementor-integration' ),
+			'FIRSTNAME'      => __( 'Contact first name', 'ml-brevo-for-elementor-pro' ),
+			'LASTNAME'       => __( 'Contact last name', 'ml-brevo-for-elementor-pro' ),
+			'SMS'            => __( 'Contact phone number', 'ml-brevo-for-elementor-pro' ),
+			'EMAIL'          => __( 'Contact email address', 'ml-brevo-for-elementor-pro' ),
+			'COMPANY'        => __( 'Contact company name', 'ml-brevo-for-elementor-pro' ),
+			'WEBSITE'        => __( 'Contact website URL', 'ml-brevo-for-elementor-pro' ),
+			'ADDRESS'        => __( 'Contact address', 'ml-brevo-for-elementor-pro' ),
+			'BIRTH_DATE'     => __( 'Contact birth date', 'ml-brevo-for-elementor-pro' ),
+			'GENDER'         => __( 'Contact gender', 'ml-brevo-for-elementor-pro' ),
+			'COUNTRY'        => __( 'Contact country', 'ml-brevo-for-elementor-pro' ),
+			'CITY'           => __( 'Contact city', 'ml-brevo-for-elementor-pro' ),
+			'ZIPCODE'        => __( 'Contact postal code', 'ml-brevo-for-elementor-pro' ),
 		);
 
 		if ( isset( $descriptions[ $field_name ] ) ) {
@@ -215,7 +215,7 @@ class Brevo_Attributes_Manager {
 
 		// Generate description from field name
 		$formatted_name = ucwords( strtolower( str_replace( '_', ' ', $field_name ) ) );
-		return sprintf( __( 'Contact %s', 'brevo-elementor-integration' ), $formatted_name );
+		return sprintf( __( 'Contact %s', 'ml-brevo-for-elementor-pro' ), $formatted_name );
 	}
 
 	/**
@@ -246,7 +246,7 @@ class Brevo_Attributes_Manager {
 				'type'        => 'text',
 				'category'    => 'normal',
 				'required'    => false,
-				'description' => __( 'Contact first name', 'brevo-elementor-integration' ),
+				'description' => __( 'Contact first name', 'ml-brevo-for-elementor-pro' ),
 				'enabled'     => true,
 			),
 			'LASTNAME' => array(
@@ -254,7 +254,7 @@ class Brevo_Attributes_Manager {
 				'type'        => 'text',
 				'category'    => 'normal',
 				'required'    => false,
-				'description' => __( 'Contact last name', 'brevo-elementor-integration' ),
+				'description' => __( 'Contact last name', 'ml-brevo-for-elementor-pro' ),
 				'enabled'     => true,
 			),
 			'SMS' => array(
@@ -262,7 +262,7 @@ class Brevo_Attributes_Manager {
 				'type'        => 'text',
 				'category'    => 'normal',
 				'required'    => false,
-				'description' => __( 'Contact phone number', 'brevo-elementor-integration' ),
+				'description' => __( 'Contact phone number', 'ml-brevo-for-elementor-pro' ),
 				'enabled'     => true,
 			),
 		);
@@ -374,7 +374,7 @@ class Brevo_Attributes_Manager {
 	 */
 	public function validate_api_key( $api_key ) {
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'empty_api_key', __( 'API key cannot be empty', 'brevo-elementor-integration' ) );
+			return new WP_Error( 'empty_api_key', __( 'API key cannot be empty', 'ml-brevo-for-elementor-pro' ) );
 		}
 
 		$endpoint = self::API_BASE_URL . '/account';
@@ -399,12 +399,12 @@ class Brevo_Attributes_Manager {
 		}
 
 		if ( $response_code === 401 ) {
-			return new WP_Error( 'invalid_api_key', __( 'Invalid API key', 'brevo-elementor-integration' ) );
+			return new WP_Error( 'invalid_api_key', __( 'Invalid API key', 'ml-brevo-for-elementor-pro' ) );
 		}
 
 		return new WP_Error( 
 			'api_validation_failed', 
-			sprintf( __( 'API validation failed with status %d', 'brevo-elementor-integration' ), $response_code )
+			sprintf( __( 'API validation failed with status %d', 'ml-brevo-for-elementor-pro' ), $response_code )
 		);
 	}
 

@@ -44,7 +44,7 @@ Transform the hardcoded 3-field limitation into a fully dynamic system that fetc
 - [x] Test database operations and rollback
 
 ### 2.2 Enhanced Settings Page UI
-- [x] Extend `mlbrevoFree` class in `includes/settings.php`
+- [x] Extend `MlbrevoFree` class in `includes/settings.php`
 - [x] Add "Available Fields" management section
 - [x] Create field discovery interface with "Refresh Fields" button
 - [x] Implement enable/disable toggles for each field
@@ -185,6 +185,55 @@ Transform the hardcoded 3-field limitation into a fully dynamic system that fetc
 
 ---
 
+## 🔧 PHASE 7: WHITE-LABELING FIXES (CRITICAL) 
+
+### 7.1 Class Name Inconsistencies ⚠️ HIGH PRIORITY
+- [x] **CRITICAL**: Fix class instantiation in `includes/settings.php` line 519
+  - ~~Current: `$ml_brevo = new mlbrevoFree();`~~
+  - ✅ **FIXED**: Class name case mismatch resolved
+
+### 7.2 Plugin Directory Path Issues ⚠️ HIGH PRIORITY  
+- [x] **CRITICAL**: Update plugin action links filter in `includes/settings.php` line 10
+  - ~~Current: `integration-for-elementor-forms-brevo/brevo-elementor-integration.php`~~
+  - ✅ **FIXED**: Updated to `ml-brevo-for-elementor-pro/ml-brevo-for-elementor-pro.php`
+
+### 7.3 Text Domain & Branding Consistency 🎨 MEDIUM PRIORITY
+- [x] Review all text strings for consistent branding:
+  - ✅ Plugin name updated to "ML Brevo for Elementor Pro"
+  - ✅ All text domains updated to "ml-brevo-for-elementor-pro"
+  - ✅ Support URLs updated to match new plugin name
+  - ✅ Admin interface titles and descriptions updated
+
+### 7.4 Database Migration Removal 🗑️ MEDIUM PRIORITY
+- [ ] Remove upgrade/migration features since this will be a new plugin:
+  - Remove backwards compatibility code in `class-brevo-integration-action.php`
+  - Remove migration detection systems
+  - Remove upgrade notices
+  - Simplify field handling to assume fresh installation
+
+### 7.5 Version Information Updates 📝 LOW PRIORITY
+- [x] Update main plugin file:
+  - ✅ Renamed to `ml-brevo-for-elementor-pro.php`
+  - ✅ Updated plugin header information
+  - ✅ Set version to 2.0.0
+- [x] Update readme files:
+  - ✅ Removed readme.txt (keeping only README.md)
+  - ✅ Updated plugin descriptions for white-label branding
+
+### 7.6 Support URL Verification 🔗 LOW PRIORITY
+- [x] ✅ **COMPLETED**: All support URLs updated to:
+  - `https://matteolavaggi.it/wordpress/ml-brevo-for-elementor-pro/`
+  - Ensure this URL exists and provides appropriate support
+
+### 7.7 Testing White-Label Changes 🧪 HIGH PRIORITY
+- [ ] **CRITICAL**: Test plugin activation after class name fix
+- [ ] Test admin settings page loads correctly
+- [ ] Test Elementor form integration still works
+- [ ] Verify all admin links work with new directory structure
+- [ ] Test plugin action links in WordPress admin
+
+---
+
 ## SUCCESS CRITERIA
 
 ### Technical Goals
@@ -226,12 +275,12 @@ Transform the hardcoded 3-field limitation into a fully dynamic system that fetc
 - **Phase 3 Complete**: 2025-01-27 - ✅ Dynamic Elementor Integration implemented
 - **Phase 4 In Progress**: Testing & Quality Assurance
 - **Phase 5 Complete**: 2025-01-27 - ✅ Documentation & version info updated
-- **Released**: Ready for deployment!
+- **Phase 7 Identified**: 2025-01-27 - 🔧 White-labeling issues found and documented
 
 ### Issues Encountered
-- [ ] Issue 1: [Description] - Status: [Open/Resolved]
-- [ ] Issue 2: [Description] - Status: [Open/Resolved]
+- [ ] Issue 1: Class name case mismatch in settings.php - Status: [Identified, needs fix]
+- [ ] Issue 2: Plugin directory path mismatch in action links - Status: [Identified, needs verification]
 
 ### Decisions Made
-- [ ] Decision 1: [Description and rationale]
-- [ ] Decision 2: [Description and rationale]
+- [ ] Decision 1: Remove all upgrade/migration features since this is a new plugin release
+- [ ] Decision 2: Maintain matteolavaggi.it support URLs for white-label version

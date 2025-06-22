@@ -1,9 +1,9 @@
-# Integration for Elementor forms - Brevo (brevo) v2.0
+# ML Brevo for Elementor Pro v2.0
 
 🚀 **NEW in v2.0:** Now supports **ALL** your Brevo contact attributes with dynamic field mapping!
 
-A lightweight but feature packed brevo / Brevo integration for Elementor forms.
-With this integration you can send your form data and contacts to brevo / Brevo as easily as the standard integrations. 
+A lightweight but feature packed Brevo integration for Elementor forms.
+With this integration you can send your form data and contacts to Brevo as easily as the standard integrations. 
 Keeping performance in mind this integration doesn't add any additional scripts on page load. 
 Feel free to post any feature requests and possible issues.
 
@@ -29,8 +29,8 @@ Feel free to post any feature requests and possible issues.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Go to Pages > Add New
 4. Press the 'Edit with Elementor' button.
-5. Drag and drop the form widget of Elementor Pro from the left panel onto the content area, and find the brevo action in the "Actions after submit" dropdown.
-6. Fill your brevo data and Key and you are all set. All users will be added after they submit the form.
+5. Drag and drop the form widget of Elementor Pro from the left panel onto the content area, and find the Brevo action in the "Actions after submit" dropdown.
+6. Fill your Brevo data and Key and you are all set. All users will be added after they submit the form.
 
 
 ## Frequently Asked Questions
@@ -45,7 +45,7 @@ Yes, all the other form widget integrations will be available.
 
 **Does this also work with Brevo?**
 
-Yes, brevo has changed it name and branding to Brevo. The integration will still work.
+Yes, this plugin is designed specifically for Brevo (formerly Sendinblue). The integration will work perfectly with all Brevo features.
 
 ## Changelog
 
