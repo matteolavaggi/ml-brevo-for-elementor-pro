@@ -1,5 +1,5 @@
 # ML Brevo for Elementor Pro v2.1
-
+![Elementor Field ID Location](img/logo.png)
 ## Introduction
 
 **ML Brevo for Elementor Pro** is a powerful WordPress plugin that seamlessly integrates Brevo (formerly Sendinblue) email marketing platform with Elementor Pro forms. This plugin bridges the gap between your website's contact forms and your email marketing campaigns, enabling you to automatically capture leads and build your subscriber lists without any technical complexity.

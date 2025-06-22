@@ -469,4 +469,13 @@ msgid "Debug Level"
 msgstr "Livello di debug"
 
 msgid "Log Retention (days)"
-msgstr "Conservazione log (giorni)" 
+msgstr "Conservazione log (giorni)"
+
+msgid "Available Brevo Lists"
+msgstr "Liste Brevo disponibili"
+
+msgid "This table shows all your Brevo contact lists for reference. You can select specific lists directly in your Elementor forms using the list dropdown selector."
+msgstr "Questa tabella mostra tutte le tue liste di contatti Brevo per riferimento. Puoi selezionare liste specifiche direttamente nei tuoi form Elementor usando il selettore a discesa delle liste."
+
+msgid "Refresh Lists from Brevo"
+msgstr "Aggiorna liste da Brevo" 
