@@ -174,14 +174,23 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		$widget->add_control(
 			'brevo_list',
 			[
-				'label' => __( 'brevo List ID', 'ml-brevo-for-elementor-pro' ),
-				'type' => \Elementor\Controls_Manager::NUMBER,
-				'placeholder' => '5',
+				'label' => __( 'Brevo List', 'ml-brevo-for-elementor-pro' ),
+				'type' => \Elementor\Controls_Manager::SELECT,
+				'options' => $this->get_brevo_lists_options(),
+				'default' => '',
 				'separator' => 'before',
-				'description' => __( 'Enter your list number', 'ml-brevo-for-elementor-pro' ),
+				'description' => __( 'Select the Brevo list where contacts will be added', 'ml-brevo-for-elementor-pro' ),
 				'dynamic' => [
 					'active' => true,
 				],
+			]
+		);
+
+		$widget->add_control(
+			'brevo_list_refresh_note',
+			[
+				'type' => \Elementor\Controls_Manager::RAW_HTML,
+				'raw' => __( '<p style="margin: 5px 0 0 0; font-size: 12px; color: #666;"><strong>💡 Tip:</strong> Don\'t see your list? <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">Refresh lists in Settings</a> or clear cache if you just created a new list in Brevo.</p>', 'ml-brevo-for-elementor-pro' ),
 			]
 		);
 
@@ -296,6 +305,60 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 				],
 			]
 		);
+	}
+
+	/**
+	 * Get Brevo lists options for dropdown
+	 *
+	 * @return array
+	 */
+	public function get_brevo_lists_options() {
+		// Get global API key
+		$ml_brevo_options = get_option( 'ml_brevo_option_name', array() );
+		$api_key = $ml_brevo_options['global_api_key_ml_brevo'] ?? '';
+		
+		if ( empty( $api_key ) ) {
+			return array(
+				'' => __( 'Please set Global API Key in Settings', 'ml-brevo-for-elementor-pro' )
+			);
+		}
+
+		// Get lists from cache/API
+		$attributes_manager = Brevo_Attributes_Manager::get_instance();
+		$lists = $attributes_manager->fetch_lists( $api_key );
+		
+		if ( is_wp_error( $lists ) || empty( $lists ) ) {
+			return array(
+				'' => __( 'No lists available or API error', 'ml-brevo-for-elementor-pro' )
+			);
+		}
+
+		// Debug logging to see what Brevo returns
+		if ( WP_DEBUG === true ) {
+			error_log( 'Brevo Integration - Lists data for dropdown: ' . print_r( $lists, true ) );
+		}
+
+		// Format lists for dropdown
+		$options = array( '' => __( 'Select a list...', 'ml-brevo-for-elementor-pro' ) );
+		
+		foreach ( $lists as $list_id => $list_data ) {
+			if ( ! is_array( $list_data ) || ! isset( $list_data['name'] ) ) {
+				continue;
+			}
+			
+			$list_name = sanitize_text_field( $list_data['name'] );
+			
+			// Simple display: just list name and ID
+			$display_name = sprintf( 
+				'%s - ID: %d', 
+				$list_name, 
+				$list_id 
+			);
+			
+			$options[ $list_id ] = $display_name;
+		}
+
+		return $options;
 	}
 
 	/**

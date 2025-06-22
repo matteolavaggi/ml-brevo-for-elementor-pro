@@ -1,6 +1,6 @@
-# ML Brevo for Elementor Pro v2.0
+# ML Brevo for Elementor Pro v2.1
 
-🚀 **NEW in v2.0:** Now supports **ALL** your Brevo contact attributes with dynamic field mapping!
+🚀 **NEW in v2.1:** Enhanced user experience with list dropdown selector, unified debug system, and improved admin interface!
 
 A lightweight but feature packed Brevo integration for Elementor forms.
 With this integration you can send your form data and contacts to Brevo as easily as the standard integrations. 
@@ -48,6 +48,123 @@ Yes, all the other form widget integrations will be available.
 Yes, this plugin is designed specifically for Brevo (formerly Sendinblue). The integration will work perfectly with all Brevo features.
 
 ## Changelog
+
+## [2.1.0] - 2025-06-22
+
+### 🎯 Enhanced User Experience & Debug System
+
+This release focuses on improving user experience with better list management, comprehensive debugging tools, and a unified admin interface.
+
+### ✨ Added
+
+#### New User Interface Features
+- **Brevo Lists Management**: Complete integration with Brevo contact lists
+  - Automatic list fetching from Brevo API
+  - Visual list selection interface with subscriber counts
+  - Bulk list operations (Select All, Deselect All)
+  - Smart caching for optimal performance
+- **List Dropdown Selector**: Replaced manual list ID input with user-friendly dropdown in Elementor forms
+  - Shows list names with clean formatting
+  - Real-time list data from Brevo API
+  - Graceful error handling for missing API keys
+- **Unified Admin Interface**: Tabbed navigation system
+  - "Settings & Configuration" tab for all plugin settings
+  - "Debug Logs" tab for comprehensive debugging
+  - Professional WordPress-native design with icons
+  - Seamless navigation between features
+
+#### Advanced Debug System
+- **Comprehensive Logging**: Multi-level debug system (DEBUG, INFO, WARNING, ERROR)
+  - Form submission lifecycle tracking
+  - API call logging with execution times
+  - Cache operation monitoring
+  - Error condition logging
+- **Debug Log Viewer**: Professional log management interface
+  - Real-time log filtering by level and component
+  - Pagination for large log files
+  - Log file download functionality
+  - **Clear All Logs** feature (now working properly)
+- **Debug Settings**: Granular control over logging
+  - Enable/disable debug logging
+  - Configurable debug levels
+  - Log retention period settings
+  - Real-time log statistics
+
+#### Enhanced Form Integration
+- **Improved Form Submission Logging**: Complete tracking of form processing
+  - GDPR compliance checking
+  - Email validation and existence checks
+  - Attribute building from form data
+  - Double opt-in vs direct contact creation paths
+- **Better Error Handling**: Enhanced error messages and recovery scenarios
+- **Performance Monitoring**: Execution time tracking for all operations
+
+### 🔄 Changed
+
+#### User Interface Improvements
+- **Simplified List Selection**: Removed potentially confusing subscriber count information from dropdowns
+- **Consolidated Navigation**: Removed separate debug menu, integrated everything into main settings page
+- **Enhanced Visual Design**: Modern tabbed interface with improved spacing and typography
+- **Better Status Indicators**: Clear visual feedback for enabled/disabled features
+
+#### Technical Improvements
+- **Optimized Caching**: Enhanced cache management for both attributes and lists
+- **Improved API Integration**: Better error handling and response processing
+- **Enhanced Security**: Strengthened nonce validation and permission checks
+- **Code Organization**: Better separation of concerns between components
+
+### 🛠️ Fixed
+
+#### Critical Bug Fixes
+- **Fixed Clear Logs Functionality**: Resolved AJAX handler conflicts causing "Clearing Logs..." to hang
+- **Corrected Method Names**: Fixed `clear_all_logs()` vs `clear_logs()` method name mismatch
+- **Eliminated AJAX Conflicts**: Removed duplicate AJAX registrations between debug-viewer.php and settings.php
+- **Improved Nonce Handling**: Consistent nonce validation across all AJAX operations
+
+#### Performance Fixes
+- **Cache Optimization**: Better handling of cache metadata vs actual data
+- **Memory Management**: Improved memory usage for large log files
+- **API Rate Limiting**: Better handling of API request limits
+
+### 🔒 Security
+
+#### Enhanced Security Measures
+- **Strengthened AJAX Security**: Improved nonce validation for all admin actions
+- **Better Permission Checks**: Consistent capability checking across all operations
+- **Input Sanitization**: Enhanced validation for all user inputs
+- **Log File Protection**: Secured log directory with .htaccess protection
+
+### 📊 Performance
+
+#### Optimization Improvements
+- **Reduced API Calls**: Smart caching prevents unnecessary API requests
+- **Faster Admin Interface**: Optimized JavaScript and CSS loading
+- **Efficient Log Processing**: Improved log file reading and filtering
+- **Memory Optimization**: Better memory management for large datasets
+
+### 🎨 User Experience
+
+#### Interface Enhancements
+- **Intuitive Navigation**: Clear tabbed interface for easy feature access
+- **Visual Feedback**: Real-time status updates and loading indicators
+- **Helpful Tooltips**: Contextual help and guidance throughout the interface
+- **Responsive Design**: Better mobile and tablet compatibility
+
+### 🔧 Developer Experience
+
+#### Code Quality Improvements
+- **Better Documentation**: Enhanced inline documentation and comments
+- **Cleaner Architecture**: Improved separation between UI and logic components
+- **Consistent Coding Standards**: Unified code style across all files
+- **Enhanced Error Reporting**: More detailed error messages for debugging
+
+### 📚 Documentation
+- Updated README with v2.1 features and improvements
+- Enhanced inline code documentation
+- Improved error message clarity
+- Better user guidance in admin interface
+
+---
 
 ## [2.0.0] - 2025-06-22
 

@@ -21,9 +21,9 @@ class Brevo_Debug_Viewer {
 		// Debug menu is now integrated into main settings, so we don't add a separate menu
 		// add_action( 'admin_menu', array( $this, 'add_debug_menu' ) );
 		
-		// Keep the AJAX handlers for backward compatibility
-		add_action( 'wp_ajax_brevo_clear_debug_logs', array( $this, 'handle_clear_logs' ) );
-		add_action( 'wp_ajax_brevo_download_debug_log', array( $this, 'handle_download_log' ) );
+		// AJAX handlers are now handled in settings.php to avoid conflicts
+		// add_action( 'wp_ajax_brevo_clear_debug_logs', array( $this, 'handle_clear_logs' ) );
+		// add_action( 'wp_ajax_brevo_download_debug_log', array( $this, 'handle_download_log' ) );
 	}
 
 	/**

@@ -195,7 +195,7 @@ function brevo_handle_clear_debug_logs() {
 	}
 
 	$logger = Brevo_Debug_Logger::get_instance();
-	$logger->clear_all_logs();
+	$logger->clear_logs();
 
 	wp_send_json_success( array( 'message' => 'All debug logs cleared successfully' ) );
 }
