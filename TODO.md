@@ -44,7 +44,7 @@ Transform the hardcoded 3-field limitation into a fully dynamic system that fetc
 - [x] Test database operations and rollback
 
 ### 2.2 Enhanced Settings Page UI
-- [x] Extend `WebticabrevoFree` class in `includes/settings.php`
+- [x] Extend `mlbrevoFree` class in `includes/settings.php`
 - [x] Add "Available Fields" management section
 - [x] Create field discovery interface with "Refresh Fields" button
 - [x] Implement enable/disable toggles for each field

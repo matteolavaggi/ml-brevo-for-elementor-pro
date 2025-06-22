@@ -71,7 +71,7 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 			'brevo_unsubscribe_use_global_api_key_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('You can set your global API key <a href="' . admin_url( 'options-general.php?page=webtica-brevo-free' ) . '" target="_blank">here.</a> this means you only need to set your brevo API key once.', 'brevo-elementor-integration'),
+				'raw' => __('You can set your global API key <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">here.</a> this means you only need to set your brevo API key once.', 'brevo-elementor-integration'),
 				'condition' => array(
 					'brevo_use_global_api_key' => 'yes',
     			),
@@ -141,7 +141,7 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 			'pro_unsubscribe_version_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('Need more attributes? <a href="https://plugins.webtica.be/product/brevo-pro-integration-for-elementor-forms/?ref=plugin-widget" target="_blank">Check out our Pro version.</a>', 'brevo-elementor-integration'),
+				'raw' => __('Need more attributes? <a href="https://plugins.ml.be/product/brevo-pro-integration-for-elementor-forms/?ref=plugin-widget" target="_blank">Check out our Pro version.</a>', 'brevo-elementor-integration'),
 			]
 		);
 
@@ -149,7 +149,7 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 			'need_unsubscribe_help_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('Need help? <a href="https://plugins.webtica.be/support/?ref=plugin-widget" target="_blank">Check out our support page.</a>', 'brevo-elementor-integration'),
+				'raw' => __('Need help? <a href="https://plugins.ml.be/support/?ref=plugin-widget" target="_blank">Check out our support page.</a>', 'brevo-elementor-integration'),
 			]
 		);
 
@@ -192,8 +192,8 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 		//Global key
 		$useglobalkey = $settings['brevo_unsubscribe_use_global_api_key'];
 		if ($useglobalkey == "yes") {
-			$webtica_brevo_options = get_option( 'webtica_brevo_option_name' );
-			$globalapikey = $webtica_brevo_options['global_api_key_webtica_brevo'];
+			$ml_brevo_options = get_option( 'ml_brevo_option_name' );
+			$globalapikey = $ml_brevo_options['global_api_key_ml_brevo'];
 			if ( empty( $globalapikey ) ) {
 				if( WP_DEBUG === true ) { error_log('Elementor forms brevo integration - brevo Global API Key not set.'); }
 				return;

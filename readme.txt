@@ -1,5 +1,5 @@
 === Integration for Elementor forms - brevo ===
-Contributors: webtica
+Contributors: ml
 Tags: brevo, brevo, elementor, elementor pro, forms
 Requires at least: 5.0
 Tested up to: 6.8.1

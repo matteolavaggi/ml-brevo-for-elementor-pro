@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Plugin Name: Integration for Elementor forms - Brevo (brevo)
- * Description: Integrates Elementor forms with Brevo (brevo) API. Now supports ALL your Brevo contact attributes with dynamic field mapping!
- * Author: Webtica
- * Author URI: https://webtica.be/
+ * Plugin Name: ML Integration for Elementor forms - Brevo
+ * Description: Integrates Elementor forms with Brevo API. Now supports ALL your Brevo contact attributes with dynamic field mapping!
+ * Author: Matteo Lavaggi	
+ * Author URI: https://matteolavaggi.it/
  * Version: 2.0.0
  * Elementor tested up to: 3.28.4
  * Elementor Pro tested up to: 3.28.4

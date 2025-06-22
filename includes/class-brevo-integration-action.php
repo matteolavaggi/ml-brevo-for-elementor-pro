@@ -63,7 +63,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'brevo_use_global_api_key_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('You can set your global API key <a href="' . admin_url( 'options-general.php?page=webtica-brevo-free' ) . '" target="_blank">here.</a> this means you only need to set your brevo API key once.', 'brevo-elementor-integration'),
+				'raw' => __('You can set your global API key <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">here.</a> this means you only need to set your brevo API key once.', 'brevo-elementor-integration'),
 				'condition' => array(
 					'brevo_use_global_api_key' => 'yes',
     			),
@@ -207,7 +207,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'v2_upgrade_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('<strong>✨ New in v2.0:</strong> Dynamic field mapping now supports ALL your Brevo contact attributes! Configure available fields in <a href="' . admin_url( 'options-general.php?page=webtica-brevo-free' ) . '" target="_blank">Settings → Brevo</a>.', 'brevo-elementor-integration'),
+				'raw' => __('<strong>✨ New in v2.0:</strong> Dynamic field mapping now supports ALL your Brevo contact attributes! Configure available fields in <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">Settings → Brevo</a>.', 'brevo-elementor-integration'),
 				'separator' => 'before',
 			]
 		);
@@ -216,7 +216,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'need_help_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('Need help? <a href="https://plugins.webtica.be/support/?ref=plugin-widget" target="_blank">Check out our support page.</a>', 'brevo-elementor-integration'),
+				'raw' => __('Need help? <a href="https://plugins.ml.be/support/?ref=plugin-widget" target="_blank">Check out our support page.</a>', 'brevo-elementor-integration'),
 			]
 		);
 
@@ -237,7 +237,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 				'brevo_no_fields_notice',
 				[
 					'type' => \Elementor\Controls_Manager::RAW_HTML,
-					'raw' => __( '<div style="padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; color: #856404;"><strong>⚠️ No fields configured:</strong> Please configure your Brevo fields in <a href="' . admin_url( 'options-general.php?page=webtica-brevo-free' ) . '" target="_blank">Settings → Brevo</a> to enable field mapping.</div>', 'brevo-elementor-integration' ),
+					'raw' => __( '<div style="padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; color: #856404;"><strong>⚠️ No fields configured:</strong> Please configure your Brevo fields in <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">Settings → Brevo</a> to enable field mapping.</div>', 'brevo-elementor-integration' ),
 					'separator' => 'before',
 				]
 			);
@@ -316,8 +316,8 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		}
 
 		// Get API key for fetching field definitions
-		$webtica_brevo_options = get_option( 'webtica_brevo_option_name', array() );
-		$api_key = $webtica_brevo_options['global_api_key_webtica_brevo'] ?? '';
+		$ml_brevo_options = get_option( 'ml_brevo_option_name', array() );
+		$api_key = $ml_brevo_options['global_api_key_ml_brevo'] ?? '';
 
 		if ( empty( $api_key ) ) {
 			return array();
@@ -478,8 +478,8 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 	 */
 	private function get_api_key( $settings ) {
 		if ( $settings['brevo_use_global_api_key'] === 'yes' ) {
-			$webtica_brevo_options = get_option( 'webtica_brevo_option_name', array() );
-			$api_key = $webtica_brevo_options['global_api_key_webtica_brevo'] ?? '';
+			$ml_brevo_options = get_option( 'ml_brevo_option_name', array() );
+			$api_key = $ml_brevo_options['global_api_key_ml_brevo'] ?? '';
 			
 			if ( empty( $api_key ) ) {
 				if ( WP_DEBUG ) {

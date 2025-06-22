@@ -1,15 +1,14 @@
 <?php
 
 // Link to support and pro page from plugins screen
-function webtica_brevo_filter_action_links( $links ) {
+function ml_brevo_filter_action_links( $links ) {
 
-	$links['settings'] = '<a href="' . admin_url( 'options-general.php?page=webtica-brevo-free' ) . '">' . __( 'Settings' ) . '</a>';
-	$links['proversion'] = '<a href="https://plugins.webtica.be/product/brevo-pro-integration-for-elementor-forms/?ref=plugin-settings-page" target="_blank">Get Pro version</a>';
-	$links['support'] = '<a href="https://plugins.webtica.be/support/?ref=plugin-settings-page" target="_blank">Support</a>';
+	$links['settings'] = '<a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '">' . __( 'Settings' ) . '</a>';
+	$links['support'] = '<a href="https://matteolavaggi.it/wordpress/brevo-elementor-integration/" target="_blank">Support</a>';
 	return $links;
 
 }
-add_filter( 'plugin_action_links_integration-for-elementor-forms-brevo/brevo-elementor-integration.php', 'webtica_brevo_filter_action_links', 10, 3 );
+add_filter( 'plugin_action_links_integration-for-elementor-forms-brevo/brevo-elementor-integration.php', 'ml_brevo_filter_action_links', 10, 3 );
 
 // Handle AJAX requests for field management
 add_action( 'wp_ajax_brevo_refresh_fields', 'brevo_handle_refresh_fields' );
@@ -72,12 +71,12 @@ function brevo_handle_field_settings_update() {
 }
 
 // Add global site setting API Key option
-class WebticabrevoFree {
-	private $webtica_brevo_free_options;
+class MlbrevoFree {
+	private $ml_brevo_free_options;
 
 	public function __construct() {
-		add_action( 'admin_menu', array( $this, 'webtica_brevo_add_plugin_page' ) );
-		add_action( 'admin_init', array( $this, 'webtica_brevo_page_init' ) );
+		add_action( 'admin_menu', array( $this, 'ml_brevo_add_plugin_page' ) );
+		add_action( 'admin_init', array( $this, 'ml_brevo_page_init' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 	}
 
@@ -86,7 +85,7 @@ class WebticabrevoFree {
 	 */
 	public function enqueue_admin_scripts( $hook ) {
 		// Only load on our settings page
-		if ( $hook !== 'settings_page_webtica-brevo-free' ) {
+		if ( $hook !== 'settings_page_ml-brevo-free' ) {
 			return;
 		}
 
@@ -95,19 +94,19 @@ class WebticabrevoFree {
 		wp_add_inline_style( 'wp-admin', $this->get_admin_css() );
 	}
 
-	public function webtica_brevo_add_plugin_page() {
+	public function ml_brevo_add_plugin_page() {
 		add_options_page(
 			'brevo', // page_title
 			'brevo', // menu_title
 			'manage_options', // capability
-			'webtica-brevo-free', // menu_slug
-			array( $this, 'webtica_brevo_create_admin_page' ) // function
+			'ml-brevo-free', // menu_slug
+			array( $this, 'ml_brevo_create_admin_page' ) // function
 		);
 	}
 
-	public function webtica_brevo_create_admin_page() {
-		$this->webtica_brevo_options = get_option( 'webtica_brevo_option_name' ); 
-		$api_key = $this->webtica_brevo_options['global_api_key_webtica_brevo'] ?? '';
+	public function ml_brevo_create_admin_page() {
+		$this->ml_brevo_options = get_option( 'ml_brevo_option_name' ); 
+		$api_key = $this->ml_brevo_options['global_api_key_ml_brevo'] ?? '';
 		?>
 
 		<div class="wrap">
@@ -117,8 +116,8 @@ class WebticabrevoFree {
 
 			<form method="post" action="options.php" id="brevo-settings-form">
 				<?php
-					settings_fields( 'webtica_brevo_option_group' );
-					do_settings_sections( 'webtica-brevo-admin' );
+					settings_fields( 'ml_brevo_option_group' );
+					do_settings_sections( 'ml-brevo-admin' );
 				?>
 				
 				<?php $this->render_field_management_section( $api_key ); ?>
@@ -246,34 +245,34 @@ class WebticabrevoFree {
 		<?php
 	}
 
-	public function webtica_brevo_page_init() {
+	public function ml_brevo_page_init() {
 		register_setting(
-			'webtica_brevo_option_group', // option_group
-			'webtica_brevo_option_name', // option_name
-			array( $this, 'webtica_brevo_sanitize' ) // sanitize_callback
+			'ml_brevo_option_group', // option_group
+			'ml_brevo_option_name', // option_name
+			array( $this, 'ml_brevo_sanitize' ) // sanitize_callback
 		);
 
 		add_settings_section(
-			'webtica_brevo_setting_section', // id
+			'ml_brevo_setting_section', // id
 			'Settings', // title
-			array( $this, 'webtica_brevo_section_info' ), // callback
-			'webtica-brevo-admin' // page
+			array( $this, 'ml_brevo_section_info' ), // callback
+			'ml-brevo-admin' // page
 		);
 
 		add_settings_field(
-			'global_api_key_webtica_brevo', // id
+			'global_api_key_ml_brevo', // id
 			'Global brevo API key', // title
-			array( $this, 'global_api_key_webtica_brevo_callback' ), // callback
-			'webtica-brevo-admin', // page
-			'webtica_brevo_setting_section' // section
+			array( $this, 'global_api_key_ml_brevo_callback' ), // callback
+			'ml-brevo-admin', // page
+			'ml_brevo_setting_section' // section
 		);
 	}
 
-	public function webtica_brevo_sanitize($input) {
+	public function ml_brevo_sanitize($input) {
 		$sanitary_values = array();
 
-		if ( isset( $input['global_api_key_webtica_brevo'] ) ) {
-			$sanitary_values['global_api_key_webtica_brevo'] = sanitize_text_field( $input['global_api_key_webtica_brevo'] );
+		if ( isset( $input['global_api_key_ml_brevo'] ) ) {
+			$sanitary_values['global_api_key_ml_brevo'] = sanitize_text_field( $input['global_api_key_ml_brevo'] );
 		}
 
 		// Handle field settings update
@@ -303,7 +302,7 @@ class WebticabrevoFree {
 			// Refresh fields button
 			$('#refresh-fields-btn').on('click', function() {
 				var button = $(this);
-				var apiKey = $('#global_api_key_webtica_brevo').val();
+				var apiKey = $('#global_api_key_ml_brevo').val();
 				
 				if (!apiKey) {
 					showNotice('Please enter an API key first.', 'error');
@@ -497,25 +496,25 @@ class WebticabrevoFree {
 		";
 	}
 
-	public function webtica_brevo_section_info() {
-		echo "Here you can find all your Webtica Integration for Elementor Form - brevo settings";
+	public function ml_brevo_section_info() {
+		echo "Here you can find all your ml Integration for Elementor Form - brevo settings";
 	}
 
-	public function global_api_key_webtica_brevo_callback() {
-		if (empty($this->webtica_brevo_options['global_api_key_webtica_brevo'])){
+	public function global_api_key_ml_brevo_callback() {
+		if (empty($this->ml_brevo_options['global_api_key_ml_brevo'])){
 			printf(
-				'<input class="regular-text" type="text" name="webtica_brevo_option_name[global_api_key_webtica_brevo]" id="global_api_key_webtica_brevo" value="%s">',
-				isset( $this->webtica_brevo_options['global_api_key_webtica_brevo'] ) ? esc_attr( $this->webtica_brevo_options['global_api_key_webtica_brevo']) : ''
+				'<input class="regular-text" type="text" name="ml_brevo_option_name[global_api_key_ml_brevo]" id="global_api_key_ml_brevo" value="%s">',
+				isset( $this->ml_brevo_options['global_api_key_ml_brevo'] ) ? esc_attr( $this->ml_brevo_options['global_api_key_ml_brevo']) : ''
 			);
 		}
 		else{
 			printf(
-				'<input class="regular-text" type="password" name="webtica_brevo_option_name[global_api_key_webtica_brevo]" id="global_api_key_webtica_brevo" value="%s">',
-				isset( $this->webtica_brevo_options['global_api_key_webtica_brevo'] ) ? esc_attr( $this->webtica_brevo_options['global_api_key_webtica_brevo']) : ''
+				'<input class="regular-text" type="password" name="ml_brevo_option_name[global_api_key_ml_brevo]" id="global_api_key_ml_brevo" value="%s">',
+				isset( $this->ml_brevo_options['global_api_key_ml_brevo'] ) ? esc_attr( $this->ml_brevo_options['global_api_key_ml_brevo']) : ''
 			);
 		}
 	}
 
 }
 if ( is_admin() )
-	$webtica_brevo = new WebticabrevoFree();
+	$ml_brevo = new mlbrevoFree();
