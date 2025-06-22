@@ -540,4 +540,36 @@ msgstr ""
 
 #: includes/settings.php:434
 msgid "Change your site language in Settings > General > Site Language"
+msgstr ""
+
+#: includes/settings.php:270
+msgid "Automatizza la tua strategia di vendita e marketing con Twins Agency!"
+msgstr ""
+
+#: includes/settings.php:273
+msgid "Sfrutta al massimo le potenzialità di Brevo (ex Sendinblue) per ottimizzare la gestione dei lead, le campagne email e l'intero customer journey. Con le nostre automazioni personalizzate e l'integrazione dei migliori strumenti di intelligenza artificiale, ti aiuteremo a:"
+msgstr ""
+
+#: includes/settings.php:276
+msgid "Ridurre il lavoro manuale e aumentare l'efficienza operativa."
+msgstr ""
+
+#: includes/settings.php:277
+msgid "Centralizzare i dati dei clienti per una visione unificata e completa."
+msgstr ""
+
+#: includes/settings.php:278
+msgid "Massimizzare le conversioni e migliorare l'engagement dei tuoi clienti."
+msgstr ""
+
+#: includes/settings.php:281
+msgid "Contattaci oggi stesso per scoprire come Twins Agency può supportare la crescita della tua azienda attraverso le automazioni Brevo e l'intelligenza artificiale."
+msgstr ""
+
+#: includes/settings.php:284
+msgid "Contattaci subito"
+msgstr ""
+
+#: includes/settings.php:289
+msgid "Dismiss this notice."
 msgstr "" 

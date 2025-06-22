@@ -229,4 +229,127 @@ msgid "Debug Logs"
 msgstr "Debug-Protokolle"
 
 msgid "Docs"
-msgstr "Dokumentation" 
+msgstr "Dokumentation"
+
+msgid "Translations"
+msgstr "Übersetzungen"
+
+msgid "File PO non trovato: %s"
+msgstr "PO-Datei nicht gefunden: %s"
+
+msgid "Errore nella compilazione: %s"
+msgstr "Fehler bei der Kompilierung: %s"
+
+msgid "%d file di traduzione compilati con successo!"
+msgstr "%d Übersetzungsdateien erfolgreich kompiliert!"
+
+msgid "Translation Management"
+msgstr "Übersetzungsverwaltung"
+
+msgid "Manage and compile plugin translations for better performance."
+msgstr "Verwalten und kompilieren Sie Plugin-Übersetzungen für bessere Leistung."
+
+msgid "Some translations need compilation!"
+msgstr "Einige Übersetzungen müssen kompiliert werden!"
+
+msgid "Click \"Compile Translations\" to improve performance."
+msgstr "Klicken Sie auf \"Übersetzungen kompilieren\", um die Leistung zu verbessern."
+
+msgid "Compile All Translations"
+msgstr "Alle Übersetzungen kompilieren"
+
+msgid "Converts .po files to optimized .mo files for better performance."
+msgstr "Konvertiert .po-Dateien in optimierte .mo-Dateien für bessere Leistung."
+
+msgid "Translation Status"
+msgstr "Übersetzungsstatus"
+
+msgid "Language"
+msgstr "Sprache"
+
+msgid "PO File"
+msgstr "PO-Datei"
+
+msgid "MO File"
+msgstr "MO-Datei"
+
+msgid "Last Modified"
+msgstr "Zuletzt geändert"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Missing"
+msgstr "Fehlt"
+
+msgid "Needs Compilation"
+msgstr "Benötigt Kompilierung"
+
+msgid "Up to Date"
+msgstr "Aktuell"
+
+msgid "Not Compiled"
+msgstr "Nicht kompiliert"
+
+msgid "About Translations"
+msgstr "Über Übersetzungen"
+
+msgid "PO Files"
+msgstr "PO-Dateien"
+
+msgid "Human-readable translation files that you can edit with text editors or translation tools like Poedit."
+msgstr "Menschenlesbare Übersetzungsdateien, die Sie mit Texteditoren oder Übersetzungstools wie Poedit bearbeiten können."
+
+msgid "MO Files"
+msgstr "MO-Dateien"
+
+msgid "Compiled binary files that WordPress uses for faster translation loading. Generated from PO files."
+msgstr "Kompilierte Binärdateien, die WordPress für schnelleres Laden von Übersetzungen verwendet. Aus PO-Dateien generiert."
+
+msgid "Automatic Detection"
+msgstr "Automatische Erkennung"
+
+msgid "WordPress automatically loads the correct translation based on your site language setting."
+msgstr "WordPress lädt automatisch die korrekte Übersetzung basierend auf Ihrer Website-Spracheinstellung."
+
+msgid "Current Site Settings"
+msgstr "Aktuelle Website-Einstellungen"
+
+msgid "Site Language:"
+msgstr "Website-Sprache:"
+
+msgid "Translation loaded"
+msgstr "Übersetzung geladen"
+
+msgid "Translation not compiled"
+msgstr "Übersetzung nicht kompiliert"
+
+msgid "English (default)"
+msgstr "Englisch (Standard)"
+
+msgid "Change your site language in Settings > General > Site Language"
+msgstr "Ändern Sie Ihre Website-Sprache unter Einstellungen > Allgemein > Website-Sprache"
+
+msgid "Automatizza la tua strategia di vendita e marketing con Twins Agency!"
+msgstr "Automatisieren Sie Ihre Verkaufs- und Marketingstrategie mit Twins Agency!"
+
+msgid "Sfrutta al massimo le potenzialità di Brevo (ex Sendinblue) per ottimizzare la gestione dei lead, le campagne email e l'intero customer journey. Con le nostre automazioni personalizzate e l'integrazione dei migliori strumenti di intelligenza artificiale, ti aiuteremo a:"
+msgstr "Nutzen Sie das volle Potenzial von Brevo (ehemals Sendinblue), um Lead-Management, E-Mail-Kampagnen und die gesamte Customer Journey zu optimieren. Mit unseren maßgeschneiderten Automatisierungen und der Integration der besten KI-Tools helfen wir Ihnen dabei:"
+
+msgid "Ridurre il lavoro manuale e aumentare l'efficienza operativa."
+msgstr "Manuelle Arbeit zu reduzieren und die operative Effizienz zu steigern."
+
+msgid "Centralizzare i dati dei clienti per una visione unificata e completa."
+msgstr "Kundendaten zu zentralisieren für eine einheitliche und vollständige Sicht."
+
+msgid "Massimizzare le conversioni e migliorare l'engagement dei tuoi clienti."
+msgstr "Conversions zu maximieren und das Engagement Ihrer Kunden zu verbessern."
+
+msgid "Contattaci oggi stesso per scoprire come Twins Agency può supportare la crescita della tua azienda attraverso le automazioni Brevo e l'intelligenza artificiale."
+msgstr "Kontaktieren Sie uns noch heute, um zu erfahren, wie Twins Agency das Wachstum Ihres Unternehmens durch Brevo-Automatisierungen und künstliche Intelligenz unterstützen kann."
+
+msgid "Contattaci subito"
+msgstr "Kontaktieren Sie uns jetzt"
+
+msgid "Dismiss this notice."
+msgstr "Diese Benachrichtigung schließen." 

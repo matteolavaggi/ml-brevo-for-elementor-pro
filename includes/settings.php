@@ -261,6 +261,8 @@ class MlbrevoFree {
 		<div class="wrap">
 			<h1>ML Brevo for Elementor Pro</h1>
 			
+			<?php $this->render_promotional_banner(); ?>
+			
 			<?php $this->render_navigation_tabs( $current_tab ); ?>
 			
 			<div id="brevo-admin-notices"></div>
@@ -289,6 +291,166 @@ class MlbrevoFree {
 		
 		<?php wp_nonce_field( 'brevo_admin_nonce', 'brevo_nonce' ); ?>
 	<?php }
+
+	/**
+	 * Render promotional banner
+	 */
+	public function render_promotional_banner() {
+		$utm_params = array(
+			'utm_source' => 'wordpress',
+			'utm_medium' => 'plugin',
+			'utm_campaign' => 'brevo_elementor_pro',
+			'utm_content' => 'admin_banner'
+		);
+		$contact_url = 'https://2wins.agency/help?' . http_build_query( $utm_params );
+		?>
+		<div class="brevo-promotional-banner">
+			<div class="brevo-promo-content">
+				<h3>
+					<?php _e( 'Automatizza la tua strategia di vendita e marketing con Twins Agency!', 'ml-brevo-for-elementor-pro' ); ?>
+				</h3>
+				<p>
+					<?php _e( 'Sfrutta al massimo le potenzialità di Brevo (ex Sendinblue) per ottimizzare la gestione dei lead, le campagne email e l\'intero customer journey. Con le nostre automazioni personalizzate e l\'integrazione dei migliori strumenti di intelligenza artificiale, ti aiuteremo a:', 'ml-brevo-for-elementor-pro' ); ?>
+				</p>
+				<ul class="brevo-promo-benefits">
+					<li><?php _e( 'Ridurre il lavoro manuale e aumentare l\'efficienza operativa.', 'ml-brevo-for-elementor-pro' ); ?></li>
+					<li><?php _e( 'Centralizzare i dati dei clienti per una visione unificata e completa.', 'ml-brevo-for-elementor-pro' ); ?></li>
+					<li><?php _e( 'Massimizzare le conversioni e migliorare l\'engagement dei tuoi clienti.', 'ml-brevo-for-elementor-pro' ); ?></li>
+				</ul>
+				<p>
+					<?php _e( 'Contattaci oggi stesso per scoprire come Twins Agency può supportare la crescita della tua azienda attraverso le automazioni Brevo e l\'intelligenza artificiale.', 'ml-brevo-for-elementor-pro' ); ?>
+				</p>
+				<div class="brevo-promo-cta">
+					<a href="<?php echo esc_url( $contact_url ); ?>" target="_blank" class="button button-primary button-hero">
+						<?php _e( 'Contattaci subito', 'ml-brevo-for-elementor-pro' ); ?>
+					</a>
+				</div>
+			</div>
+			<div class="brevo-promo-close">
+				<button type="button" class="notice-dismiss" onclick="this.parentElement.parentElement.style.display='none';">
+					<span class="screen-reader-text"><?php _e( 'Dismiss this notice.', 'ml-brevo-for-elementor-pro' ); ?></span>
+				</button>
+			</div>
+		</div>
+
+		<style>
+		.brevo-promotional-banner {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: #ffffff;
+			padding: 25px;
+			margin: 20px 0;
+			border-radius: 8px;
+			box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+			position: relative;
+			overflow: hidden;
+		}
+		.brevo-promotional-banner::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.03)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.03)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+			pointer-events: none;
+		}
+		.brevo-promo-content {
+			position: relative;
+			z-index: 1;
+			max-width: 900px;
+		}
+		.brevo-promotional-banner h3 {
+			margin: 0 0 15px 0;
+			font-size: 24px;
+			font-weight: 600;
+			color: #ffffff;
+			text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+		}
+		.brevo-promotional-banner p {
+			margin: 0 0 15px 0;
+			font-size: 16px;
+			line-height: 1.6;
+			color: rgba(255,255,255,0.95);
+		}
+		.brevo-promo-benefits {
+			margin: 15px 0;
+			padding-left: 0;
+			list-style: none;
+		}
+		.brevo-promo-benefits li {
+			margin: 8px 0;
+			padding-left: 25px;
+			position: relative;
+			font-size: 15px;
+			line-height: 1.5;
+			color: rgba(255,255,255,0.95);
+		}
+		.brevo-promo-benefits li::before {
+			content: '✓';
+			position: absolute;
+			left: 0;
+			top: 0;
+			color: #4ade80;
+			font-weight: bold;
+			font-size: 16px;
+		}
+		.brevo-promo-cta {
+			margin-top: 20px;
+		}
+		.brevo-promo-cta .button-hero {
+			background: #ffffff;
+			color: #667eea;
+			border: none;
+			font-weight: 600;
+			text-decoration: none;
+			transition: all 0.3s ease;
+			box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+		}
+		.brevo-promo-cta .button-hero:hover,
+		.brevo-promo-cta .button-hero:focus {
+			background: #f8fafc;
+			color: #5a67d8;
+			transform: translateY(-1px);
+			box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+		}
+		.brevo-promo-close {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			z-index: 2;
+		}
+		.brevo-promo-close .notice-dismiss {
+			background: rgba(255,255,255,0.2);
+			color: #ffffff;
+			border: none;
+			border-radius: 50%;
+			width: 30px;
+			height: 30px;
+			cursor: pointer;
+			transition: background 0.3s ease;
+		}
+		.brevo-promo-close .notice-dismiss:hover {
+			background: rgba(255,255,255,0.3);
+		}
+		.brevo-promo-close .notice-dismiss::before {
+			color: #ffffff;
+			font-size: 16px;
+		}
+		@media (max-width: 768px) {
+			.brevo-promotional-banner {
+				padding: 20px 15px;
+			}
+			.brevo-promotional-banner h3 {
+				font-size: 20px;
+			}
+			.brevo-promotional-banner p,
+			.brevo-promo-benefits li {
+				font-size: 14px;
+			}
+		}
+		</style>
+		<?php
+	}
 
 	/**
 	 * Render navigation tabs
