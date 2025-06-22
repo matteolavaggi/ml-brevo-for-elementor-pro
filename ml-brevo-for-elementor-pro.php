@@ -5,12 +5,6 @@
  * Description: Integrates Elementor forms with Brevo API. Now supports ALL your Brevo contact attributes with dynamic field mapping!
  * Author: Matteo Lavaggi	
  * Author URI: https://matteolavaggi.it/
- * Version: 2.1.0
- * Elementor tested up to: 3.28.4
- * Elementor Pro tested up to: 3.28.4
- * Requires at least: 5.0
- * Tested up to: 6.4
- * Requires PHP: 7.4
  * Text Domain: ml-brevo-for-elementor-pro
  * Domain Path: /languages
  */
