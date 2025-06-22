@@ -310,7 +310,7 @@ class MlbrevoFree {
 		<div class="brevo-promotional-banner">
 			<div class="brevo-promo-content">
 				<h3>
-					<?php _e( 'Automate your sales and marketing strategy with Twins Agency!', 'ml-brevo-for-elementor-pro' ); ?>
+					<?php _e( 'Need help with Brevo automations?', 'ml-brevo-for-elementor-pro' ); ?>
 				</h3>
 				<p>
 					<?php _e( 'Make the most of Brevo\'s (formerly Sendinblue) potential to optimize lead management, email campaigns, and the entire customer journey. With our custom automations and integration of the best artificial intelligence tools, we will help you:', 'ml-brevo-for-elementor-pro' ); ?>

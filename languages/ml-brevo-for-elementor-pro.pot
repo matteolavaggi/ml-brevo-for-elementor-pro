@@ -543,7 +543,7 @@ msgid "Change your site language in Settings > General > Site Language"
 msgstr ""
 
 #: includes/settings.php:270
-msgid "Automate your sales and marketing strategy with Twins Agency!"
+msgid "Need help with Brevo automations?"
 msgstr ""
 
 #: includes/settings.php:273

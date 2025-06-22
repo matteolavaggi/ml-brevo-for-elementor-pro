@@ -330,8 +330,8 @@ msgstr "Englisch (Standard)"
 msgid "Change your site language in Settings > General > Site Language"
 msgstr "Ändern Sie Ihre Website-Sprache unter Einstellungen > Allgemein > Website-Sprache"
 
-msgid "Automate your sales and marketing strategy with Twins Agency!"
-msgstr "Automatisieren Sie Ihre Verkaufs- und Marketingstrategie mit Twins Agency!"
+msgid "Need help with Brevo automations?"
+msgstr "Benötigen Sie Hilfe bei Brevo-Automatisierungen?"
 
 msgid "Make the most of Brevo's (formerly Sendinblue) potential to optimize lead management, email campaigns, and the entire customer journey. With our custom automations and integration of the best artificial intelligence tools, we will help you:"
 msgstr "Nutzen Sie das volle Potenzial von Brevo (ehemals Sendinblue), um Lead-Management, E-Mail-Kampagnen und die gesamte Customer Journey zu optimieren. Mit unseren maßgeschneiderten Automatisierungen und der Integration der besten KI-Tools helfen wir Ihnen dabei:"
