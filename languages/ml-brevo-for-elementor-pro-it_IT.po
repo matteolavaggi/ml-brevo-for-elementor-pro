@@ -403,4 +403,58 @@ msgid "3. Verify your Brevo API key and account settings"
 msgstr "3. Verifica la tua chiave API Brevo e le impostazioni dell'account"
 
 msgid "4. Contact plugin support with debug logs if needed"
-msgstr "4. Contatta il supporto del plugin con i log di debug se necessario" 
+msgstr "4. Contatta il supporto del plugin con i log di debug se necessario"
+
+msgid "Settings"
+msgstr "Impostazioni"
+
+msgid "Here you can find all your ml Integration for Elementor Form - brevo settings"
+msgstr "Qui puoi trovare tutte le impostazioni della tua integrazione ML per Elementor Form - Brevo"
+
+msgid "Clear API Key"
+msgstr "Cancella chiave API"
+
+msgid "Show"
+msgstr "Mostra"
+
+msgid "Enter your Brevo API key. You can find it in your Brevo account under Account Settings > API Keys."
+msgstr "Inserisci la tua chiave API Brevo. Puoi trovarla nel tuo account Brevo sotto Impostazioni account > Chiavi API."
+
+msgid "API key is currently set. Use \"Clear API Key\" to remove it."
+msgstr "La chiave API è attualmente impostata. Usa \"Cancella chiave API\" per rimuoverla."
+
+msgid "Enable debug logging"
+msgstr "Abilita logging di debug"
+
+msgid "When enabled, the plugin will log detailed information about API calls, form submissions, and errors to help with troubleshooting."
+msgstr "Quando abilitato, il plugin registrerà informazioni dettagliate su chiamate API, invii di form ed errori per aiutare nella risoluzione dei problemi."
+
+msgid "Debug logging is currently ENABLED."
+msgstr "Il logging di debug è attualmente ABILITATO."
+
+msgid "View Debug Logs"
+msgstr "Visualizza log di debug"
+
+msgid "ERROR - Only errors"
+msgstr "ERROR - Solo errori"
+
+msgid "WARNING - Errors and warnings"
+msgstr "WARNING - Errori e avvisi"
+
+msgid "INFO - Errors, warnings, and info"
+msgstr "INFO - Errori, avvisi e informazioni"
+
+msgid "DEBUG - All messages (verbose)"
+msgstr "DEBUG - Tutti i messaggi (dettagliato)"
+
+msgid "Select the minimum level of messages to log. DEBUG level will create larger log files."
+msgstr "Seleziona il livello minimo di messaggi da registrare. Il livello DEBUG creerà file di log più grandi."
+
+msgid "Number of days to keep log files. Older logs will be automatically deleted. Range: 1-90 days."
+msgstr "Numero di giorni per mantenere i file di log. I log più vecchi verranno eliminati automaticamente. Range: 1-90 giorni."
+
+msgid "Available Brevo Fields"
+msgstr "Campi Brevo disponibili"
+
+msgid "Enable or disable fields that will be available for mapping in Elementor forms."
+msgstr "Abilita o disabilita i campi che saranno disponibili per la mappatura nei form di Elementor." 

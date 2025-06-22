@@ -640,4 +640,76 @@ msgstr ""
 
 #: includes/settings.php:1082
 msgid "4. Contact plugin support with debug logs if needed"
+msgstr ""
+
+#: includes/settings.php:2003
+msgid "Settings"
+msgstr ""
+
+#: includes/settings.php:2004
+msgid "Here you can find all your ml Integration for Elementor Form - brevo settings"
+msgstr ""
+
+#: includes/settings.php:2010
+msgid "Clear API Key"
+msgstr ""
+
+#: includes/settings.php:2013
+msgid "Show"
+msgstr ""
+
+#: includes/settings.php:2017
+msgid "Enter your Brevo API key. You can find it in your Brevo account under Account Settings > API Keys."
+msgstr ""
+
+#: includes/settings.php:2019
+msgid "API key is currently set. Use \"Clear API Key\" to remove it."
+msgstr ""
+
+#: includes/settings.php:2027
+msgid "Enable debug logging"
+msgstr ""
+
+#: includes/settings.php:2030
+msgid "When enabled, the plugin will log detailed information about API calls, form submissions, and errors to help with troubleshooting."
+msgstr ""
+
+#: includes/settings.php:2032
+msgid "Debug logging is currently ENABLED."
+msgstr ""
+
+#: includes/settings.php:2034
+msgid "View Debug Logs"
+msgstr ""
+
+#: includes/settings.php:2044
+msgid "ERROR - Only errors"
+msgstr ""
+
+#: includes/settings.php:2045
+msgid "WARNING - Errors and warnings"
+msgstr ""
+
+#: includes/settings.php:2046
+msgid "INFO - Errors, warnings, and info"
+msgstr ""
+
+#: includes/settings.php:2047
+msgid "DEBUG - All messages (verbose)"
+msgstr ""
+
+#: includes/settings.php:2050
+msgid "Select the minimum level of messages to log. DEBUG level will create larger log files."
+msgstr ""
+
+#: includes/settings.php:2059
+msgid "Number of days to keep log files. Older logs will be automatically deleted. Range: 1-90 days."
+msgstr ""
+
+#: includes/settings.php:1099
+msgid "Available Brevo Fields"
+msgstr ""
+
+#: includes/settings.php:1100
+msgid "Enable or disable fields that will be available for mapping in Elementor forms."
 msgstr "" 
