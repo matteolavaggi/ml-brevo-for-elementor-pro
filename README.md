@@ -1,13 +1,43 @@
 # ML Brevo for Elementor Pro v2.1
 
-🚀 **NEW in v2.1:** Enhanced user experience with list dropdown selector, unified debug system, and improved admin interface!
+## Introduction
 
-A lightweight but feature packed Brevo integration for Elementor forms.
-With this integration you can send your form data and contacts to Brevo as easily as the standard integrations. 
-Keeping performance in mind this integration doesn't add any additional scripts on page load. 
-Feel free to post any feature requests and possible issues.
+**ML Brevo for Elementor Pro** is a powerful WordPress plugin that seamlessly integrates Brevo (formerly Sendinblue) email marketing platform with Elementor Pro forms. This plugin bridges the gap between your website's contact forms and your email marketing campaigns, enabling you to automatically capture leads and build your subscriber lists without any technical complexity.
 
-## Installation
+### What This Plugin Does
+
+This integration allows you to:
+
+- **Automatically sync form submissions** from Elementor Pro forms directly to your Brevo contact lists
+- **Map any form field** to any Brevo contact attribute (name, email, phone, custom fields, etc.)
+- **Support all Brevo contact attributes** dynamically fetched from your Brevo account
+- **Manage GDPR compliance** with built-in double opt-in support
+- **Handle multiple contact lists** with an intuitive list selection interface
+- **Monitor form submissions** with comprehensive debug logging
+
+### Why Choose This Plugin
+
+🎯 **Purpose-Built for Brevo**: Unlike generic form integrations, this plugin is specifically designed for Brevo's API and features
+
+⚡ **Performance Optimized**: Zero impact on page load times - no additional scripts are loaded on the frontend
+
+🔧 **Dynamic Field Mapping**: Automatically discovers and supports ALL your Brevo contact attributes, not just basic fields
+
+📊 **Professional Admin Interface**: Modern, tabbed interface with real-time list management and debug tools
+
+🔒 **GDPR Compliant**: Built-in support for double opt-in and privacy compliance
+
+🚀 **Easy Setup**: Works seamlessly with existing Elementor Pro forms - no complex configuration required
+
+### Perfect For
+
+- **Marketing Agencies** managing multiple client websites with Brevo
+- **Business Owners** who want to automate lead capture from their website
+- **Developers** who need a reliable, extensible Brevo integration
+- **Anyone using Elementor Pro** who wants professional email marketing automation
+
+
+## System Requirements
 
 ### Minimum Requirements
 
@@ -16,12 +46,11 @@ Feel free to post any feature requests and possible issues.
 * MySQL version 5.0 or greater
 * [Elementor Pro](https://elementor.com) 3 or greater
 
-### We recommend your host supports:
+### Recommended Environment
 
 * PHP version 7.4 or greater
 * MySQL version 5.6 or greater
 * WordPress Memory limit of 64 MB or greater (128 MB or higher is preferred)
-
 
 ## Installation
 
@@ -133,12 +162,6 @@ This release focuses on improving user experience with better list management, c
 - **Enhanced Visual Design**: Modern tabbed interface with improved spacing and typography
 - **Better Status Indicators**: Clear visual feedback for enabled/disabled features
 
-#### Technical Improvements
-- **Optimized Caching**: Enhanced cache management for both attributes and lists
-- **Improved API Integration**: Better error handling and response processing
-- **Enhanced Security**: Strengthened nonce validation and permission checks
-- **Code Organization**: Better separation of concerns between components
-
 ### 🛠️ Fixed
 
 #### Critical Bug Fixes
@@ -146,19 +169,6 @@ This release focuses on improving user experience with better list management, c
 - **Corrected Method Names**: Fixed `clear_all_logs()` vs `clear_logs()` method name mismatch
 - **Eliminated AJAX Conflicts**: Removed duplicate AJAX registrations between debug-viewer.php and settings.php
 - **Improved Nonce Handling**: Consistent nonce validation across all AJAX operations
-
-#### Performance Fixes
-- **Cache Optimization**: Better handling of cache metadata vs actual data
-- **Memory Management**: Improved memory usage for large log files
-- **API Rate Limiting**: Better handling of API request limits
-
-### 🔒 Security
-
-#### Enhanced Security Measures
-- **Strengthened AJAX Security**: Improved nonce validation for all admin actions
-- **Better Permission Checks**: Consistent capability checking across all operations
-- **Input Sanitization**: Enhanced validation for all user inputs
-- **Log File Protection**: Secured log directory with .htaccess protection
 
 ### 📊 Performance
 
@@ -176,13 +186,6 @@ This release focuses on improving user experience with better list management, c
 - **Helpful Tooltips**: Contextual help and guidance throughout the interface
 - **Responsive Design**: Better mobile and tablet compatibility
 
-### 🔧 Developer Experience
-
-#### Code Quality Improvements
-- **Better Documentation**: Enhanced inline documentation and comments
-- **Cleaner Architecture**: Improved separation between UI and logic components
-- **Consistent Coding Standards**: Unified code style across all files
-- **Enhanced Error Reporting**: More detailed error messages for debugging
 
 ### 📚 Documentation
 - Updated README with v2.1 features and improvements
@@ -195,10 +198,6 @@ This release focuses on improving user experience with better list management, c
 ## [2.0.0] - 2025-06-22
 
 ### 🚀 MAJOR RELEASE - Dynamic Field Mapping
-
-This is a major release that transforms the plugin from supporting only 3 hardcoded fields to dynamically supporting **ALL** available Brevo contact attributes.
-
-### ✨ Added
 
 #### New Core Features
 - **Dynamic Field Discovery**: Automatically fetches all available contact attributes from Brevo API
@@ -213,18 +212,7 @@ This is a major release that transforms the plugin from supporting only 3 hardco
 - **Smart Placeholders**: Context-aware placeholder suggestions for form field mapping
 - **Real-time Field Sync**: Fields update automatically when admin settings change
 
-#### Developer Features
-- **Brevo_Attributes_Manager Class**: Centralized API management with comprehensive error handling
-- **Extensible Architecture**: Plugin now built with extensibility and future enhancements in mind
-- **Enhanced Logging**: Detailed debug logging for troubleshooting
-- **Security Improvements**: Enhanced input validation and sanitization
-
 ### 🔄 Changed
-
-#### Breaking Changes
-- Plugin name updated to "Integration for Elementor forms - Brevo (brevo)"
-- Admin interface completely redesigned with modern UI
-- Field mapping now uses dynamic controls instead of hardcoded inputs
 
 #### Improvements
 - **Performance**: 60% reduction in API calls through intelligent caching
@@ -249,12 +237,6 @@ This is a major release that transforms the plugin from supporting only 3 hardco
 - Interactive field management interface
 - Real-time status updates via AJAX
 
-### 🔧 Fixed
-- Fixed compatibility issues with latest Elementor Pro versions
-- Resolved field mapping inconsistencies
-- Fixed memory issues with large contact attribute lists
-- Corrected timezone handling for date fields
-
 ### 🔒 Security
 - Enhanced API key handling
 - Input validation for all form fields
@@ -272,11 +254,5 @@ This is a major release that transforms the plugin from supporting only 3 hardco
 - PHP 7.4 or higher
 - Elementor Pro (latest version recommended)
 - Valid Brevo API key
-
-### 🔄 Migration from v1.x
-- Automatic detection and migration of existing field configurations
-- Backwards compatibility maintained for existing forms
-- Legacy field mapping preserved during upgrade
-- Optional: Manual optimization recommended for best performance
 
 ---
