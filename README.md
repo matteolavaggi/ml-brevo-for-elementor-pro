@@ -32,6 +32,32 @@ Feel free to post any feature requests and possible issues.
 5. Drag and drop the form widget of Elementor Pro from the left panel onto the content area, and find the Brevo action in the "Actions after submit" dropdown.
 6. Fill your Brevo data and Key and you are all set. All users will be added after they submit the form.
 
+## Field Mapping Guide
+
+When configuring the Brevo integration in your Elementor form, you'll need to map your form fields to Brevo contact attributes. To do this, you need to know the **Field ID** of each form field in Elementor.
+
+### How to Find Field IDs in Elementor
+
+![Elementor Field ID Location](img/elementor-field-id.png)
+
+To find the Field ID for any form field in Elementor:
+
+1. **Edit your form** in Elementor
+2. **Click on the form field** you want to map (e.g., Name, Email, Phone, etc.)
+3. **Go to the Advanced tab** in the field settings
+4. **Look for the "Field ID"** - this is the unique identifier you'll use in the Brevo integration
+5. **Copy this Field ID** and use it in the corresponding Brevo field mapping
+
+### Field Mapping Example
+
+For example, if your form has:
+- Name field with ID: `name`
+- Email field with ID: `email` 
+- Phone field with ID: `phone`
+
+You would map these in the Brevo integration settings by entering the Field ID (e.g., `name`) in the corresponding Brevo attribute field.
+
+**💡 Tip:** Use descriptive Field IDs like `first_name`, `email_address`, `phone_number` to make mapping easier and more maintainable.
 
 ## Frequently Asked Questions
 
