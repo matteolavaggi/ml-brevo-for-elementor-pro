@@ -776,7 +776,6 @@ class MlbrevoFree {
 					<th><?php _e( 'List ID', 'ml-brevo-for-elementor-pro' ); ?></th>
 					<th><?php _e( 'List Name', 'ml-brevo-for-elementor-pro' ); ?></th>
 					<th><?php _e( 'Subscribers', 'ml-brevo-for-elementor-pro' ); ?></th>
-					<th><?php _e( 'Created', 'ml-brevo-for-elementor-pro' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -788,18 +787,7 @@ class MlbrevoFree {
 					
 					$list_id = intval( $list_id );
 					$list_name = isset( $list_data['name'] ) ? sanitize_text_field( $list_data['name'] ) : '';
-					$total_subscribers = isset( $list_data['totalSubscribers'] ) ? intval( $list_data['totalSubscribers'] ) : 0;
 					$unique_subscribers = isset( $list_data['uniqueSubscribers'] ) ? intval( $list_data['uniqueSubscribers'] ) : 0;
-					$created_at = isset( $list_data['createdAt'] ) ? sanitize_text_field( $list_data['createdAt'] ) : '';
-					
-					// Format creation date
-					$created_display = '';
-					if ( ! empty( $created_at ) ) {
-						$created_timestamp = strtotime( $created_at );
-						if ( $created_timestamp ) {
-							$created_display = date_i18n( get_option( 'date_format' ), $created_timestamp );
-						}
-					}
 				?>
 				<tr>
 					<td>
@@ -809,13 +797,8 @@ class MlbrevoFree {
 						<strong><?php echo esc_html( $list_name ); ?></strong>
 					</td>
 					<td>
-						<?php printf( 
-							__( '%s total / %s unique', 'ml-brevo-for-elementor-pro' ),
-							number_format( $total_subscribers ),
-							number_format( $unique_subscribers )
-						); ?>
+						<?php echo number_format( $unique_subscribers ); ?>
 					</td>
-					<td><?php echo esc_html( $created_display ); ?></td>
 				</tr>
 				<?php endforeach; ?>
 			</tbody>
