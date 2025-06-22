@@ -259,7 +259,7 @@ class MlbrevoFree {
 		?>
 
 		<div class="wrap">
-			<h1>ML Brevo for Elementor Pro v2.0</h1>
+			<h1>ML Brevo for Elementor Pro</h1>
 			
 			<?php $this->render_navigation_tabs( $current_tab ); ?>
 			
@@ -280,6 +280,8 @@ class MlbrevoFree {
 				</form>
 			<?php elseif ( $current_tab === 'debug' ): ?>
 				<?php $this->render_debug_tab(); ?>
+			<?php elseif ( $current_tab === 'docs' ): ?>
+				<?php $this->render_docs_tab(); ?>
 			<?php endif; ?>
 		</div>
 		
@@ -298,6 +300,10 @@ class MlbrevoFree {
 			'debug' => array(
 				'title' => __( 'Debug Logs', 'ml-brevo-for-elementor-pro' ),
 				'icon' => 'admin-tools'
+			),
+			'docs' => array(
+				'title' => __( 'Docs', 'ml-brevo-for-elementor-pro' ),
+				'icon' => 'media-document'
 			)
 		);
 		?>
@@ -564,6 +570,86 @@ class MlbrevoFree {
 		}
 		sort( $components );
 		return $components;
+	}
+
+	/**
+	 * Render docs tab content
+	 */
+	public function render_docs_tab() {
+		$readme_pdf_url = plugin_dir_url( dirname( __FILE__ ) ) . 'readme.pdf';
+		$readme_pdf_path = plugin_dir_path( dirname( __FILE__ ) ) . 'readme.pdf';
+		?>
+		<div class="brevo-docs-section">
+			<h2><?php _e( 'Documentation', 'ml-brevo-for-elementor-pro' ); ?></h2>
+			<p><?php _e( 'Access the complete documentation for ML Brevo for Elementor Pro plugin.', 'ml-brevo-for-elementor-pro' ); ?></p>
+			
+			<div class="brevo-docs-content">
+				<?php if ( file_exists( $readme_pdf_path ) ): ?>
+					<div class="brevo-docs-download">
+						<h3><?php _e( 'Plugin Documentation', 'ml-brevo-for-elementor-pro' ); ?></h3>
+						<p><?php _e( 'Download the complete documentation PDF file for detailed setup instructions, troubleshooting, and usage examples.', 'ml-brevo-for-elementor-pro' ); ?></p>
+						<p>
+							<a href="<?php echo esc_url( $readme_pdf_url ); ?>" 
+							   class="button button-primary" 
+							   target="_blank" 
+							   download="ML-Brevo-Elementor-Pro-Documentation.pdf">
+								<span class="dashicons dashicons-download" style="vertical-align: text-top;"></span>
+								<?php _e( 'Download Documentation PDF', 'ml-brevo-for-elementor-pro' ); ?>
+							</a>
+							<a href="<?php echo esc_url( $readme_pdf_url ); ?>" 
+							   class="button button-secondary" 
+							   target="_blank">
+								<span class="dashicons dashicons-visibility" style="vertical-align: text-top;"></span>
+								<?php _e( 'View Online', 'ml-brevo-for-elementor-pro' ); ?>
+							</a>
+						</p>
+					</div>
+				<?php else: ?>
+					<div class="notice notice-warning inline">
+						<p>
+							<strong><?php _e( 'Documentation file not found', 'ml-brevo-for-elementor-pro' ); ?></strong><br>
+							<?php _e( 'The readme.pdf file is not present in the plugin directory. Please contact support or check the plugin installation.', 'ml-brevo-for-elementor-pro' ); ?>
+						</p>
+					</div>
+				<?php endif; ?>
+				
+				<div class="brevo-docs-links">
+					<h3><?php _e( 'Quick Links', 'ml-brevo-for-elementor-pro' ); ?></h3>
+					<ul>
+						<li>
+							<a href="https://www.brevo.com/docs/" target="_blank" rel="noopener">
+								<span class="dashicons dashicons-external" style="vertical-align: text-top;"></span>
+								<?php _e( 'Brevo API Documentation', 'ml-brevo-for-elementor-pro' ); ?>
+							</a>
+						</li>
+						<li>
+							<a href="https://elementor.com/help/" target="_blank" rel="noopener">
+								<span class="dashicons dashicons-external" style="vertical-align: text-top;"></span>
+								<?php _e( 'Elementor Pro Documentation', 'ml-brevo-for-elementor-pro' ); ?>
+							</a>
+						</li>
+						<li>
+							<a href="<?php echo admin_url( 'options-general.php?page=ml-brevo-free&tab=debug' ); ?>">
+								<span class="dashicons dashicons-admin-tools" style="vertical-align: text-top;"></span>
+								<?php _e( 'Debug Logs (Troubleshooting)', 'ml-brevo-for-elementor-pro' ); ?>
+							</a>
+						</li>
+					</ul>
+				</div>
+				
+				<div class="brevo-docs-support">
+					<h3><?php _e( 'Need Help?', 'ml-brevo-for-elementor-pro' ); ?></h3>
+					<p><?php _e( 'If you need additional support or have questions about the plugin:', 'ml-brevo-for-elementor-pro' ); ?></p>
+					<ul>
+						<li><?php _e( '1. Check the documentation PDF for detailed instructions', 'ml-brevo-for-elementor-pro' ); ?></li>
+						<li><?php _e( '2. Enable debug logging to troubleshoot issues', 'ml-brevo-for-elementor-pro' ); ?></li>
+						<li><?php _e( '3. Verify your Brevo API key and account settings', 'ml-brevo-for-elementor-pro' ); ?></li>
+						<li><?php _e( '4. Contact plugin support with debug logs if needed', 'ml-brevo-for-elementor-pro' ); ?></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<?php
 	}
 
 	/**
