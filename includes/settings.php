@@ -278,6 +278,8 @@ class MlbrevoFree {
 					
 					<?php submit_button(); ?>
 				</form>
+			<?php elseif ( $current_tab === 'translations' ): ?>
+				<?php $this->render_translations_tab(); ?>
 			<?php elseif ( $current_tab === 'debug' ): ?>
 				<?php $this->render_debug_tab(); ?>
 			<?php elseif ( $current_tab === 'docs' ): ?>
@@ -296,6 +298,10 @@ class MlbrevoFree {
 			'settings' => array(
 				'title' => __( 'Settings & Configuration', 'ml-brevo-for-elementor-pro' ),
 				'icon' => 'admin-settings'
+			),
+			'translations' => array(
+				'title' => __( 'Translations', 'ml-brevo-for-elementor-pro' ),
+				'icon' => 'translation'
 			),
 			'debug' => array(
 				'title' => __( 'Debug Logs', 'ml-brevo-for-elementor-pro' ),
@@ -316,6 +322,186 @@ class MlbrevoFree {
 				</a>
 			<?php endforeach; ?>
 		</nav>
+		<?php
+	}
+
+	/**
+	 * Render translations tab content
+	 */
+	public function render_translations_tab() {
+		$compiler = new ML_Brevo_Translation_Compiler();
+		$stats = $compiler->get_translation_stats();
+		$needs_compilation = $compiler->needs_compilation();
+		?>
+		<div class="brevo-translations-section">
+			<div class="brevo-translations-header">
+				<h2><?php _e( 'Translation Management', 'ml-brevo-for-elementor-pro' ); ?></h2>
+				<p><?php _e( 'Manage and compile plugin translations for better performance.', 'ml-brevo-for-elementor-pro' ); ?></p>
+			</div>
+
+			<?php if ( $needs_compilation ): ?>
+				<div class="notice notice-warning">
+					<p>
+						<strong>⚠️ <?php _e( 'Some translations need compilation!', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<?php _e( 'Click "Compile Translations" to improve performance.', 'ml-brevo-for-elementor-pro' ); ?>
+					</p>
+				</div>
+			<?php endif; ?>
+
+			<!-- Compilation Actions -->
+			<div class="brevo-translations-actions">
+				<form method="post" action="">
+					<?php wp_nonce_field( 'compile_brevo_translations' ); ?>
+					<p>
+						<input type="submit" name="compile_brevo_translations" class="button button-primary" 
+							   value="<?php _e( 'Compile All Translations', 'ml-brevo-for-elementor-pro' ); ?>">
+						<span class="description">
+							<?php _e( 'Converts .po files to optimized .mo files for better performance.', 'ml-brevo-for-elementor-pro' ); ?>
+						</span>
+					</p>
+				</form>
+			</div>
+
+			<!-- Translation Statistics -->
+			<div class="brevo-translations-stats">
+				<h3><?php _e( 'Translation Status', 'ml-brevo-for-elementor-pro' ); ?></h3>
+				<table class="wp-list-table widefat fixed striped">
+					<thead>
+						<tr>
+							<th><?php _e( 'Language', 'ml-brevo-for-elementor-pro' ); ?></th>
+							<th><?php _e( 'PO File', 'ml-brevo-for-elementor-pro' ); ?></th>
+							<th><?php _e( 'MO File', 'ml-brevo-for-elementor-pro' ); ?></th>
+							<th><?php _e( 'Last Modified', 'ml-brevo-for-elementor-pro' ); ?></th>
+							<th><?php _e( 'Status', 'ml-brevo-for-elementor-pro' ); ?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ( $stats as $code => $stat ): ?>
+							<tr>
+								<td><strong><?php echo esc_html( $stat['name'] ); ?></strong><br>
+									<code><?php echo esc_html( $code ); ?></code>
+								</td>
+								<td>
+									<?php if ( $stat['po_exists'] ): ?>
+										<span class="dashicons dashicons-yes-alt" style="color: green;"></span>
+										<?php echo esc_html( $stat['po_size'] ); ?>
+									<?php else: ?>
+										<span class="dashicons dashicons-dismiss" style="color: red;"></span>
+										<?php _e( 'Missing', 'ml-brevo-for-elementor-pro' ); ?>
+									<?php endif; ?>
+								</td>
+								<td>
+									<?php if ( $stat['mo_exists'] ): ?>
+										<span class="dashicons dashicons-yes-alt" style="color: green;"></span>
+										<?php echo esc_html( $stat['mo_size'] ); ?>
+									<?php else: ?>
+										<span class="dashicons dashicons-dismiss" style="color: red;"></span>
+										<?php _e( 'Missing', 'ml-brevo-for-elementor-pro' ); ?>
+									<?php endif; ?>
+								</td>
+								<td>
+									<strong>PO:</strong> <?php echo esc_html( $stat['po_modified'] ); ?><br>
+									<strong>MO:</strong> <?php echo esc_html( $stat['mo_modified'] ); ?>
+								</td>
+								<td>
+									<?php if ( $stat['needs_compile'] ): ?>
+										<span class="dashicons dashicons-warning" style="color: orange;"></span>
+										<strong style="color: orange;"><?php _e( 'Needs Compilation', 'ml-brevo-for-elementor-pro' ); ?></strong>
+									<?php elseif ( $stat['mo_exists'] ): ?>
+										<span class="dashicons dashicons-yes-alt" style="color: green;"></span>
+										<strong style="color: green;"><?php _e( 'Up to Date', 'ml-brevo-for-elementor-pro' ); ?></strong>
+									<?php else: ?>
+										<span class="dashicons dashicons-dismiss" style="color: red;"></span>
+										<strong style="color: red;"><?php _e( 'Not Compiled', 'ml-brevo-for-elementor-pro' ); ?></strong>
+									<?php endif; ?>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+			</div>
+
+			<!-- Translation Information -->
+			<div class="brevo-translations-info">
+				<h3><?php _e( 'About Translations', 'ml-brevo-for-elementor-pro' ); ?></h3>
+				<div class="brevo-info-cards">
+					<div class="brevo-info-card">
+						<h4>📄 <?php _e( 'PO Files', 'ml-brevo-for-elementor-pro' ); ?></h4>
+						<p><?php _e( 'Human-readable translation files that you can edit with text editors or translation tools like Poedit.', 'ml-brevo-for-elementor-pro' ); ?></p>
+					</div>
+					<div class="brevo-info-card">
+						<h4>⚡ <?php _e( 'MO Files', 'ml-brevo-for-elementor-pro' ); ?></h4>
+						<p><?php _e( 'Compiled binary files that WordPress uses for faster translation loading. Generated from PO files.', 'ml-brevo-for-elementor-pro' ); ?></p>
+					</div>
+					<div class="brevo-info-card">
+						<h4>🔄 <?php _e( 'Automatic Detection', 'ml-brevo-for-elementor-pro' ); ?></h4>
+						<p><?php _e( 'WordPress automatically loads the correct translation based on your site language setting.', 'ml-brevo-for-elementor-pro' ); ?></p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Current Site Language -->
+			<div class="brevo-current-language">
+				<h3><?php _e( 'Current Site Settings', 'ml-brevo-for-elementor-pro' ); ?></h3>
+				<p>
+					<strong><?php _e( 'Site Language:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+					<?php echo get_locale(); ?>
+					<?php 
+					$current_lang = get_locale();
+					if ( isset( $stats[$current_lang] ) ) {
+						echo ' - ' . esc_html( $stats[$current_lang]['name'] );
+						if ( $stats[$current_lang]['mo_exists'] ) {
+							echo ' <span class="dashicons dashicons-yes-alt" style="color: green;" title="' . __( 'Translation loaded', 'ml-brevo-for-elementor-pro' ) . '"></span>';
+						} else {
+							echo ' <span class="dashicons dashicons-warning" style="color: orange;" title="' . __( 'Translation not compiled', 'ml-brevo-for-elementor-pro' ) . '"></span>';
+						}
+					} else {
+						echo ' - ' . __( 'English (default)', 'ml-brevo-for-elementor-pro' );
+					}
+					?>
+				</p>
+				<p>
+					<em><?php _e( 'Change your site language in Settings > General > Site Language', 'ml-brevo-for-elementor-pro' ); ?></em>
+				</p>
+			</div>
+		</div>
+
+		<style>
+		.brevo-translations-section {
+			max-width: 1200px;
+		}
+		.brevo-translations-actions {
+			background: #f9f9f9;
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			margin: 20px 0;
+		}
+		.brevo-info-cards {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+			gap: 20px;
+			margin-top: 15px;
+		}
+		.brevo-info-card {
+			background: #fff;
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+		}
+		.brevo-info-card h4 {
+			margin-top: 0;
+			color: #23282d;
+		}
+		.brevo-current-language {
+			background: #e8f4fd;
+			padding: 20px;
+			border: 1px solid #c3e4f7;
+			border-radius: 4px;
+			margin-top: 20px;
+		}
+		</style>
 		<?php
 	}
 

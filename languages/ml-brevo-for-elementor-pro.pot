@@ -408,4 +408,136 @@ msgstr ""
 
 #: includes/settings.php:432
 msgid "ERROR"
+msgstr ""
+
+#: includes/settings.php:300
+msgid "Translations"
+msgstr ""
+
+#: includes/class-translation-compiler.php:85
+msgid "File PO non trovato: %s"
+msgstr ""
+
+#: includes/class-translation-compiler.php:92
+msgid "Errore nella compilazione: %s"
+msgstr ""
+
+#: includes/class-translation-compiler.php:104
+msgid "%d file di traduzione compilati con successo!"
+msgstr ""
+
+#: includes/settings.php:320
+msgid "Translation Management"
+msgstr ""
+
+#: includes/settings.php:321
+msgid "Manage and compile plugin translations for better performance."
+msgstr ""
+
+#: includes/settings.php:326
+msgid "Some translations need compilation!"
+msgstr ""
+
+#: includes/settings.php:327
+msgid "Click \"Compile Translations\" to improve performance."
+msgstr ""
+
+#: includes/settings.php:335
+msgid "Compile All Translations"
+msgstr ""
+
+#: includes/settings.php:337
+msgid "Converts .po files to optimized .mo files for better performance."
+msgstr ""
+
+#: includes/settings.php:344
+msgid "Translation Status"
+msgstr ""
+
+#: includes/settings.php:348
+msgid "Language"
+msgstr ""
+
+#: includes/settings.php:349
+msgid "PO File"
+msgstr ""
+
+#: includes/settings.php:350
+msgid "MO File"
+msgstr ""
+
+#: includes/settings.php:351
+msgid "Last Modified"
+msgstr ""
+
+#: includes/settings.php:352
+msgid "Status"
+msgstr ""
+
+#: includes/settings.php:365
+msgid "Missing"
+msgstr ""
+
+#: includes/settings.php:384
+msgid "Needs Compilation"
+msgstr ""
+
+#: includes/settings.php:387
+msgid "Up to Date"
+msgstr ""
+
+#: includes/settings.php:390
+msgid "Not Compiled"
+msgstr ""
+
+#: includes/settings.php:399
+msgid "About Translations"
+msgstr ""
+
+#: includes/settings.php:402
+msgid "PO Files"
+msgstr ""
+
+#: includes/settings.php:403
+msgid "Human-readable translation files that you can edit with text editors or translation tools like Poedit."
+msgstr ""
+
+#: includes/settings.php:406
+msgid "MO Files"
+msgstr ""
+
+#: includes/settings.php:407
+msgid "Compiled binary files that WordPress uses for faster translation loading. Generated from PO files."
+msgstr ""
+
+#: includes/settings.php:410
+msgid "Automatic Detection"
+msgstr ""
+
+#: includes/settings.php:411
+msgid "WordPress automatically loads the correct translation based on your site language setting."
+msgstr ""
+
+#: includes/settings.php:417
+msgid "Current Site Settings"
+msgstr ""
+
+#: includes/settings.php:419
+msgid "Site Language:"
+msgstr ""
+
+#: includes/settings.php:425
+msgid "Translation loaded"
+msgstr ""
+
+#: includes/settings.php:427
+msgid "Translation not compiled"
+msgstr ""
+
+#: includes/settings.php:430
+msgid "English (default)"
+msgstr ""
+
+#: includes/settings.php:434
+msgid "Change your site language in Settings > General > Site Language"
 msgstr "" 

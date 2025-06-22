@@ -29,6 +29,7 @@ add_action( 'plugins_loaded', 'brevo_elementor_load_textdomain' );
 //load plugins functionallity and settings
 require dirname(__FILE__).'/includes/class-brevo-attributes-manager.php';
 require dirname(__FILE__).'/includes/class-brevo-debug-logger.php';
+require dirname(__FILE__).'/includes/class-translation-compiler.php';
 require dirname(__FILE__).'/includes/debug-viewer.php';
 require dirname(__FILE__).'/init-brevo-integration-action.php';
 require dirname(__FILE__).'/includes/settings.php';
