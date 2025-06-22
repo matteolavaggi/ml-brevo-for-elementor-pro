@@ -1,0 +1,411 @@
+# Copyright (C) 2024 ML Brevo for Elementor Pro
+# This file is distributed under the same license as the ML Brevo for Elementor Pro package.
+msgid ""
+msgstr ""
+"Project-Id-Version: ML Brevo for Elementor Pro 2.1.0\n"
+"Report-Msgid-Bugs-To: https://matteolavaggi.it/\n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: \n"
+
+#: includes/class-brevo-integration-action.php:30
+msgid "Brevo"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:45
+msgid "Brevo"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:55
+msgid "Global brevo API key"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:65
+msgid "You can set your global API key <a href=\"%s\" target=\"_blank\">here.</a> this means you only need to set your brevo API key once."
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:75
+msgid "brevo API key"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:80
+msgid "Enter your V3 API key from brevo"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:93
+msgid "Double Opt-in"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:102
+msgid "Double Opt-in Template ID"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:106
+msgid "Enter your double opt-in template ID - <a href=\"https://help.brevo.com/hc/en-us/articles/360019540880-Create-a-double-opt-in-DOI-confirmation-template-for-brevo-form\" target=\"_blank\">More info here</a>"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:119
+msgid "Double Opt-in Redirect URL"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:124
+msgid "Enter the url you want to redirect to after the subscriber confirms double opt-in"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:137
+msgid "Check if user already exists - Skip Double Opt-in"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:138
+msgid "Note: This will skip the notification email. This will still update the users fields"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:150
+msgid "GDPR Checkbox"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:159
+msgid "Acceptance Field ID"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:163
+msgid "Enter the acceptance checkbox field id - you can find this under the acceptance field advanced tab - if the acceptance checkbox is not checked then the email and extra information will not be added to brevo"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:176
+msgid "Brevo List"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:181
+msgid "Select the Brevo list where contacts will be added"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:192
+msgid "<p style=\"margin: 5px 0 0 0; font-size: 12px; color: #666;\"><strong>💡 Tip:</strong> Don't see your list? <a href=\"%s\" target=\"_blank\">Refresh your lists here</a> after creating them in Brevo.</p>"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:199
+msgid "Email Field ID"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:204
+msgid "Enter the email field id - you can find this under the email field advanced tab"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:218
+msgid "<strong>✨ New in v2.0:</strong> Dynamic field mapping now supports ALL your Brevo contact attributes! Configure available fields in <a href=\"%s\" target=\"_blank\">plugin settings</a>."
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:227
+msgid "Need help? <a href=\"https://matteolavaggi.it/wordpress/ml-brevo-for-elementor-pro/\" target=\"_blank\">Check out our support page.</a>"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:248
+msgid "<div style=\"padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; color: #856404;\"><strong>⚠️ No fields configured:</strong> Please configure your Brevo fields in <a href=\"%s\" target=\"_blank\">plugin settings</a> to enable dynamic mapping.</div>"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:259
+msgid "<h3 style=\"margin: 0 0 10px 0; color: #495057;\"><span style=\"color: #007cba;\">🔗</span> Brevo Field Mapping</h3><p style=\"margin: 0 0 15px 0; color: #6c757d; font-style: italic;\">Map your form fields to Brevo contact attributes. Only mapped fields will be synchronized.</p>"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:321
+msgid "Please set Global API Key in Settings"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:331
+msgid "No lists available or API error"
+msgstr ""
+
+#: includes/class-brevo-integration-action.php:341
+msgid "Select a list..."
+msgstr ""
+
+#: includes/class-brevo-integration-unsubscribe-action.php:30
+msgid "brevo Unsubscribe"
+msgstr ""
+
+#: includes/class-brevo-integration-unsubscribe-action.php:45
+msgid "brevo Unsubscribe"
+msgstr ""
+
+#: includes/class-brevo-integration-unsubscribe-action.php:56
+msgid "<b>PLEASE NOTE - THIS ACTION DELETES THE INPUT EMAIL IN brevo!</b>"
+msgstr ""
+
+#: includes/class-brevo-integration-unsubscribe-action.php:63
+msgid "Global brevo API key"
+msgstr ""
+
+#: includes/class-brevo-integration-unsubscribe-action.php:73
+msgid "You can set your global API key <a href=\"%s\" target=\"_blank\">here.</a> this means you only need to set your brevo API key once."
+msgstr ""
+
+#: includes/class-brevo-integration-unsubscribe-action.php:83
+msgid "brevo API key"
+msgstr ""
+
+#: includes/class-brevo-integration-unsubscribe-action.php:88
+msgid "Enter your V3 API key from brevo"
+msgstr ""
+
+#: includes/class-brevo-integration-unsubscribe-action.php:101
+msgid "GDPR Checkbox"
+msgstr ""
+
+#: includes/class-brevo-integration-unsubscribe-action.php:110
+msgid "Acceptance Field ID"
+msgstr ""
+
+#: includes/class-brevo-integration-unsubscribe-action.php:114
+msgid "Enter the acceptance checkbox field id - you can find this under the acceptance field advanced tab - if the acceptance checkbox is not checked then the email and extra information will not be added to brevo"
+msgstr ""
+
+#: includes/class-brevo-integration-unsubscribe-action.php:127
+msgid "Email Field ID"
+msgstr ""
+
+#: includes/class-brevo-integration-unsubscribe-action.php:132
+msgid "Enter the email field id - you can find this under the email field advanced tab"
+msgstr ""
+
+#: includes/class-brevo-integration-unsubscribe-action.php:143
+msgid "Need help? <a href=\"https://matteolavaggi.it/wordpress/ml-brevo-for-elementor-pro/\" target=\"_blank\">Check out our support page.</a>"
+msgstr ""
+
+#: includes/debug-viewer.php:78
+msgid "ML Brevo Debug Logs"
+msgstr ""
+
+#: includes/debug-viewer.php:83
+msgid "Debug logging is currently disabled."
+msgstr ""
+
+#: includes/debug-viewer.php:85
+msgid "Enable it in settings"
+msgstr ""
+
+#: includes/debug-viewer.php:96
+msgid "Log Information"
+msgstr ""
+
+#: includes/debug-viewer.php:98
+msgid "Debug Status:"
+msgstr ""
+
+#: includes/debug-viewer.php:100
+msgid "Enabled"
+msgstr ""
+
+#: includes/debug-viewer.php:101
+msgid "Disabled"
+msgstr ""
+
+#: includes/debug-viewer.php:104
+msgid "Debug Level:"
+msgstr ""
+
+#: includes/debug-viewer.php:108
+msgid "Total Log Size:"
+msgstr ""
+
+#: includes/debug-viewer.php:112
+msgid "Log Files:"
+msgstr ""
+
+#: includes/debug-viewer.php:118
+msgid "Actions"
+msgstr ""
+
+#: includes/debug-viewer.php:121
+msgid "Clear All Logs"
+msgstr ""
+
+#: includes/debug-viewer.php:128
+msgid "Download Current Log"
+msgstr ""
+
+#: includes/debug-viewer.php:141
+msgid "Log File:"
+msgstr ""
+
+#: includes/debug-viewer.php:153
+msgid "Level:"
+msgstr ""
+
+#: includes/debug-viewer.php:155
+msgid "All Levels"
+msgstr ""
+
+#: includes/debug-viewer.php:156
+msgid "ERROR"
+msgstr ""
+
+#: includes/debug-viewer.php:157
+msgid "WARNING"
+msgstr ""
+
+#: includes/debug-viewer.php:158
+msgid "INFO"
+msgstr ""
+
+#: includes/debug-viewer.php:159
+msgid "DEBUG"
+msgstr ""
+
+#: includes/debug-viewer.php:164
+msgid "Component:"
+msgstr ""
+
+#: includes/debug-viewer.php:166
+msgid "All Components"
+msgstr ""
+
+#: includes/debug-viewer.php:179
+msgid "Filter"
+msgstr ""
+
+#: includes/debug-viewer.php:181
+msgid "Reset"
+msgstr ""
+
+#: includes/debug-viewer.php:194
+msgid "&laquo; Previous"
+msgstr ""
+
+#: includes/debug-viewer.php:195
+msgid "Next &raquo;"
+msgstr ""
+
+#: includes/debug-viewer.php:205
+msgid "Showing %d-%d of %d entries"
+msgstr ""
+
+#: includes/debug-viewer.php:218
+msgid "No log entries found."
+msgstr ""
+
+#: includes/debug-viewer.php:224
+msgid "Timestamp"
+msgstr ""
+
+#: includes/debug-viewer.php:225
+msgid "Level"
+msgstr ""
+
+#: includes/debug-viewer.php:226
+msgid "Component"
+msgstr ""
+
+#: includes/debug-viewer.php:227
+msgid "Action"
+msgstr ""
+
+#: includes/debug-viewer.php:228
+msgid "Message"
+msgstr ""
+
+#: includes/debug-viewer.php:247
+msgid "Context"
+msgstr ""
+
+#: includes/debug-viewer.php:375
+msgid "Are you sure you want to clear all debug logs? This action cannot be undone."
+msgstr ""
+
+#: includes/debug-viewer.php:380
+msgid "Clearing..."
+msgstr ""
+
+#: includes/debug-viewer.php:390
+msgid "Error clearing logs:"
+msgstr ""
+
+#: includes/debug-viewer.php:394
+msgid "Request failed. Please try again."
+msgstr ""
+
+#: includes/debug-viewer.php:397
+msgid "Clear All Logs"
+msgstr ""
+
+#: includes/settings.php:5
+msgid "Settings"
+msgstr ""
+
+#: includes/settings.php:296
+msgid "Settings & Configuration"
+msgstr ""
+
+#: includes/settings.php:300
+msgid "Debug Logs"
+msgstr ""
+
+#: includes/settings.php:304
+msgid "Docs"
+msgstr ""
+
+#: includes/settings.php:360
+msgid "Debug logging is currently disabled."
+msgstr ""
+
+#: includes/settings.php:362
+msgid "Enable it in settings tab"
+msgstr ""
+
+#: includes/settings.php:371
+msgid "Log Information"
+msgstr ""
+
+#: includes/settings.php:373
+msgid "Debug Status:"
+msgstr ""
+
+#: includes/settings.php:375
+msgid "Enabled"
+msgstr ""
+
+#: includes/settings.php:376
+msgid "Disabled"
+msgstr ""
+
+#: includes/settings.php:379
+msgid "Debug Level:"
+msgstr ""
+
+#: includes/settings.php:383
+msgid "Total Log Size:"
+msgstr ""
+
+#: includes/settings.php:387
+msgid "Log Files:"
+msgstr ""
+
+#: includes/settings.php:393
+msgid "Actions"
+msgstr ""
+
+#: includes/settings.php:396
+msgid "Clear All Logs"
+msgstr ""
+
+#: includes/settings.php:403
+msgid "Download Current Log"
+msgstr ""
+
+#: includes/settings.php:417
+msgid "Log File:"
+msgstr ""
+
+#: includes/settings.php:429
+msgid "Level:"
+msgstr ""
+
+#: includes/settings.php:431
+msgid "All Levels"
+msgstr ""
+
+#: includes/settings.php:432
+msgid "ERROR"
+msgstr "" 

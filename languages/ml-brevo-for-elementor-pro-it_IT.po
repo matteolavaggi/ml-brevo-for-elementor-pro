@@ -1,0 +1,232 @@
+# Italian (Italy) translation for ML Brevo for Elementor Pro
+# Copyright (C) 2024 ML Brevo for Elementor Pro
+# This file is distributed under the same license as the ML Brevo for Elementor Pro package.
+msgid ""
+msgstr ""
+"Project-Id-Version: ML Brevo for Elementor Pro 2.1.0\n"
+"Report-Msgid-Bugs-To: https://matteolavaggi.it/\n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2024-01-01 12:00+0000\n"
+"Last-Translator: Matteo Lavaggi <info@matteolavaggi.it>\n"
+"Language-Team: Italian\n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Brevo"
+msgstr "Brevo"
+
+msgid "Global brevo API key"
+msgstr "Chiave API Brevo globale"
+
+msgid "You can set your global API key <a href=\"%s\" target=\"_blank\">here.</a> this means you only need to set your brevo API key once."
+msgstr "Puoi impostare la tua chiave API globale <a href=\"%s\" target=\"_blank\">qui.</a> Questo significa che devi impostare la tua chiave API Brevo solo una volta."
+
+msgid "brevo API key"
+msgstr "Chiave API Brevo"
+
+msgid "Enter your V3 API key from brevo"
+msgstr "Inserisci la tua chiave API V3 da Brevo"
+
+msgid "Double Opt-in"
+msgstr "Doppio opt-in"
+
+msgid "Double Opt-in Template ID"
+msgstr "ID del template di doppio opt-in"
+
+msgid "Enter your double opt-in template ID - <a href=\"https://help.brevo.com/hc/en-us/articles/360019540880-Create-a-double-opt-in-DOI-confirmation-template-for-brevo-form\" target=\"_blank\">More info here</a>"
+msgstr "Inserisci il tuo ID del template di doppio opt-in - <a href=\"https://help.brevo.com/hc/en-us/articles/360019540880-Create-a-double-opt-in-DOI-confirmation-template-for-brevo-form\" target=\"_blank\">Maggiori informazioni qui</a>"
+
+msgid "Double Opt-in Redirect URL"
+msgstr "URL di reindirizzamento doppio opt-in"
+
+msgid "Enter the url you want to redirect to after the subscriber confirms double opt-in"
+msgstr "Inserisci l'URL a cui vuoi reindirizzare dopo che l'iscritto conferma il doppio opt-in"
+
+msgid "Check if user already exists - Skip Double Opt-in"
+msgstr "Controlla se l'utente esiste già - Salta il doppio opt-in"
+
+msgid "Note: This will skip the notification email. This will still update the users fields"
+msgstr "Nota: Questo salterà l'email di notifica. Aggiornerà comunque i campi dell'utente"
+
+msgid "GDPR Checkbox"
+msgstr "Checkbox GDPR"
+
+msgid "Acceptance Field ID"
+msgstr "ID campo di accettazione"
+
+msgid "Enter the acceptance checkbox field id - you can find this under the acceptance field advanced tab - if the acceptance checkbox is not checked then the email and extra information will not be added to brevo"
+msgstr "Inserisci l'ID del campo checkbox di accettazione - puoi trovarlo sotto la scheda avanzata del campo di accettazione - se la checkbox di accettazione non è selezionata, l'email e le informazioni extra non saranno aggiunte a Brevo"
+
+msgid "Brevo List"
+msgstr "Lista Brevo"
+
+msgid "Select the Brevo list where contacts will be added"
+msgstr "Seleziona la lista Brevo dove verranno aggiunti i contatti"
+
+msgid "<p style=\"margin: 5px 0 0 0; font-size: 12px; color: #666;\"><strong>💡 Tip:</strong> Don't see your list? <a href=\"%s\" target=\"_blank\">Refresh your lists here</a> after creating them in Brevo.</p>"
+msgstr "<p style=\"margin: 5px 0 0 0; font-size: 12px; color: #666;\"><strong>💡 Suggerimento:</strong> Non vedi la tua lista? <a href=\"%s\" target=\"_blank\">Aggiorna le tue liste qui</a> dopo averle create in Brevo.</p>"
+
+msgid "Email Field ID"
+msgstr "ID campo email"
+
+msgid "Enter the email field id - you can find this under the email field advanced tab"
+msgstr "Inserisci l'ID del campo email - puoi trovarlo sotto la scheda avanzata del campo email"
+
+msgid "<strong>✨ New in v2.0:</strong> Dynamic field mapping now supports ALL your Brevo contact attributes! Configure available fields in <a href=\"%s\" target=\"_blank\">plugin settings</a>."
+msgstr "<strong>✨ Novità nella v2.0:</strong> La mappatura dinamica dei campi ora supporta TUTTI i tuoi attributi di contatto Brevo! Configura i campi disponibili nelle <a href=\"%s\" target=\"_blank\">impostazioni del plugin</a>."
+
+msgid "Need help? <a href=\"https://matteolavaggi.it/wordpress/ml-brevo-for-elementor-pro/\" target=\"_blank\">Check out our support page.</a>"
+msgstr "Hai bisogno di aiuto? <a href=\"https://matteolavaggi.it/wordpress/ml-brevo-for-elementor-pro/\" target=\"_blank\">Controlla la nostra pagina di supporto.</a>"
+
+msgid "<div style=\"padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; color: #856404;\"><strong>⚠️ No fields configured:</strong> Please configure your Brevo fields in <a href=\"%s\" target=\"_blank\">plugin settings</a> to enable dynamic mapping.</div>"
+msgstr "<div style=\"padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; color: #856404;\"><strong>⚠️ Nessun campo configurato:</strong> Configura i tuoi campi Brevo nelle <a href=\"%s\" target=\"_blank\">impostazioni del plugin</a> per abilitare la mappatura dinamica.</div>"
+
+msgid "<h3 style=\"margin: 0 0 10px 0; color: #495057;\"><span style=\"color: #007cba;\">🔗</span> Brevo Field Mapping</h3><p style=\"margin: 0 0 15px 0; color: #6c757d; font-style: italic;\">Map your form fields to Brevo contact attributes. Only mapped fields will be synchronized.</p>"
+msgstr "<h3 style=\"margin: 0 0 10px 0; color: #495057;\"><span style=\"color: #007cba;\">🔗</span> Mappatura campi Brevo</h3><p style=\"margin: 0 0 15px 0; color: #6c757d; font-style: italic;\">Mappa i campi del tuo modulo agli attributi di contatto Brevo. Solo i campi mappati verranno sincronizzati.</p>"
+
+msgid "Please set Global API Key in Settings"
+msgstr "Imposta la chiave API globale nelle impostazioni"
+
+msgid "No lists available or API error"
+msgstr "Nessuna lista disponibile o errore API"
+
+msgid "Select a list..."
+msgstr "Seleziona una lista..."
+
+msgid "brevo Unsubscribe"
+msgstr "Disiscrizione Brevo"
+
+msgid "<b>PLEASE NOTE - THIS ACTION DELETES THE INPUT EMAIL IN brevo!</b>"
+msgstr "<b>ATTENZIONE - QUESTA AZIONE ELIMINA L'EMAIL INSERITA IN BREVO!</b>"
+
+msgid "ML Brevo Debug Logs"
+msgstr "Log di debug ML Brevo"
+
+msgid "Debug logging is currently disabled."
+msgstr "La registrazione di debug è attualmente disabilitata."
+
+msgid "Enable it in settings"
+msgstr "Abilitala nelle impostazioni"
+
+msgid "Enable it in settings tab"
+msgstr "Abilitala nella scheda impostazioni"
+
+msgid "Log Information"
+msgstr "Informazioni log"
+
+msgid "Debug Status:"
+msgstr "Stato debug:"
+
+msgid "Enabled"
+msgstr "Abilitato"
+
+msgid "Disabled"
+msgstr "Disabilitato"
+
+msgid "Debug Level:"
+msgstr "Livello debug:"
+
+msgid "Total Log Size:"
+msgstr "Dimensione totale log:"
+
+msgid "Log Files:"
+msgstr "File di log:"
+
+msgid "Actions"
+msgstr "Azioni"
+
+msgid "Clear All Logs"
+msgstr "Cancella tutti i log"
+
+msgid "Download Current Log"
+msgstr "Scarica log corrente"
+
+msgid "Log File:"
+msgstr "File di log:"
+
+msgid "Level:"
+msgstr "Livello:"
+
+msgid "All Levels"
+msgstr "Tutti i livelli"
+
+msgid "ERROR"
+msgstr "ERRORE"
+
+msgid "WARNING"
+msgstr "AVVISO"
+
+msgid "INFO"
+msgstr "INFO"
+
+msgid "DEBUG"
+msgstr "DEBUG"
+
+msgid "Component:"
+msgstr "Componente:"
+
+msgid "All Components"
+msgstr "Tutti i componenti"
+
+msgid "Filter"
+msgstr "Filtra"
+
+msgid "Reset"
+msgstr "Reimposta"
+
+msgid "&laquo; Previous"
+msgstr "&laquo; Precedente"
+
+msgid "Next &raquo;"
+msgstr "Successivo &raquo;"
+
+msgid "Showing %d-%d of %d entries"
+msgstr "Visualizzazione di %d-%d su %d voci"
+
+msgid "No log entries found."
+msgstr "Nessuna voce di log trovata."
+
+msgid "Timestamp"
+msgstr "Timestamp"
+
+msgid "Level"
+msgstr "Livello"
+
+msgid "Component"
+msgstr "Componente"
+
+msgid "Action"
+msgstr "Azione"
+
+msgid "Message"
+msgstr "Messaggio"
+
+msgid "Context"
+msgstr "Contesto"
+
+msgid "Are you sure you want to clear all debug logs? This action cannot be undone."
+msgstr "Sei sicuro di voler cancellare tutti i log di debug? Questa azione non può essere annullata."
+
+msgid "Clearing..."
+msgstr "Cancellazione in corso..."
+
+msgid "Error clearing logs:"
+msgstr "Errore nella cancellazione dei log:"
+
+msgid "Request failed. Please try again."
+msgstr "Richiesta fallita. Riprova."
+
+msgid "Settings"
+msgstr "Impostazioni"
+
+msgid "Settings & Configuration"
+msgstr "Impostazioni e configurazione"
+
+msgid "Debug Logs"
+msgstr "Log di debug"
+
+msgid "Docs"
+msgstr "Documentazione" 
