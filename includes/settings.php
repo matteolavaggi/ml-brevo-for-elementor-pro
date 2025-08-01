@@ -137,6 +137,16 @@ function brevo_handle_refresh_lists() {
 	$lists = $attributes_manager->fetch_all_lists( $api_key );
 
 	if ( is_wp_error( $lists ) ) {
+		$logger = Brevo_Debug_Logger::get_instance();
+		$logger->error(
+			'Refresh lists failed: ' . $lists->get_error_message(),
+			'ADMIN',
+			'refresh_lists',
+			array(
+				'error_code' => $lists->get_error_code(),
+				'api_key_hash' => md5( $api_key ),
+			)
+		);
 		wp_send_json_error( array( 'message' => $lists->get_error_message() ) );
 	}
 

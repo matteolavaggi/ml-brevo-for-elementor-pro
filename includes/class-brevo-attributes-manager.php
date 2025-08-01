@@ -344,8 +344,8 @@ class Brevo_Attributes_Manager {
 	 * Fetch all contact lists from Brevo API
 	 *
 	 * @param string $api_key Brevo API key
-	 * @param int    $limit   Maximum number of lists to fetch (default: 50, max: 100)
-	 * @param int    $offset  Starting point for pagination (default: 0)
+	 * @param int    $limit   Not used - kept for compatibility
+	 * @param int    $offset  Not used - kept for compatibility
 	 * @return array|WP_Error Array of lists or WP_Error on failure
 	 */
 	public function fetch_lists( $api_key, $limit = 50, $offset = 0 ) {
@@ -355,19 +355,8 @@ class Brevo_Attributes_Manager {
 			return new WP_Error( 'invalid_api_key', __( 'API key is required', 'ml-brevo-for-elementor-pro' ) );
 		}
 
-		// Validate pagination parameters for lists (try smaller limit first)
-		$limit  = max( 1, min( 50, intval( $limit ) ) ); // Ensure limit is between 1 and 50 for lists
-		$offset = max( 0, intval( $offset ) ); // Ensure offset is not negative
-
-		// Build endpoint with pagination parameters
+		// Brevo lists API doesn't support pagination - fetch all lists
 		$endpoint = self::API_BASE_URL . '/contacts/lists';
-		$endpoint = add_query_arg(
-			array(
-				'limit'  => $limit,
-				'offset' => $offset,
-			),
-			$endpoint
-		);
 
 		// Debug logging
 		$logger = Brevo_Debug_Logger::get_instance();
@@ -377,8 +366,6 @@ class Brevo_Attributes_Manager {
 			'fetch_lists',
 			array(
 				'endpoint'     => $endpoint,
-				'limit'        => $limit,
-				'offset'       => $offset,
 				'api_key_hash' => md5( $api_key ),
 			)
 		);
@@ -548,44 +535,26 @@ class Brevo_Attributes_Manager {
 	}
 
 	/**
-	 * Fetch all lists with automatic pagination
+	 * Fetch all lists (no pagination needed for lists API)
 	 *
 	 * @param string $api_key Brevo API key
 	 * @param int    $max_items Maximum items to fetch (0 = unlimited)
 	 * @return array|WP_Error Array of all lists or WP_Error on failure
 	 */
 	public function fetch_all_lists( $api_key, $max_items = 0 ) {
-		$all_lists     = array();
-		$offset        = 0;
-		$limit         = 50; // Use safe limit for lists API
-		$fetched_count = 0;
+		// Lists API returns all lists in one call - no pagination needed
+		$lists = $this->fetch_lists( $api_key );
 
-		do {
-			$lists = $this->fetch_lists( $api_key, $limit, $offset );
+		if ( is_wp_error( $lists ) ) {
+			return $lists;
+		}
 
-			if ( is_wp_error( $lists ) ) {
-				return $lists;
-			}
+		// Apply max_items limit if specified
+		if ( $max_items > 0 && count( $lists ) > $max_items ) {
+			$lists = array_slice( $lists, 0, $max_items );
+		}
 
-			$batch_count = count( $lists );
-			if ( $batch_count === 0 ) {
-				break; // No more data
-			}
-
-			$all_lists     = array_merge( $all_lists, $lists );
-			$fetched_count += $batch_count;
-			$offset        += $limit;
-
-			// Check if we've reached the maximum items limit
-			if ( $max_items > 0 && $fetched_count >= $max_items ) {
-				$all_lists = array_slice( $all_lists, 0, $max_items );
-				break;
-			}
-
-			// If we got less than the limit, we've reached the end
-		} while ( $batch_count === $limit );
-
-		return $all_lists;
+		return $lists;
 	}
 
 	/**
