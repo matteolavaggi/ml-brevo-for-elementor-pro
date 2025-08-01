@@ -3,7 +3,7 @@
 /**
  * Plugin Name: ML Brevo for Elementor Pro
  * Description: Integrates Elementor forms with Brevo API. Now supports ALL your Brevo contact attributes with dynamic field mapping! Multilingual support: Italian, French, German, Spanish.
- * Version: 2.2.1
+ * Version: 2.3.0
  * Author: Matteo Lavaggi
  * Author URI: https://matteolavaggi.it/
  * Text Domain: ml-brevo-for-elementor-pro
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants
-define( 'BREVO_ELEMENTOR_VERSION', '2.2.1' );
+define( 'BREVO_ELEMENTOR_VERSION', '2.3.0' );
 define( 'BREVO_ELEMENTOR_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BREVO_ELEMENTOR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
