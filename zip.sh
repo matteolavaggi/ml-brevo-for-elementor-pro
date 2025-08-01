@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Get the module name from the current directory name
 MODULE_NAME=$(basename "$(pwd)")
 
