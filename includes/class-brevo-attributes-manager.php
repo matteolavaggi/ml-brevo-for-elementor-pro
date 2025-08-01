@@ -2,14 +2,14 @@
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; 
+	exit;
 }
 
 /**
  * Brevo Attributes Manager
- * 
+ *
  * Handles fetching, caching, and managing Brevo contact attributes
- * 
+ *
  * @since 2.0.0
  */
 class Brevo_Attributes_Manager {
@@ -42,7 +42,7 @@ class Brevo_Attributes_Manager {
 	 */
 	public function fetch_attributes( $api_key ) {
 		$start_time = microtime( true );
-		
+
 		if ( empty( $api_key ) ) {
 			return new WP_Error( 'invalid_api_key', __( 'API key is required', 'ml-brevo-for-elementor-pro' ) );
 		}
@@ -51,74 +51,96 @@ class Brevo_Attributes_Manager {
 		$cached_attributes = $this->get_cached_attributes( $api_key );
 		if ( $cached_attributes !== false ) {
 			$logger = Brevo_Debug_Logger::get_instance();
-			$logger->debug( 'Using cached attributes', 'CACHE', 'fetch_attributes', array(
-				'attributes_count' => count( $cached_attributes ),
-				'api_key_hash' => md5( $api_key )
-			) );
-			
+			$logger->debug(
+				'Using cached attributes',
+				'CACHE',
+				'fetch_attributes',
+				array(
+					'attributes_count' => count( $cached_attributes ),
+					'api_key_hash'     => md5( $api_key ),
+				)
+			);
 
 			return $cached_attributes;
 		}
 
 		// Cache miss - fetch from Brevo API
 		$logger = Brevo_Debug_Logger::get_instance();
-		$logger->info( 'Cache miss - fetching attributes from API', 'CACHE', 'fetch_attributes', array(
-			'api_key_hash' => md5( $api_key )
-		) );
-		
+		$logger->info(
+			'Cache miss - fetching attributes from API',
+			'CACHE',
+			'fetch_attributes',
+			array(
+				'api_key_hash' => md5( $api_key ),
+			)
+		);
+
 		$endpoint = self::API_BASE_URL . '/contacts/attributes';
-		
+
 		// Debug logging
 		$logger = Brevo_Debug_Logger::get_instance();
-		$logger->info( 'Fetching attributes from API', 'API', 'fetch_attributes', array(
-			'endpoint' => $endpoint,
-			'api_key_hash' => md5( $api_key )
-		) );
-		
-		
+		$logger->info(
+			'Fetching attributes from API',
+			'API',
+			'fetch_attributes',
+			array(
+				'endpoint'     => $endpoint,
+				'api_key_hash' => md5( $api_key ),
+			)
+		);
 
-		$response = wp_remote_get( $endpoint, array(
-			'timeout'     => 30,
-			'httpversion' => '1.0',
-			'headers'     => array(
-				'accept'       => 'application/json',
-				'api-key'      => $api_key,
-				'content-type' => 'application/json',
-			),
-		) );
+		$response = wp_remote_get(
+			$endpoint,
+			array(
+				'timeout'     => 30,
+				'httpversion' => '1.0',
+				'headers'     => array(
+					'accept'       => 'application/json',
+					'api-key'      => $api_key,
+					'content-type' => 'application/json',
+				),
+			)
+		);
 
 		// Handle request errors
 		if ( is_wp_error( $response ) ) {
-			$logger->error( 'API request failed: ' . $response->get_error_message(), 'API', 'fetch_attributes', array(
-				'endpoint' => $endpoint,
-				'error_code' => $response->get_error_code()
-			) );
-			
-			
+			$logger->error(
+				'API request failed: ' . $response->get_error_message(),
+				'API',
+				'fetch_attributes',
+				array(
+					'endpoint'   => $endpoint,
+					'error_code' => $response->get_error_code(),
+				)
+			);
+
 			return $response;
 		}
 
 		$response_code = wp_remote_retrieve_response_code( $response );
 		$response_body = wp_remote_retrieve_body( $response );
 
-		
-
 		// Handle HTTP errors
 		if ( $response_code < 200 || $response_code >= 300 ) {
 			/* translators: %d is the HTTP response status code */
 			$error_message = sprintf( __( 'Brevo API request failed with status %d', 'ml-brevo-for-elementor-pro' ), $response_code );
-			
+
 			// Try to extract error message from response
 			$decoded_body = json_decode( $response_body, true );
 			if ( isset( $decoded_body['message'] ) ) {
 				$error_message .= ': ' . $decoded_body['message'];
 			}
 
-			$logger->error( 'API HTTP error: ' . $error_message, 'API', 'fetch_attributes', array(
-				'response_code' => $response_code,
-				'response_body' => $response_body,
-				'decoded_body' => $decoded_body
-			) );
+			$logger->error(
+				'API HTTP error: ' . $error_message,
+				'API',
+				'fetch_attributes',
+				array(
+					'response_code' => $response_code,
+					'response_body' => $response_body,
+					'decoded_body'  => $decoded_body,
+				)
+			);
 
 			return new WP_Error( 'api_request_failed', $error_message );
 		}
@@ -135,13 +157,16 @@ class Brevo_Attributes_Manager {
 		// Cache the results
 		$this->cache_attributes( $api_key, $normalized_attributes );
 
-		$logger->info( 'Successfully fetched and cached attributes', 'API', 'fetch_attributes', array(
-			'attributes_count' => count( $normalized_attributes ),
-			'execution_time' => microtime( true ) - $start_time,
-			'api_key_hash' => md5( $api_key )
-		) );
-
-		
+		$logger->info(
+			'Successfully fetched and cached attributes',
+			'API',
+			'fetch_attributes',
+			array(
+				'attributes_count' => count( $normalized_attributes ),
+				'execution_time'   => microtime( true ) - $start_time,
+				'api_key_hash'     => md5( $api_key ),
+			)
+		);
 
 		return $normalized_attributes;
 	}
@@ -155,28 +180,24 @@ class Brevo_Attributes_Manager {
 	public function normalize_attributes( $raw_data ) {
 		$normalized = array();
 
-		
-
 		if ( ! is_array( $raw_data ) ) {
-			
+
 			return $normalized;
 		}
 
-		
-
 		foreach ( $raw_data['attributes'] as $attribute ) {
 			if ( ! is_array( $attribute ) || ! isset( $attribute['name'] ) ) {
-				
+
 				continue;
 			}
 
 			$field_name = sanitize_text_field( $attribute['name'] );
-			
+
 			// Skip if field name is empty after sanitization
 			if ( empty( $field_name ) ) {
 				continue;
 			}
-			
+
 			$normalized[ $field_name ] = array(
 				'name'        => $field_name,
 				'type'        => $this->map_field_type( $attribute['type'] ?? 'text' ),
@@ -194,8 +215,6 @@ class Brevo_Attributes_Manager {
 				$normalized[ $field_name ] = $field_data;
 			}
 		}
-
-		
 
 		return $normalized;
 	}
@@ -230,18 +249,18 @@ class Brevo_Attributes_Manager {
 	private function generate_field_description( $field_name, $attribute ) {
 		// Common field descriptions
 		$descriptions = array(
-			'FIRSTNAME'      => __( 'Contact first name', 'ml-brevo-for-elementor-pro' ),
-			'LASTNAME'       => __( 'Contact last name', 'ml-brevo-for-elementor-pro' ),
-			'SMS'            => __( 'Contact phone number', 'ml-brevo-for-elementor-pro' ),
-			'EMAIL'          => __( 'Contact email address', 'ml-brevo-for-elementor-pro' ),
-			'COMPANY'        => __( 'Contact company name', 'ml-brevo-for-elementor-pro' ),
-			'WEBSITE'        => __( 'Contact website URL', 'ml-brevo-for-elementor-pro' ),
-			'ADDRESS'        => __( 'Contact address', 'ml-brevo-for-elementor-pro' ),
-			'BIRTH_DATE'     => __( 'Contact birth date', 'ml-brevo-for-elementor-pro' ),
-			'GENDER'         => __( 'Contact gender', 'ml-brevo-for-elementor-pro' ),
-			'COUNTRY'        => __( 'Contact country', 'ml-brevo-for-elementor-pro' ),
-			'CITY'           => __( 'Contact city', 'ml-brevo-for-elementor-pro' ),
-			'ZIPCODE'        => __( 'Contact postal code', 'ml-brevo-for-elementor-pro' ),
+			'FIRSTNAME'  => __( 'Contact first name', 'ml-brevo-for-elementor-pro' ),
+			'LASTNAME'   => __( 'Contact last name', 'ml-brevo-for-elementor-pro' ),
+			'SMS'        => __( 'Contact phone number', 'ml-brevo-for-elementor-pro' ),
+			'EMAIL'      => __( 'Contact email address', 'ml-brevo-for-elementor-pro' ),
+			'COMPANY'    => __( 'Contact company name', 'ml-brevo-for-elementor-pro' ),
+			'WEBSITE'    => __( 'Contact website URL', 'ml-brevo-for-elementor-pro' ),
+			'ADDRESS'    => __( 'Contact address', 'ml-brevo-for-elementor-pro' ),
+			'BIRTH_DATE' => __( 'Contact birth date', 'ml-brevo-for-elementor-pro' ),
+			'GENDER'     => __( 'Contact gender', 'ml-brevo-for-elementor-pro' ),
+			'COUNTRY'    => __( 'Contact country', 'ml-brevo-for-elementor-pro' ),
+			'CITY'       => __( 'Contact city', 'ml-brevo-for-elementor-pro' ),
+			'ZIPCODE'    => __( 'Contact postal code', 'ml-brevo-for-elementor-pro' ),
 		);
 
 		if ( isset( $descriptions[ $field_name ] ) ) {
@@ -285,7 +304,7 @@ class Brevo_Attributes_Manager {
 				'description' => __( 'Contact first name', 'ml-brevo-for-elementor-pro' ),
 				'enabled'     => true,
 			),
-			'LASTNAME' => array(
+			'LASTNAME'  => array(
 				'name'        => 'LASTNAME',
 				'type'        => 'text',
 				'category'    => 'normal',
@@ -293,7 +312,7 @@ class Brevo_Attributes_Manager {
 				'description' => __( 'Contact last name', 'ml-brevo-for-elementor-pro' ),
 				'enabled'     => true,
 			),
-			'SMS' => array(
+			'SMS'       => array(
 				'name'        => 'SMS',
 				'type'        => 'text',
 				'category'    => 'normal',
@@ -311,18 +330,18 @@ class Brevo_Attributes_Manager {
 	 * @return array|false Cached attributes or false if not found
 	 */
 	private function get_cached_attributes( $api_key ) {
-		$cache_key = $this->generate_cache_key( $api_key );
+		$cache_key  = $this->generate_cache_key( $api_key );
 		$cache_data = get_transient( $cache_key );
-		
+
 		if ( $cache_data === false ) {
 			return false;
 		}
-		
+
 		// Handle new cache format with metadata
 		if ( is_array( $cache_data ) && isset( $cache_data['attributes'] ) ) {
 			return $cache_data['attributes'];
 		}
-		
+
 		// Handle old cache format (direct attributes array)
 		return $cache_data;
 	}
@@ -336,7 +355,7 @@ class Brevo_Attributes_Manager {
 	 */
 	private function cache_attributes( $api_key, $attributes ) {
 		$cache_key = $this->generate_cache_key( $api_key );
-		
+
 		// Also store metadata about the cache
 		$cache_data = array(
 			'attributes'   => $attributes,
@@ -372,9 +391,9 @@ class Brevo_Attributes_Manager {
 
 		// Clear all attribute caches (this is expensive, use sparingly)
 		global $wpdb;
-		
+
 		$cache_prefix = '_transient_' . self::CACHE_PREFIX;
-		
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk transient deletion requires direct query for efficiency
 		$result = $wpdb->query(
 			$wpdb->prepare(
@@ -383,8 +402,6 @@ class Brevo_Attributes_Manager {
 				$wpdb->esc_like( '_transient_timeout_' . self::CACHE_PREFIX ) . '%'
 			)
 		);
-
-		
 
 		return $result !== false;
 	}
@@ -396,7 +413,7 @@ class Brevo_Attributes_Manager {
 	 * @return array|null Cache info or null if no cache
 	 */
 	public function get_cache_info( $api_key ) {
-		$cache_key = $this->generate_cache_key( $api_key );
+		$cache_key  = $this->generate_cache_key( $api_key );
 		$cache_data = get_transient( $cache_key );
 
 		if ( $cache_data === false ) {
@@ -404,17 +421,17 @@ class Brevo_Attributes_Manager {
 		}
 
 		$timeout_key = '_transient_timeout_' . $cache_key;
-		$expires_at = get_option( $timeout_key, 0 );
+		$expires_at  = get_option( $timeout_key, 0 );
 
 		// Handle both new cache format (with metadata) and old format (direct array)
 		if ( is_array( $cache_data ) && isset( $cache_data['attributes'] ) ) {
 			// New format with metadata
 			$attributes = $cache_data['attributes'];
-			$cached_at = $cache_data['cached_at'] ?? 0;
+			$cached_at  = $cache_data['cached_at'] ?? 0;
 		} else {
 			// Old format - direct attributes array
 			$attributes = is_array( $cache_data ) ? $cache_data : array();
-			$cached_at = 0; // Unknown for old format
+			$cached_at  = 0; // Unknown for old format
 		}
 
 		return array(
@@ -437,15 +454,18 @@ class Brevo_Attributes_Manager {
 		}
 
 		$endpoint = self::API_BASE_URL . '/account';
-		
-		$response = wp_remote_get( $endpoint, array(
-			'timeout'     => 15,
-			'httpversion' => '1.0',
-			'headers'     => array(
-				'accept'   => 'application/json',
-				'api-key'  => $api_key,
-			),
-		) );
+
+		$response = wp_remote_get(
+			$endpoint,
+			array(
+				'timeout'     => 15,
+				'httpversion' => '1.0',
+				'headers'     => array(
+					'accept'  => 'application/json',
+					'api-key' => $api_key,
+				),
+			)
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
@@ -473,7 +493,7 @@ class Brevo_Attributes_Manager {
 	 */
 	public function fetch_lists( $api_key ) {
 		$start_time = microtime( true );
-		
+
 		if ( empty( $api_key ) ) {
 			return new WP_Error( 'invalid_api_key', __( 'API key is required', 'ml-brevo-for-elementor-pro' ) );
 		}
@@ -482,42 +502,43 @@ class Brevo_Attributes_Manager {
 		$cached_lists = $this->get_cached_lists( $api_key );
 		if ( $cached_lists !== false ) {
 			$logger = Brevo_Debug_Logger::get_instance();
-			$logger->debug( 'Using cached lists', 'CACHE', 'fetch_lists', array(
-				'lists_count' => count( $cached_lists ),
-				'api_key_hash' => md5( $api_key )
-			) );
-			
-			
+			$logger->debug(
+				'Using cached lists',
+				'CACHE',
+				'fetch_lists',
+				array(
+					'lists_count'  => count( $cached_lists ),
+					'api_key_hash' => md5( $api_key ),
+				)
+			);
+
 			return $cached_lists;
 		}
 
 		// Fetch from Brevo API
 		$endpoint = self::API_BASE_URL . '/contacts/lists';
-		
-		
 
-		$response = wp_remote_get( $endpoint, array(
-			'timeout'     => 30,
-			'httpversion' => '1.0',
-			'headers'     => array(
-				'accept'       => 'application/json',
-				'api-key'      => $api_key,
-				'content-type' => 'application/json',
-			),
-		) );
-
-		
+		$response = wp_remote_get(
+			$endpoint,
+			array(
+				'timeout'     => 30,
+				'httpversion' => '1.0',
+				'headers'     => array(
+					'accept'       => 'application/json',
+					'api-key'      => $api_key,
+					'content-type' => 'application/json',
+				),
+			)
+		);
 
 		$response_code = wp_remote_retrieve_response_code( $response );
 		$response_body = wp_remote_retrieve_body( $response );
-
-		
 
 		// Handle HTTP errors
 		if ( $response_code < 200 || $response_code >= 300 ) {
 			/* translators: %d is the HTTP response status code */
 			$error_message = sprintf( __( 'Brevo Lists API request failed with status %d', 'ml-brevo-for-elementor-pro' ), $response_code );
-			
+
 			// Try to extract error message from response
 			$decoded_body = json_decode( $response_body, true );
 			if ( isset( $decoded_body['message'] ) ) {
@@ -539,13 +560,16 @@ class Brevo_Attributes_Manager {
 		// Cache the results
 		$this->cache_lists( $api_key, $normalized_lists );
 
-		$logger->info( 'Successfully fetched and cached lists', 'API', 'fetch_lists', array(
-			'lists_count' => count( $normalized_lists ),
-			'execution_time' => microtime( true ) - $start_time,
-			'api_key_hash' => md5( $api_key )
-		) );
-
-		
+		$logger->info(
+			'Successfully fetched and cached lists',
+			'API',
+			'fetch_lists',
+			array(
+				'lists_count'    => count( $normalized_lists ),
+				'execution_time' => microtime( true ) - $start_time,
+				'api_key_hash'   => md5( $api_key ),
+			)
+		);
 
 		return $normalized_lists;
 	}
@@ -559,29 +583,25 @@ class Brevo_Attributes_Manager {
 	public function normalize_lists( $raw_data ) {
 		$normalized = array();
 
-		
-
 		if ( ! is_array( $raw_data ) ) {
-			
+
 			return $normalized;
 		}
 
-		
-
 		foreach ( $raw_data['lists'] as $list ) {
 			if ( ! is_array( $list ) || ! isset( $list['id'] ) || ! isset( $list['name'] ) ) {
-				
+
 				continue;
 			}
 
-			$list_id = intval( $list['id'] );
+			$list_id   = intval( $list['id'] );
 			$list_name = sanitize_text_field( $list['name'] );
-			
+
 			// Skip if list ID or name is invalid
 			if ( $list_id <= 0 || empty( $list_name ) ) {
 				continue;
 			}
-			
+
 			$normalized[ $list_id ] = array(
 				'id'                => $list_id,
 				'name'              => $list_name,
@@ -594,8 +614,6 @@ class Brevo_Attributes_Manager {
 			);
 		}
 
-		
-
 		return $normalized;
 	}
 
@@ -606,18 +624,18 @@ class Brevo_Attributes_Manager {
 	 * @return array|false Cached lists or false if not found
 	 */
 	private function get_cached_lists( $api_key ) {
-		$cache_key = $this->generate_lists_cache_key( $api_key );
+		$cache_key  = $this->generate_lists_cache_key( $api_key );
 		$cache_data = get_transient( $cache_key );
-		
+
 		if ( $cache_data === false ) {
 			return false;
 		}
-		
+
 		// Handle new cache format with metadata
 		if ( is_array( $cache_data ) && isset( $cache_data['lists'] ) ) {
 			return $cache_data['lists'];
 		}
-		
+
 		// Handle old cache format (direct lists array)
 		return $cache_data;
 	}
@@ -631,7 +649,7 @@ class Brevo_Attributes_Manager {
 	 */
 	private function cache_lists( $api_key, $lists ) {
 		$cache_key = $this->generate_lists_cache_key( $api_key );
-		
+
 		// Store metadata about the cache
 		$cache_data = array(
 			'lists'        => $lists,
@@ -667,8 +685,9 @@ class Brevo_Attributes_Manager {
 
 		// Clear all lists caches
 		global $wpdb;
-		
+
 		$cache_prefix = '_transient_' . self::LISTS_CACHE_PREFIX;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk transient deletion requires direct query for efficiency
 		$result = $wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
@@ -676,8 +695,6 @@ class Brevo_Attributes_Manager {
 				$wpdb->esc_like( '_transient_timeout_' . self::LISTS_CACHE_PREFIX ) . '%'
 			)
 		);
-
-		
 
 		return $result !== false;
 	}
@@ -689,7 +706,7 @@ class Brevo_Attributes_Manager {
 	 * @return array|null Cache info or null if no cache
 	 */
 	public function get_lists_cache_info( $api_key ) {
-		$cache_key = $this->generate_lists_cache_key( $api_key );
+		$cache_key  = $this->generate_lists_cache_key( $api_key );
 		$cache_data = get_transient( $cache_key );
 
 		if ( $cache_data === false ) {
@@ -697,16 +714,16 @@ class Brevo_Attributes_Manager {
 		}
 
 		$timeout_key = '_transient_timeout_' . $cache_key;
-		$expires_at = get_option( $timeout_key, 0 );
+		$expires_at  = get_option( $timeout_key, 0 );
 
 		// Handle both new cache format (with metadata) and old format (direct array)
 		if ( is_array( $cache_data ) && isset( $cache_data['lists'] ) ) {
 			// New format with metadata
-			$lists = $cache_data['lists'];
+			$lists     = $cache_data['lists'];
 			$cached_at = $cache_data['cached_at'] ?? 0;
 		} else {
 			// Old format - direct lists array
-			$lists = is_array( $cache_data ) ? $cache_data : array();
+			$lists     = is_array( $cache_data ) ? $cache_data : array();
 			$cached_at = 0; // Unknown for old format
 		}
 
@@ -725,11 +742,11 @@ class Brevo_Attributes_Manager {
 	 */
 	public static function get_instance() {
 		static $instance = null;
-		
+
 		if ( $instance === null ) {
 			$instance = new self();
 		}
-		
+
 		return $instance;
 	}
-} 
+}
