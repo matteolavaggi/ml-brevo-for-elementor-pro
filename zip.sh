@@ -27,6 +27,7 @@ cd "$TEMP_DIR"
 # Note: Using the module name without version number as requested
 zip -r "$ZIP_FILE" "$MODULE_NAME" \
     -x "*.git*" \
+    -x "*.htaccess*" \
     -x "*.cursor*" \
     -x "*.sh" \
     -x "*.code-workspace" \

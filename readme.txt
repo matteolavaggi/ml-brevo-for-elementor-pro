@@ -4,7 +4,7 @@ Tags: brevo, elementor, forms, email, marketing
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,7 +62,7 @@ Yes, the plugin supports mapping to all your Brevo contact attributes, including
 
 == Changelog ==
 
-= 2.2.0 =
+= 2.2.1 =
 * Enhanced field mapping capabilities
 * Improved error handling
 * Added comprehensive logging
@@ -85,7 +85,7 @@ Yes, the plugin supports mapping to all your Brevo contact attributes, including
 
 == Upgrade Notice ==
 
-= 2.2.0 =
+= 2.2.1 =
 This version includes important improvements to field mapping and error handling. Please update your forms after upgrading.
 
 == License ==

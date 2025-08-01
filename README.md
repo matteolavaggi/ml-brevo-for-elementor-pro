@@ -170,7 +170,7 @@ Yes, this plugin is designed specifically for Brevo (formerly Sendinblue). The i
 
 ## Changelog
 
-## [2.2.0] - 2025-06-22
+## [2.2.1] - 2025-06-22
 
 ### 🌍 MULTILINGUAL RELEASE - Complete Translation Support
 
@@ -234,7 +234,7 @@ This major release introduces comprehensive multilingual support, making the plu
   - Documentation section with localized content
   - Field management with translated labels
 - **Enhanced Plugin Description**: Updated to mention multilingual support
-- **Version Bump**: Updated to v2.2.0 across all files
+- **Version Bump**: Updated to v2.2.1 across all files
 
 ### 🛠️ Technical Implementation
 
@@ -458,3 +458,9 @@ This release focuses on improving user experience with better list management, c
 - Valid Brevo API key
 
 ---
+
+## Extra file in repo:
+
+zip.sh is a script i use to create plugin zip folder excluding some file / folder
+mklink.sh is a script i use to create symlink to wordpress studio local folder fo dev (Example ./mklink.sh "C:\Users\matteolavaggi\Studio\wordpress")
+Both are sh script run from wsl under windows cmd (i know, i'm a bit strange)
