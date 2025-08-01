@@ -1,0 +1,119 @@
+---
+alwaysApply: true
+---
+Escaping with Localization
+Rather than using echo to output data, it’s common to use the WordPress localization functions, such as _e() or __().
+
+These functions simply wrap a localization function inside an escaping function:
+
+
+esc_html_e( 'Hello World', 'text_domain' );
+// Same as
+echo esc_html( __( 'Hello World', 'text_domain' ) );
+These helper functions combine localization and escaping:
+
+esc_html__()
+esc_html_e()
+esc_html_x()
+esc_attr__()
+esc_attr_e()
+esc_attr_x()
+Examples
+Escaping any numeric variable used anywhere
+echo $int;
+Depending on whether it is an integer or a float, (int), absint(), (float) are all correct and acceptable.
+At times, number_format() or number_format_i18n() might be more appropriate.
+
+intval(), floatval() are acceptable, but are outdated (PHP4) functions.
+
+Escaping arbitrary variable within HTML attribute
+echo '<div id="', $prefix, '-box', $id, '">';
+This should be escaped with one call to esc_attr().
+When a variable is used as part of an attribute or url, it is always better to escape the whole string as that way a potential escape character just before the variable will be correctly escaped.
+
+Correct:
+
+
+echo '<div id="', esc_attr( $prefix . '-box' . $id ), '">';
+Incorrect:
+
+echo '<div id="', esc_attr( $prefix ), '-box', esc_attr( $id ), '">';
+Note: nonces created using wp_create_nonce() should also be escaped like this if used in an HTML attribute.
+
+Escaping arbitrary URL within HTML attribute, but also in other contexts
+echo '<a href="', $url, '">';
+This should be escaped with esc_url().
+
+Correct:
+
+
+echo '<a href="', esc_url( $url ), '">';
+Incorrect:
+
+echo '<a href="', esc_attr( $url ), '">';
+echo '<a href="', esc_attr( esc_url( $url ) ), '">';
+Passing an arbitrary variable to JavaScript via wp_localize_script()
+
+wp_localize_script( 'handle', 'name',
+	array(
+		'prefix_nonce' => wp_create_nonce( 'plugin-name' ),
+		'ajaxurl'      => admin_url( 'admin-ajax.php' ),
+		'errorMsg'     => __( 'An error occurred', 'plugin-name' ),
+	)
+);
+No escaping needed, WordPress will escape this.
+
+Escaping arbitrary variable within JavaScript block
+<script type="text/javascript">
+    var myVar = <?php echo $my_var; ?>
+</script>
+$my_var should be escaped with esc_js().
+
+Correct:
+
+
+<script type="text/javascript">
+    var myVar = <?php echo esc_js( $my_var ); ?>
+</script>
+Escaping arbitrary variable within inline JavaScript
+<a href="#" onclick="do_something(<?php echo $var; ?>); return false;">
+$var should be escaped with esc_js().
+
+Correct:
+
+
+<a href="#" onclick="do_something(<?php echo esc_js( $var ); ?>); return false;">
+Escaping arbitrary variable within HTML attribute for use by JavaScript
+<a href="#" data-json="<?php echo $var; ?>">
+$var should be escaped with esc_js(), json_encode() or wp_json_encode().
+
+Correct:
+
+
+<a href="#" data-json="<?php echo esc_js( $var ); ?>">
+Escaping arbitrary string within HTML textarea
+echo '<textarea>', $data, '</textarea>';
+$data should be escaped with esc_textarea().
+
+Correct:
+
+
+echo '<textarea>', esc_textarea( $data ), '</textarea>';
+Escaping arbitrary string within HTML tags
+echo '<div>', $phrase, '</div>';
+This depends on whether $phrase is expected to contain HTML or not.
+
+If not, use esc_html() or any of its variants.
+If HTML is expected, use wp_kses_post(), wp_kses_allowed_html() or wp_kses() with a set of HTML tags you want to allow.
+Escaping arbitrary string within XML or XSL context
+echo '<loc>', $var, '</loc>';
+Escape with esc_xml() or ent2ncr().
+
+Correct:
+
+
+echo '<loc>', ent2ncr( $var ), '</loc>';
+First published
+
+November 20, 2022
+Last updated

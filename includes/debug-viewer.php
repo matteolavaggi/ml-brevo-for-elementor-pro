@@ -50,12 +50,12 @@ class Brevo_Debug_Viewer {
 		$current_file = isset( $_GET['file'] ) ? sanitize_text_field( wp_unslash( $_GET['file'] ) ) : '';
 		$current_level = isset( $_GET['level'] ) ? sanitize_text_field( wp_unslash( $_GET['level'] ) ) : '';
 		$current_component = isset( $_GET['component'] ) ? sanitize_text_field( wp_unslash( $_GET['component'] ) ) : '';
-		$current_page = isset( $_GET['paged'] ) ? max( 1, intval( $_GET['paged'] ) ) : 1;
+		$current_page = isset( $_GET['paged'] ) ? max( 1, intval( wp_unslash( $_GET['paged'] ) ) ) : 1;
 		$entries_per_page = 50;
 
 		// Nonce verification for actions
-		if ( isset( $_GET['action'] ) && $_GET['action'] === 'brevo_download_debug_log' ) {
-			if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( wp_unslash( $_GET['_wpnonce'] ), 'brevo_download_log' ) ) {
+		if ( isset( $_GET['action'] ) && sanitize_text_field( wp_unslash( $_GET['action'] ) ) === 'brevo_download_debug_log' ) {
+			if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'brevo_download_log' ) ) {
 				wp_die( 'Security check failed' );
 			}
 		}
@@ -206,17 +206,12 @@ class Brevo_Debug_Viewer {
 						'show_all' => false,
 						'type' => 'plain',
 					);
-					echo paginate_links( $pagination_args );
+					echo wp_kses_post( paginate_links( $pagination_args ) );
 					?>
 					<p class="pagination-info">
 						<?php 
 						/* translators: %1$d is the start entry number, %2$d is the end entry number, %3$d is the total number of entries */
-						printf( 
-							esc_html__( 'Showing %1$d-%2$d of %3$d entries', 'ml-brevo-for-elementor-pro' ),
-							$offset + 1,
-							min( $offset + $entries_per_page, $total_entries ),
-							$total_entries
-						); ?>
+						printf( esc_html__( 'Showing %1$d-%2$d of %3$d entries', 'ml-brevo-for-elementor-pro' ), absint( $offset ) + 1, absint( min( absint( $offset ) + absint( $entries_per_page ), absint( $total_entries ) ) ), absint( $total_entries ) ); ?>
 					</p>
 				</div>
 			<?php endif; ?>
@@ -240,10 +235,10 @@ class Brevo_Debug_Viewer {
 						</thead>
 						<tbody>
 							<?php foreach ( $entries as $entry ): ?>
-								<tr class="debug-entry debug-level-<?php echo strtolower( esc_attr( $entry['level'] ) ); ?>">
+								<tr class="debug-entry debug-level-<?php echo esc_attr( strtolower( $entry['level'] ) ); ?>">
 									<td><?php echo esc_html( $entry['timestamp'] ); ?></td>
 									<td>
-										<span class="debug-level-badge debug-level-<?php echo strtolower( esc_attr( $entry['level'] ) ); ?>">
+										<span class="debug-level-badge debug-level-<?php echo esc_attr( strtolower( $entry['level'] ) ); ?>">
 											<?php echo esc_html( $entry['level'] ); ?>
 										</span>
 									</td>
@@ -270,7 +265,7 @@ class Brevo_Debug_Viewer {
 			<!-- Pagination (bottom) -->
 			<?php if ( $total_pages > 1 ): ?>
 				<div class="brevo-debug-pagination">
-					<?php echo paginate_links( $pagination_args ); ?>
+					<?php echo wp_kses_post( paginate_links( $pagination_args ) ); ?>
 				</div>
 			<?php endif; ?>
 		</div>
@@ -457,7 +452,7 @@ class Brevo_Debug_Viewer {
 	 */
 	public function handle_clear_logs() {
 		// Verify nonce
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( wp_unslash( sanitize_text_field( $_POST['nonce'] ) ), 'brevo_clear_logs' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'brevo_clear_logs' ) ) {
 			wp_die( 'Security check failed' );
 		}
 
@@ -477,7 +472,7 @@ class Brevo_Debug_Viewer {
 	 */
 	public function handle_download_log() {
 		// Verify nonce
-		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( wp_unslash( sanitize_text_field( $_GET['_wpnonce'] ) ), 'brevo_download_log' ) ) {
+		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'brevo_download_log' ) ) {
 			wp_die( 'Security check failed' );
 		}
 

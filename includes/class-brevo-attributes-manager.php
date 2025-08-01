@@ -106,10 +106,7 @@ class Brevo_Attributes_Manager {
 		// Handle HTTP errors
 		if ( $response_code < 200 || $response_code >= 300 ) {
 			/* translators: %d is the HTTP response status code */
-			$error_message = sprintf( 
-				__( 'Brevo API request failed with status %d', 'ml-brevo-for-elementor-pro' ), 
-				$response_code 
-			);
+			$error_message = sprintf( __( 'Brevo API request failed with status %d', 'ml-brevo-for-elementor-pro' ), $response_code );
 			
 			// Try to extract error message from response
 			$decoded_body = json_decode( $response_body, true );
@@ -377,13 +374,15 @@ class Brevo_Attributes_Manager {
 		global $wpdb;
 		
 		$cache_prefix = '_transient_' . self::CACHE_PREFIX;
-		$sql = $wpdb->prepare(
-			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-			$wpdb->esc_like( $cache_prefix ) . '%',
-			$wpdb->esc_like( '_transient_timeout_' . self::CACHE_PREFIX ) . '%'
-		);
 		
-		$result = $wpdb->query( $sql );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk transient deletion requires direct query for efficiency
+		$result = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+				$wpdb->esc_like( $cache_prefix ) . '%',
+				$wpdb->esc_like( '_transient_timeout_' . self::CACHE_PREFIX ) . '%'
+			)
+		);
 
 		
 
@@ -463,10 +462,7 @@ class Brevo_Attributes_Manager {
 		}
 
 		/* translators: %d is the HTTP response status code */
-		return new WP_Error( 
-			'api_validation_failed', 
-			sprintf( __( 'API validation failed with status %d', 'ml-brevo-for-elementor-pro' ), $response_code )
-		);
+		return new WP_Error( 'api_validation_failed', sprintf( __( 'API validation failed with status %d', 'ml-brevo-for-elementor-pro' ), $response_code ) );
 	}
 
 	/**
@@ -520,10 +516,7 @@ class Brevo_Attributes_Manager {
 		// Handle HTTP errors
 		if ( $response_code < 200 || $response_code >= 300 ) {
 			/* translators: %d is the HTTP response status code */
-			$error_message = sprintf( 
-				__( 'Brevo Lists API request failed with status %d', 'ml-brevo-for-elementor-pro' ), 
-				$response_code 
-			);
+			$error_message = sprintf( __( 'Brevo Lists API request failed with status %d', 'ml-brevo-for-elementor-pro' ), $response_code );
 			
 			// Try to extract error message from response
 			$decoded_body = json_decode( $response_body, true );
@@ -676,13 +669,13 @@ class Brevo_Attributes_Manager {
 		global $wpdb;
 		
 		$cache_prefix = '_transient_' . self::LISTS_CACHE_PREFIX;
-		$sql = $wpdb->prepare(
-			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-			$wpdb->esc_like( $cache_prefix ) . '%',
-			$wpdb->esc_like( '_transient_timeout_' . self::LISTS_CACHE_PREFIX ) . '%'
+		$result = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+				$wpdb->esc_like( $cache_prefix ) . '%',
+				$wpdb->esc_like( '_transient_timeout_' . self::LISTS_CACHE_PREFIX ) . '%'
+			)
 		);
-		
-		$result = $wpdb->query( $sql );
 
 		
 

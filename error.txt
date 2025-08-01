@@ -1,232 +1,111 @@
-SOLUTION:
-# WordPress Translator Comments Rule
+// Handle HTTP errors
+        if ( $response_code < 200 || $response_code >= 300 ) {
+            /* translators: %d is the HTTP response status code */
+            $error_message = sprintf( 
+                __( 'Brevo API request failed with status %d', 'ml-brevo-for-elementor-pro' ), 
+                $response_code 
+            );            // Try to extract error message from response
+            $decoded_body = json_decode( $response_body, true );
+            if ( isset( $decoded_body['message'] ) ) {
+                $error_message .= ': ' . $decoded_body['message'];
+            }            $logger->error( 'API HTTP error: ' . $error_message, 'API', 'fetch_attributes', array(
+                'response_code' => $response_code,
+                'response_body' => $response_body,
+                'decoded_body' => $decoded_body
+            ) );            return new WP_Error( 'api_request_failed', $error_message );
+        }LineaColonnaTipoCodiceMessaggio11017ERRORWordPress.WP.I18n.MissingTranslatorsCommentA function call to __() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.hy this eror is still here and not fixed?!WModificaLooking at your code, the issue is that the __() function call is on line 111, but the translator comment is on line 109. The PHPCS rule is very strict - it wants the translator comment to be on the immediately preceding line to the line containing the __() function.
+Since your sprintf() is split across multiple lines, the __() function is not on the line immediately after the translator comment.
+Here are two ways to fix this:
+Option 1: Put everything on fewer lines
+php// Handle HTTP errors
+if ( $response_code < 200 || $response_code >= 300 ) {
+    /* translators: %d is the HTTP response status code */
+    $error_message = sprintf( __( 'Brevo API request failed with status %d', 'ml-brevo-for-elementor-pro' ), $response_code );
+    
+    // Try to extract error message from response
+    $decoded_body = json_decode( $response_body, true );
+    if ( isset( $decoded_body['message'] ) ) {
+        $error_message .= ': ' . $decoded_body['message'];
+    }
 
-## Purpose
-This rule ensures proper implementation of WordPress translator comments for internationalization (i18n) in PHP code.
+    $logger->error( 'API HTTP error: ' . $error_message, 'API', 'fetch_attributes', array(
+        'response_code' => $response_code,
+        'response_body' => $response_body,
+        'decoded_body' => $decoded_body
+    ) );
 
-## Rule Definition
+    return new WP_Error( 'api_request_failed', $error_message );
+}
+Option 2: Move the translator comment inline
+php// Handle HTTP errors
+if ( $response_code < 200 || $response_code >= 300 ) {
+    $error_message = sprintf( 
+        /* translators: %d is the HTTP response status code */
+        __( 'Brevo API request failed with status %d', 'ml-brevo-for-elementor-pro' ), 
+        $response_code 
+    );
+    
+    // Try to extract error message from response
+    $decoded_body = json_decode( $response_body, true );
+    if ( isset( $decoded_body['message'] ) ) {
+        $error_message .= ': ' . $decoded_body['message'];
+    }
 
-When writing WordPress PHP code that includes translatable strings with placeholders, ALWAYS add translator comments following these strict requirements:
+    $logger->error( 'API HTTP error: ' . $error_message, 'API', 'fetch_attributes', array(
+        'response_code' => $response_code,
+        'response_body' => $response_body,
+        'decoded_body' => $decoded_body
+    ) );
 
-### 1. Comment Format
-- Use multi-line comment syntax: `/* translators: ... */`
-- NEVER use single-line comments: `// translators: ...`
-- The comment MUST start with the word `translators:` (lowercase, with colon)
+    return new WP_Error( 'api_request_failed', $error_message );
+}
+The WordPress coding standards and PHPCS are extremely picky about this - the translator comment must be on the line immediately before the gettext function call (__(), _e(), etc.), not before the sprintf() that contains it.
+I recommend Option 1 as it's cleaner and more standard. Apply the same fix to all three locations where you're getting this error.
 
-### 2. Comment Placement
-- The translator comment MUST be the LAST PHP comment before the gettext function call
-- No blank lines between the comment and the function
-- The comment must be immediately before the line containing the gettext function (`__()`, `_e()`, `_n()`, `_x()`, etc.)
 
-### 3. Placeholder Documentation
-- Document ALL placeholders in the string
-- Use the format: `1: description, 2: description` for multiple placeholders
-- For sprintf placeholders like `%s`, `%d`, `%1$s`, describe what each represents
-
-### 4. Examples
-
-**Correct - Single placeholder:**
-```php
-/* translators: %s is the user's display name */
-$message = sprintf( __( 'Welcome back, %s!', 'text-domain' ), $user_name );
-```
-
-**Correct - Multiple placeholders:**
-```php
-/* translators: 1: post title, 2: publication date */
-$info = sprintf( __( 'The post "%1$s" was published on %2$s', 'text-domain' ), $title, $date );
-```
-
-**Correct - With _n() for plurals:**
-```php
-/* translators: %d is the number of items */
-$message = sprintf( _n( 'You have %d item', 'You have %d items', $count, 'text-domain' ), $count );
-```
-
-**Correct - Multi-line function call:**
-```php
-/* translators: %d is the HTTP response status code */
-$error = sprintf(
-    __( 'API request failed with status %d', 'text-domain' ),
-    $response_code
-);
-```
-
-**Incorrect - Using single-line comment:**
-```php
-// translators: %s is the username - WRONG!
-$msg = sprintf( __( 'Hello %s', 'text-domain' ), $name );
-```
-
-**Incorrect - Blank line between comment and function:**
-```php
-/* translators: %s is the username */
-
-$msg = sprintf( __( 'Hello %s', 'text-domain' ), $name ); // WRONG - no blank line allowed
-```
-
-### 5. Special Cases
-
-**Date/Time Formats:**
-```php
-/* translators: draft saved date format, see http://php.net/date */
-$saved_date_format = __( 'g:i:s a', 'text-domain' );
-```
-
-**Context with _x():**
-```php
-/* translators: %s is the category name */
-$label = sprintf( _x( 'In %s', 'category preposition', 'text-domain' ), $category );
-```
-
-### 6. PHPCS Compliance
-This format ensures compliance with WordPress.WP.I18n.MissingTranslatorsComment sniff in PHPCS.
-
-### 7. When Translator Comments Are Required
-Add translator comments when:
-- The string contains any placeholder (%s, %d, %1$s, etc.)
-- The string contains date/time format codes
-- The string's context might be unclear without explanation
-- Using `_n()` or `_nx()` with placeholders
-
-### 8. Quick Reference Checklist
-- [ ] Used `/* */` not `//`
-- [ ] Started with `translators:`
-- [ ] No blank lines before gettext function
-- [ ] Documented all placeholders
-- [ ] Comment is the last comment before the function
-
-ERROR:
 
 FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/class-brevo-attributes-manager.php
 Linea	Colonna	Tipo	Codice	Messaggio
-119	17	ERROR	WordPress.WP.I18n.MissingTranslatorsComment	A function call to __() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.
+110	17	ERROR	WordPress.WP.I18n.MissingTranslatorsComment	A function call to __() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.
 Approfondisci (apre in una nuova scheda)
-496	22	ERROR	WordPress.WP.I18n.MissingTranslatorsComment	A function call to __() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.
+468	22	ERROR	WordPress.WP.I18n.MissingTranslatorsComment	A function call to __() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.
 Approfondisci (apre in una nuova scheda)
-564	17	ERROR	WordPress.WP.I18n.MissingTranslatorsComment	A function call to __() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.
-Approfondisci (apre in una nuova scheda)
-
-FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/class-brevo-integration-action.php
-Linea	Colonna	Tipo	Codice	Messaggio
-197	37	ERROR	WordPress.WP.I18n.UnorderedPlaceholdersText	Multiple placeholders in translatable strings should be ordered. Expected "%1$s, %2$s", but got "%s, %s" in 'Don\'t see your list? %sRefresh lists in Settings%s or clear cache if you just created a new list in Brevo.'.
-Approfondisci (apre in una nuova scheda)
-260	41	ERROR	WordPress.WP.I18n.UnorderedPlaceholdersText	Multiple placeholders in translatable strings should be ordered. Expected "%1$s, %2$s", but got "%s, %s" in 'Please configure your Brevo fields in %sSettings → Brevo%s to enable field mapping.'.
+524	17	ERROR	WordPress.WP.I18n.MissingTranslatorsComment	A function call to __() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.
 Approfondisci (apre in una nuova scheda)
 
 FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/debug-viewer.php
 Linea	Colonna	Tipo	Codice	Messaggio
-208	29	ERROR	WordPress.WP.I18n.MissingTranslatorsComment	A function call to __() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.
+215	29	ERROR	WordPress.WP.I18n.MissingTranslatorsComment	A function call to esc_html__() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.
 Approfondisci (apre in una nuova scheda)
 
 FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/settings.php
 Linea	Colonna	Tipo	Codice	Messaggio
 940	29	ERROR	WordPress.WP.I18n.MissingTranslatorsComment	A function call to __() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.
 Approfondisci (apre in una nuova scheda)
-1181	25	ERROR	WordPress.WP.I18n.MissingTranslatorsComment	A function call to __() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.
+1181	25	ERROR	WordPress.WP.I18n.MissingTranslatorsComment	A function call to esc_html__() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.
 Approfondisci (apre in una nuova scheda)
-1307	25	ERROR	WordPress.WP.I18n.MissingTranslatorsComment	A function call to __() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.
+1307	25	ERROR	WordPress.WP.I18n.MissingTranslatorsComment	A function call to esc_html__() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify the meaning of the placeholders.
 Approfondisci (apre in una nuova scheda)
-
-FILE: .gitignore
-Linea	Colonna	Tipo	Codice	Messaggio
-0	0	ERROR	hidden_files	Non sono ammessi file nascosti.
-
-FILE: logs/.htaccess
-Linea	Colonna	Tipo	Codice	Messaggio
-0	0	ERROR	hidden_files	Non sono ammessi file nascosti.
-
-FILE: mklink.sh
-Linea	Colonna	Tipo	Codice	Messaggio	Modifica link
-0	0	ERROR	application_detected	Non sono ammessi file applicativi.	Visualizza nell'editor del codice (apre in una nuova scheda)
-
-FILE: zip.sh
-Linea	Colonna	Tipo	Codice	Messaggio	Modifica link
-0	0	ERROR	application_detected	Non sono ammessi file applicativi.	Visualizza nell'editor del codice (apre in una nuova scheda)
 
 FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/debug-viewer.php
 Linea	Colonna	Tipo	Codice	Messaggio
-119	31	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+209	26	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'paginate_links'.
 Approfondisci (apre in una nuova scheda)
-122	35	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+216	29	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$offset'.
 Approfondisci (apre in una nuova scheda)
-125	49	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'wp_nonce_url'.
+217	29	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'min'.
 Approfondisci (apre in una nuova scheda)
-129	39	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+218	29	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$total_entries'.
 Approfondisci (apre in una nuova scheda)
-142	56	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+243	79	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'strtolower'.
 Approfondisci (apre in una nuova scheda)
-147	49	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'size_format'.
+246	95	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'strtolower'.
 Approfondisci (apre in una nuova scheda)
-154	57	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-156	52	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-157	103	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-158	107	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-159	101	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-160	103	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-165	61	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-167	52	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-180	89	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-181	45	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'admin_url'.
-Approfondisci (apre in una nuova scheda)
-182	35	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-202	26	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'paginate_links'.
-Approfondisci (apre in una nuova scheda)
-208	29	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-209	29	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$offset'.
-Approfondisci (apre in una nuova scheda)
-210	29	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'min'.
-Approfondisci (apre in una nuova scheda)
-211	29	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$total_entries'.
-Approfondisci (apre in una nuova scheda)
-221	34	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-227	65	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-228	64	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-229	65	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-230	65	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-231	43	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-236	79	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'strtolower'.
-Approfondisci (apre in una nuova scheda)
-239	95	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'strtolower'.
-Approfondisci (apre in una nuova scheda)
-250	68	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-266	32	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'paginate_links'.
-Approfondisci (apre in una nuova scheda)
-378	41	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-383	63	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-387	44	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'wp_create_nonce'.
-Approfondisci (apre in una nuova scheda)
-393	42	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-397	38	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-400	68	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+273	32	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'paginate_links'.
 Approfondisci (apre in una nuova scheda)
 
 FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/settings.php
 Linea	Colonna	Tipo	Codice	Messaggio
-337	31	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
 464	37	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'admin_url'.
 Approfondisci (apre in una nuova scheda)
 671	78	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
@@ -323,227 +202,51 @@ Approfondisci (apre in una nuova scheda)
 Approfondisci (apre in una nuova scheda)
 1097	35	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
 Approfondisci (apre in una nuova scheda)
-1111	23	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1112	22	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1117	27	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1121	27	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1125	27	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1129	27	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1146	17	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1159	35	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1159	100	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$attributes'.
-Approfondisci (apre in una nuova scheda)
-1160	101	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1168	26	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1169	101	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1181	25	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1182	25	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'human_time_diff'.
-Approfondisci (apre in una nuova scheda)
-1183	25	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$cache_info['count']'.
-Approfondisci (apre in una nuova scheda)
-1195	31	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1196	31	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1197	31	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1198	31	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1223	87	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1234	54	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1234	102	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1250	23	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1251	22	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1256	27	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1273	17	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1285	35	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1285	99	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$lists'.
-Approfondisci (apre in una nuova scheda)
-1286	107	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1294	26	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1295	107	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1307	25	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
-Approfondisci (apre in una nuova scheda)
-1308	25	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'human_time_diff'.
-Approfondisci (apre in una nuova scheda)
-1309	25	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$cache_info['count']'.
-Approfondisci (apre in una nuova scheda)
-1318	31	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1319	31	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-1320	31	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
 2021	14	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
 Approfondisci (apre in una nuova scheda)
-2039	27	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+2032	38	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$api_key'.
 Approfondisci (apre in una nuova scheda)
-2042	27	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+2061	23	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
 Approfondisci (apre in una nuova scheda)
-2047	23	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+2064	23	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
 Approfondisci (apre in una nuova scheda)
-2049	39	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+2066	39	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
 Approfondisci (apre in una nuova scheda)
-2062	23	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+2067	41	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'admin_url'.
 Approfondisci (apre in una nuova scheda)
-2065	23	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+2068	31	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
 Approfondisci (apre in una nuova scheda)
-2067	39	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+2081	85	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
 Approfondisci (apre in una nuova scheda)
-2068	41	ERROR	WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'admin_url'.
+2082	89	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
 Approfondisci (apre in una nuova scheda)
-2069	31	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+2083	83	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
 Approfondisci (apre in una nuova scheda)
-2082	85	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+2084	85	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
 Approfondisci (apre in una nuova scheda)
-2083	89	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-2084	83	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-2085	85	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-2088	19	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
-Approfondisci (apre in una nuova scheda)
-2102	19	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
+2087	19	ERROR	WordPress.Security.EscapeOutput.UnsafePrintingFunction	All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.
 Approfondisci (apre in una nuova scheda)
 
 FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/class-brevo-attributes-manager.php
 Linea	Colonna	Tipo	Codice	Messaggio
-412	27	ERROR	WordPress.DB.PreparedSQL.NotPrepared	Use placeholders and $wpdb->prepare(); found $sql
-741	27	ERROR	WordPress.DB.PreparedSQL.NotPrepared	Use placeholders and $wpdb->prepare(); found $sql
-60	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-81	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-102	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-111	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-112	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-157	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-173	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-173	66	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_print_r	print_r() found. Debug code should not normally be used in production.
-178	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-185	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-194	6	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-194	77	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_print_r	print_r() found. Debug code should not normally be used in production.
-225	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-226	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-415	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-523	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-532	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-548	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-557	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-596	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-612	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-612	72	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_print_r	print_r() found. Debug code should not normally be used in production.
-617	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-624	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-632	6	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-632	72	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_print_r	print_r() found. Debug code should not normally be used in production.
-658	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-659	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-744	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-
-FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/class-brevo-integration-action.php
-Linea	Colonna	Tipo	Codice	Messaggio
-806	13	ERROR	WordPress.DateTime.RestrictedFunctions.date_date	date() is affected by runtime timezone changes which can cause date/time to be incorrectly displayed. Use gmdate() instead.
-352	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-352	65	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_print_r	print_r() found. Debug code should not normally be used in production.
-407	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-615	6	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-629	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-649	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-657	6	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-678	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-691	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-713	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-721	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-841	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-867	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-906	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-943	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-975	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-1012	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-
-FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/class-translation-compiler.php
-Linea	Colonna	Tipo	Codice	Messaggio
-197	60	ERROR	WordPress.DateTime.RestrictedFunctions.date_date	date() is affected by runtime timezone changes which can cause date/time to be incorrectly displayed. Use gmdate() instead.
-198	60	ERROR	WordPress.DateTime.RestrictedFunctions.date_date	date() is affected by runtime timezone changes which can cause date/time to be incorrectly displayed. Use gmdate() instead.
-36	99	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_POST['_wpnonce'] not unslashed before sanitization. Use wp_unslash() or similar
-116	17	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-130	17	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-148	17	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-162	17	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-166	17	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-
-FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/class-brevo-debug-logger.php
-Linea	Colonna	Tipo	Codice	Messaggio
-171	49	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_SERVER['REQUEST_URI'] not unslashed before sanitization. Use wp_unslash() or similar
-
-FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/class-brevo-integration-unsubscribe-action.php
-Linea	Colonna	Tipo	Codice	Messaggio
-191	31	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-201	31	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-208	30	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-229	30	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-238	31	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-244	31	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-257	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-258	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-259	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-278	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-289	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-290	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-294	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-299	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-301	5	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
-305	4	WARNING	WordPress.PHP.DevelopmentFunctions.error_log_error_log	error_log() found. Debug code should not normally be used in production.
+386	27	ERROR	WordPress.DB.PreparedSQL.NotPrepared	Use placeholders and $wpdb->prepare(); found $sql
+685	27	ERROR	WordPress.DB.PreparedSQL.NotPrepared	Use placeholders and $wpdb->prepare(); found $sql
 
 FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/debug-viewer.php
 Linea	Colonna	Tipo	Codice	Messaggio
-50	26	WARNING	WordPress.Security.NonceVerification.Recommended	Processing form data without nonce verification.
-50	77	WARNING	WordPress.Security.NonceVerification.Recommended	Processing form data without nonce verification.
-51	27	WARNING	WordPress.Security.NonceVerification.Recommended	Processing form data without nonce verification.
-51	79	WARNING	WordPress.Security.NonceVerification.Recommended	Processing form data without nonce verification.
-52	31	WARNING	WordPress.Security.NonceVerification.Recommended	Processing form data without nonce verification.
-52	87	WARNING	WordPress.Security.NonceVerification.Recommended	Processing form data without nonce verification.
-53	26	WARNING	WordPress.Security.NonceVerification.Recommended	Processing form data without nonce verification.
 53	61	WARNING	WordPress.Security.NonceVerification.Recommended	Processing form data without nonce verification.
-453	90	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_POST['nonce'] not unslashed before sanitization. Use wp_unslash() or similar
-473	92	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_GET['_wpnonce'] not unslashed before sanitization. Use wp_unslash() or similar
+58	72	WARNING	WordPress.Security.ValidatedSanitizedInput.InputNotSanitized	Detected usage of a non-sanitized input variable: $_GET['_wpnonce']
+460	90	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_POST['nonce'] not unslashed before sanitization. Use wp_unslash() or similar
+480	92	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_GET['_wpnonce'] not unslashed before sanitization. Use wp_unslash() or similar
 
 FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/settings.php
 Linea	Colonna	Tipo	Codice	Messaggio
 30	89	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_POST['nonce'] not unslashed before sanitization. Use wp_unslash() or similar
-43	34	WARNING	WordPress.Security.ValidatedSanitizedInput.InputNotValidated	Detected usage of a possibly undefined superglobal array index: $_POST['api_key']. Use isset() or empty() to check the index exists before using it
-43	34	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_POST['api_key'] not unslashed before sanitization. Use wp_unslash() or similar
 77	89	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_POST['nonce'] not unslashed before sanitization. Use wp_unslash() or similar
 88	25	WARNING	WordPress.Security.ValidatedSanitizedInput.InputNotSanitized	Detected usage of a non-sanitized input variable: $_POST['enabled_fields']
 100	89	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_POST['nonce'] not unslashed before sanitization. Use wp_unslash() or similar
 128	89	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_POST['nonce'] not unslashed before sanitization. Use wp_unslash() or similar
-163	26	WARNING	WordPress.Security.ValidatedSanitizedInput.InputNotValidated	Detected usage of a possibly undefined superglobal array index: $_POST['nonce']. Use isset() or empty() to check the index exists before using it
-163	26	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_POST['nonce'] not unslashed before sanitization. Use wp_unslash() or similar
-163	26	WARNING	WordPress.Security.ValidatedSanitizedInput.InputNotSanitized	Detected usage of a non-sanitized input variable: $_POST['nonce']
+163	89	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_POST['nonce'] not unslashed before sanitization. Use wp_unslash() or similar
 180	91	WARNING	WordPress.Security.ValidatedSanitizedInput.MissingUnslash	$_GET['_wpnonce'] not unslashed before sanitization. Use wp_unslash() or similar
 270	25	WARNING	WordPress.Security.NonceVerification.Recommended	Processing form data without nonce verification.
 270	75	WARNING	WordPress.Security.NonceVerification.Recommended	Processing form data without nonce verification.
@@ -566,7 +269,126 @@ Linea	Colonna	Tipo	Codice	Messaggio
 
 FILE: /internals/symlinks/C:\Users\Pineapple\Documents\Visual Studio Code\wordpress\plugin\ml-brevo-for-elementor-pro/includes/class-brevo-attributes-manager.php
 Linea	Colonna	Tipo	Codice	Messaggio
-412	19	WARNING	WordPress.DB.DirectDatabaseQuery.DirectQuery	Use of a direct database call is discouraged.
-412	19	WARNING	WordPress.DB.DirectDatabaseQuery.NoCaching	Direct database call without caching detected. Consider using wp_cache_get() / wp_cache_set() or wp_cache_delete().
-741	19	WARNING	WordPress.DB.DirectDatabaseQuery.DirectQuery	Use of a direct database call is discouraged.
-741	19	WARNING	WordPress.DB.DirectDatabaseQuery.NoCaching	Direct database call without caching detected. Consider using wp_cache_get() / wp_cache_set() or wp_cache_delete().
+386	19	WARNING	WordPress.DB.DirectDatabaseQuery.DirectQuery	Use of a direct database call is discouraged.
+386	19	WARNING	WordPress.DB.DirectDatabaseQuery.NoCaching	Direct database call without caching detected. Consider using wp_cache_get() / wp_cache_set() or wp_cache_delete().
+685	19	WARNING	WordPress.DB.DirectDatabaseQuery.DirectQuery	Use of a direct database call is discouraged.
+685	19	WARNING	WordPress.DB.DirectDatabaseQuery.NoCaching	Direct database call without caching detected. Consider using wp_cache_get() / wp_cache_set() or wp_cache_delete().
+
+
+
+Escaping with Localization
+Rather than using echo to output data, it’s common to use the WordPress localization functions, such as _e() or __().
+
+These functions simply wrap a localization function inside an escaping function:
+
+Copy
+esc_html_e( 'Hello World', 'text_domain' );
+// Same as
+echo esc_html( __( 'Hello World', 'text_domain' ) );
+These helper functions combine localization and escaping:
+
+esc_html__()
+esc_html_e()
+esc_html_x()
+esc_attr__()
+esc_attr_e()
+esc_attr_x()
+Examples
+Escaping any numeric variable used anywhere
+echo $int;
+Depending on whether it is an integer or a float, (int), absint(), (float) are all correct and acceptable.
+At times, number_format() or number_format_i18n() might be more appropriate.
+
+intval(), floatval() are acceptable, but are outdated (PHP4) functions.
+
+Escaping arbitrary variable within HTML attribute
+echo '<div id="', $prefix, '-box', $id, '">';
+This should be escaped with one call to esc_attr().
+When a variable is used as part of an attribute or url, it is always better to escape the whole string as that way a potential escape character just before the variable will be correctly escaped.
+
+Correct:
+
+Copy
+echo '<div id="', esc_attr( $prefix . '-box' . $id ), '">';
+Incorrect:
+
+echo '<div id="', esc_attr( $prefix ), '-box', esc_attr( $id ), '">';
+Note: nonces created using wp_create_nonce() should also be escaped like this if used in an HTML attribute.
+
+Escaping arbitrary URL within HTML attribute, but also in other contexts
+echo '<a href="', $url, '">';
+This should be escaped with esc_url().
+
+Correct:
+
+Copy
+echo '<a href="', esc_url( $url ), '">';
+Incorrect:
+
+echo '<a href="', esc_attr( $url ), '">';
+echo '<a href="', esc_attr( esc_url( $url ) ), '">';
+Passing an arbitrary variable to JavaScript via wp_localize_script()
+Copy
+wp_localize_script( 'handle', 'name',
+	array(
+		'prefix_nonce' => wp_create_nonce( 'plugin-name' ),
+		'ajaxurl'      => admin_url( 'admin-ajax.php' ),
+		'errorMsg'     => __( 'An error occurred', 'plugin-name' ),
+	)
+);
+No escaping needed, WordPress will escape this.
+
+Escaping arbitrary variable within JavaScript block
+<script type="text/javascript">
+    var myVar = <?php echo $my_var; ?>
+</script>
+$my_var should be escaped with esc_js().
+
+Correct:
+
+Copy
+<script type="text/javascript">
+    var myVar = <?php echo esc_js( $my_var ); ?>
+</script>
+Escaping arbitrary variable within inline JavaScript
+<a href="#" onclick="do_something(<?php echo $var; ?>); return false;">
+$var should be escaped with esc_js().
+
+Correct:
+
+Copy
+<a href="#" onclick="do_something(<?php echo esc_js( $var ); ?>); return false;">
+Escaping arbitrary variable within HTML attribute for use by JavaScript
+<a href="#" data-json="<?php echo $var; ?>">
+$var should be escaped with esc_js(), json_encode() or wp_json_encode().
+
+Correct:
+
+Copy
+<a href="#" data-json="<?php echo esc_js( $var ); ?>">
+Escaping arbitrary string within HTML textarea
+echo '<textarea>', $data, '</textarea>';
+$data should be escaped with esc_textarea().
+
+Correct:
+
+Copy
+echo '<textarea>', esc_textarea( $data ), '</textarea>';
+Escaping arbitrary string within HTML tags
+echo '<div>', $phrase, '</div>';
+This depends on whether $phrase is expected to contain HTML or not.
+
+If not, use esc_html() or any of its variants.
+If HTML is expected, use wp_kses_post(), wp_kses_allowed_html() or wp_kses() with a set of HTML tags you want to allow.
+Escaping arbitrary string within XML or XSL context
+echo '<loc>', $var, '</loc>';
+Escape with esc_xml() or ent2ncr().
+
+Correct:
+
+Copy
+echo '<loc>', ent2ncr( $var ), '</loc>';
+First published
+
+November 20, 2022
+Last updated
