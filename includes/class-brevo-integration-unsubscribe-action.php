@@ -54,7 +54,7 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 			'unsubscribe_note_alert_delete',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('<b>PLEASE NOTE - THIS ACTION DELETES THE INPUT EMAIL IN brevo!</b>', 'ml-brevo-for-elementor-pro'),
+				'raw' => '<b>' . esc_html__('PLEASE NOTE - THIS ACTION DELETES THE INPUT EMAIL IN brevo!', 'ml-brevo-for-elementor-pro') . '</b>',
 			]
 		);
 
@@ -71,7 +71,8 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 			'brevo_unsubscribe_use_global_api_key_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('You can set your global API key <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">here.</a> this means you only need to set your brevo API key once.', 'ml-brevo-for-elementor-pro'),
+				// translators: %s is the URL to the settings page
+				'raw' => sprintf( __('You can set your global API key <a href="%s" target="_blank">here.</a> this means you only need to set your brevo API key once.', 'ml-brevo-for-elementor-pro'), admin_url( 'options-general.php?page=ml-brevo-free' ) ),
 				'condition' => array(
 					'brevo_use_global_api_key' => 'yes',
     			),
@@ -187,7 +188,6 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 			$ml_brevo_options = get_option( 'ml_brevo_option_name' );
 			$globalapikey = $ml_brevo_options['global_api_key_ml_brevo'];
 			if ( empty( $globalapikey ) ) {
-				if( WP_DEBUG === true ) { error_log('Elementor forms brevo integration - brevo Global API Key not set.'); }
 				return;
 			}
 			else {
@@ -197,14 +197,12 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 		else {
 			//  Make sure that there is an brevo API key set
 			if ( empty( $settings['brevo_unsubscribe_api'] ) ) {
-				if( WP_DEBUG === true ) { error_log('Elementor forms brevo integration - brevo API Key not set.'); }
 				return;
 			}
 		}
 
 		// Make sure that there is a brevo Email field ID
 		if ( empty( $settings['brevo_unsubscribe_email_field'] ) ) {
-			if( WP_DEBUG === true ) { error_log('Elementor forms brevo integration - brevo e-mail field ID not set.'); }
 			return;
 		}
 
@@ -225,7 +223,6 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 
 		// Make sure that the user has an email
 		if ( empty( $fields[ $settings['brevo_unsubscribe_email_field'] ] ) ) {
-			if( WP_DEBUG === true ) { error_log('Elementor forms brevo integration - Client did not enter an e-mail.'); }
 			return;
 		}
 
@@ -234,13 +231,11 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 		if ($gdprcheckbox == "yes") {
 			//  Make sure that there is a acceptence field if switch is set
 			if ( empty( $settings['brevo_unsubscribe_gdpr_checkbox_field'] ) ) {
-				if( WP_DEBUG === true ) { error_log('Elementor forms brevo integration - Acceptence field ID is not set.'); }
 				return;
 			}
 			// Make sure that checkbox is on
-			$gdprcheckboxchecked = $fields[$settings['brevo_unsubscribe_gdpr_checkbox_field']];
+			$gdprcheckboxchecked = $fields[$settings['brevo_unsubscribe_gdpr_checkbox_field']] ?? '';
 			if ($gdprcheckboxchecked != "on") {
-				if( WP_DEBUG === true ) { error_log('Elementor forms brevo integration - GDPR Checkbox was not thicked.'); }
 				return;
 			}
 		}
@@ -250,13 +245,6 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 		
 		// Prepare the request URL
 		$requesturl = 'https://api.brevo.com/v3/contacts/'.urlencode($email_to_unsubscribe);
-		
-		// Log the unsubscribe request details
-		if( WP_DEBUG === true ) { 
-			error_log('Elementor forms brevo integration - Beginning unsubscribe process');
-			error_log('Elementor forms brevo integration - Unsubscribe request URL: ' . $requesturl); 
-			error_log('Elementor forms brevo integration - Unsubscribe email: ' . $email_to_unsubscribe);
-		}
 		
 		// Prepare request parameters
 		$request_args = array(
@@ -272,36 +260,7 @@ class brevo_Integration_Unsubscribe_Action_After_Submit extends \ElementorPro\Mo
 			'body'        => ''
 		);
 		
-		// Log the request parameters
-		if( WP_DEBUG === true ) { 
-			error_log('Elementor forms brevo integration - Unsubscribe request parameters: ' . wp_json_encode($request_args)); 
-		}
-		
 		// Send data to brevo
 		$unsubscribe_response = wp_remote_request( $requesturl, $request_args );
-		
-		// Log the response
-		if( WP_DEBUG === true ) { 
-			$response_code = wp_remote_retrieve_response_code( $unsubscribe_response );
-			$response_body = wp_remote_retrieve_body( $unsubscribe_response );
-			
-			error_log('Elementor forms brevo integration - Unsubscribe response code: ' . $response_code); 
-			error_log('Elementor forms brevo integration - Unsubscribe response body: ' . $response_body); 
-			
-			// Check for errors
-			if (is_wp_error($unsubscribe_response)) {
-				error_log('Elementor forms brevo integration - Unsubscribe request error: ' . $unsubscribe_response->get_error_message()); 
-			}
-			
-			// Log if the request was successful
-			if ($response_code >= 200 && $response_code < 300) {
-				error_log('Elementor forms brevo integration - Successfully unsubscribed email: ' . $email_to_unsubscribe);
-			} else {
-				error_log('Elementor forms brevo integration - Failed to unsubscribe email: ' . $email_to_unsubscribe . ' (Status code: ' . $response_code . ')');
-			}
-			
-			// Log the complete response for detailed debugging
-			error_log('Elementor forms brevo integration - Unsubscribe complete response: ' . wp_json_encode($unsubscribe_response)); 
-		}
 	}
 }

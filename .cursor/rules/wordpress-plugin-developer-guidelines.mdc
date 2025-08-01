@@ -1,0 +1,222 @@
+---
+description: When create, plan, modify, think or work in developing a wordpress plugin alsways rrespect this developer guidelines
+globs: 
+alwaysApply: false
+---
+Plugin Developer Guidelines
+The following are guidelines for WordPress plugins and not restrictions.
+
+Want to create a plugin for WordPress.com? WordPress.com plugins are the same as regular WordPress plugins. This page offers a set of best practices. For more information, check out the Plugin Developer Handbook. 
+
+A WordPress.com plugin should:
+
+Adhere to all WordPress plugin coding standards, as well as best practice guidelines for harmonious existence within WordPress and alongside other WordPress plugins.
+Not subvert the WordPress.com experience. For example, inserting spam links or up-selling services outside the WordPress.com ecosystem. WordPress.com users should have a unified and pleasant experience without plugin advertising appearing on WP-Admin or store.
+Main file naming
+Top ↑
+The main plugin file should adopt the name of the plugin, e.g., a plugin with the directory name plugin-name would have its main file named plugin-name.php.
+
+Text domains
+Top ↑
+Following guidelines for Internationalization for WordPress Developers, the text domain should match your plugin directory name, e.g., a plugin with a directory name plugin-name would have the text domain plugin-name. Do not use underscores.
+
+Localization
+Top ↑
+All text strings within plugin code should be in English. This is the WordPress default locale, and English should always be the first language. If your plugin is intended for a specific market (e.g., Spain or Italy), include appropriate translation files for those languages within your plugin package. Learn more at Using Makepot to translate your plugin.
+
+Follow WordPress PHP guidelines
+Top ↑
+WordPress has a set of guidelines to keep all WordPress code consistent and easy to read. This includes quotes, indentation, brace style, shorthand php tags, Yoda conditions, naming conventions, and more. Please review the guidelines.
+
+Add Settings action link
+Top ↑
+Action links are the links that appear in wp-admin/plugins.php page in each plugin row. Adding a Settings action link is very useful and will be used to redirect users to after successful plugin installation. Use the plugin_action_links_{$plugin_file} filter for adding the Settings or other action links.
+
+Custom database tables and data storage
+Top ↑
+Avoid creating custom database tables where WordPress post types, taxonomies, and options, can provide a solution.
+
+Consider the permanence of your data. Here’s a quick primer:
+
+If the data may not always be present (i.e., it expires), use a transient.
+If the data is persistent but not always present, consider using the WP Cache.
+If the data is persistent and always present, consider the wp_options table.
+If the data type is an entity with n units, consider a post type.
+If the data is a means of sorting/categorizing an entity, consider a taxonomy.
+Logs should be written to a file using the WC_Logger class.
+
+Prevent data leaks
+Top ↑
+Try to prevent direct access data leaks. Add this line of code after the opening PHP tag in each PHP file:
+
+1
+2
+3
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+Readme
+Top ↑
+All plugins require a standard WordPress readme file.
+
+Your readme might look something like this:
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+=== Plugin Name ===
+Contributors: (this should be a list of wordpress.org userid's)
+Tags: comments, spam
+Requires at least: 4.0.1
+Tested up to: 4.3
+Requires PHP: 5.6
+Stable tag: 4.3
+License: GPLv3 or later License
+URI: http://www.gnu.org/licenses/gpl-3.0.html
+Plugin author name
+Top ↑
+Consistency is important to us and our customers. Products offered through WordPress.com should provide a consistent experience for all aspects of the product, including finding information on who to contact with queries.
+
+Be sure to include  the following plugin headers:
+
+The Plugin Author is YourName/YourCompany
+The Developer header is YourName/YourCompany, with the Developer URI field listed as http://yourdomain.com/
+For example:
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+/**
+ * Plugin Name: My awesome plugin
+ * Plugin URI: http://yourgroovydomain.com/my-awesome-plugin/
+ * Description: Your plugin's description text.
+ * Version: 1.0.0
+ * Author: Your Name
+ * Author URI: http://yourgroovydomain.com/
+ * Developer: Your Name
+ * Developer URI: http://yourgroovydomain.com/
+ * Text Domain: my-awesome-plugin
+ * Domain Path: /languages
+ *
+ * License: GNU General Public License v3.0
+ * License URI: http://www.gnu.org/licenses/gpl-3.0.html
+ */
+Make it extensible
+Top ↑
+Developers should use WordPress actions and filters to allow for modification/customization without requiring users to touch the plugin’s core codebase. Check out Writing Extensible Plugins with Actions and Filters to learn more about extending WordPress.
+
+With the new WordPress Block Editor — Gutenberg, you should add block patterns for your plugin If the functionality of your plugin is suitable for it. You can read more about extending blocks.
+
+Remove unused code
+Top ↑
+With version control, there’s no reason to leave commented-out code. Remove it and return it later as needed.
+
+Comment effectively
+Top ↑
+If you have a function, what does the function do? There should be comments for most if not all functions in your code. We recommend using PHP Doc Blocks similar to WooCommerce.
+
+Avoid god objects
+Top ↑
+God Objects are objects that know or do too much. The point of object-oriented programming is to take a large problem and break it into smaller parts. When functions do too much, it’s hard to follow their logic, making bugs harder to fix. Instead of having massive functions, break them down into smaller pieces.
+
+Test your code with WP_DEBUG
+Top ↑
+Always develop with WP_DEBUG mode on, so you can see all PHP warnings sent to the screen. This will flag things like making sure a variable is set before checking the value.
+
+Separate business logic and presentation logic
+Top ↑
+It’s a good practice to separate business logic (i.e., how the plugin works) from presentation logic (i.e., how it looks). Two separate pieces of logic are more easily maintained and improved as necessary. As an example,  have two different classes — one for displaying the end results, and one for the admin settings page.
+
+Use transients to store offsite information
+Top ↑
+If you provide a service via an API, it’s best to store that information so future queries can be done faster, lessening the load on your service. WordPress transients can be used to store data for a certain amount of time.
+
+Logging data
+Top ↑
+You may want to log data that can be useful for debugging purposes. This is great with two conditions:
+
+Allow any logging as an “opt-in.”
+Use the WC_Logger class. A user can then view logs on their system status page.
+If adding logging to your extension, here’s a snippet for presenting a link to the logs, in a way the extension user can easily make use of.
+
+
+$label = __( 'Enable Logging', 'your-textdomain-here' );
+$description = __( 'Enable the logging of errors.', 'your-textdomain-here' );
+ 
+if ( defined( 'WC_LOG_DIR' ) ) {
+    $log_url = add_query_arg( 'tab', 'logs', add_query_arg( 'page', 'wc-status', admin_url( 'admin.php' ) ) );
+    $log_key = 'your-plugin-slug-here-' . sanitize_file_name( wp_hash( 'your-plugin-slug-here' ) ) . '-log';
+    $log_url = add_query_arg( 'log_file', $log_key, $log_url );
+ 
+    $label .= ' | ' . sprintf( __( '%1$sView Log%2$s', 'your-textdomain-here' ), '<a href="' . esc_url( $log_url ) . '">', '</a>' );
+}
+ 
+$form_fields['wc_yourpluginslug_debug'] = array(
+    'title'       => __( 'Debug Log', 'your-textdomain-here' ),
+    'label'       => $label,
+    'description' => $description,
+    'type'        => 'checkbox',
+    'default'     => 'no'
+);
+Data validation
+Top ↑
+Validate user input as early as possible to prevent unexpected data in your data store. Check out WordPress Data Validation, which has plenty of helpful methods for validating user input.
+
+Reserved terms
+Top ↑
+WordPress core has a set of reserved keywords, or terms, in WordPress that should not be used in certain circumstances as they may conflict with functionality. Here is a  complete list of reserved keywords or terms.
+
+Avoid global variable conflicts
+Top ↑
+WordPress-specific global variables are used throughout WordPress code for various reasons. Almost all data that WordPress generates can be found in a global variable. It’s best to use the appropriate API functions when available, instead of modifying globals directly. Also, make sure that you are not overriding any global variable. It may affect other plugins’ functionality. Here is the complete list of WordPress Global Variables.
+
+Optimize custom Query
+Top ↑
+It’s a great practice to evaluate the performance of custom queries. The WordPress Query helper function allows you to run a  variety of queries in performant ways. Use WordPress Query functions wherever possible and minimize custom queries throughout the codebase. A poorly written query has the potential to take the entire server down.
+
+PHP extension requirements
+Top ↑
+We aim to provide support for standard PHP extensions on our hosting platform so that your plugin can run. You can find a list of enabled PHP extensions on WordPress.com infrastructure here. Your plugin should not use any PHP extensions that are not supported. As a best practice, your plugin should implement a fallback strategy if any PHP extension is not enabled. i.e., you can use GD Library when ImageMagick is not available.
+
+Implement nonces
+Top ↑
+If your plugin allows users to submit data be it on the Admin or the Public side; you must verify that the user is who they say they are and that they have the necessary capability to perform the action. Doing both in tandem means that data is only changing when the user expects it to be changing. The nonce is essentially a unique hexadecimal serial number used to verify the origin and intent of requests for security purposes.
+
+Minimize security risks
+Top ↑
+The best security strategy is maximum awareness among developers. You can review OWASP’s Top Ten risks for spreading plugin security awareness. The plugin should aim to implement maximum security while minimizing security risks.
+
+Version management
+Top ↑
+Your plugin should follow WordPress versioning. It’s a delimited trio of version numbers that each increment according to a set of shared principles and rules outlined in version numbering.
+
+
+Version Numbering
+A major WordPress version is dictated by the first two sequences. For example, 3.5 is a major release. So is 3.6, 3.7, all the way up to 4.0. Version 4.0 is no different than 3.9 and 4.1. There isn’t a “WordPress 3” or “WordPress 4” – we’re weird like that for historical reasons.
+
+Major releases add new user features and developer APIs. Though typically a “major” version means you can break backward compatibility (and indeed, it normally means that you have), WordPress strives to never break backward compatibility. It’s one of our most important philosophies, and makes updates much easier on users and developers alike.
+
+A minor WordPress version is dictated by the third sequence. Version 3.9.1 is a minor release. So is 3.8.2. A minor release is intended for bugfixes and enhancements that do not add new deployed files and are at the discretion of the release lead with suggestions/input from component maintainers and committers.
+
+Since new versions of WordPress are released so frequently – we aim for 4-5 months for a major release, and minor releases happen as needed – we only have a need for major and minor releases. We don’t have bug-fix or “patch” releases you normally see with an X.Y.Z-style version number. Rather, we have an X.X.Y version number.
+
+
+While it’s a bit confusing, our commitments to backward compatibility and fast release cycles make it very easy for users to be able to update without worrying. (Which is great, considering the days of the version number are numbered…)

@@ -1,0 +1,100 @@
+---
+description: This rule ensures proper implementation of WordPress translator comments for internationalization (i18n) in PHP code.
+alwaysApply: false
+---
+# WordPress Translator Comments Rule
+
+## Purpose
+This rule ensures proper implementation of WordPress translator comments for internationalization (i18n) in PHP code.
+
+## Rule Definition
+
+When writing WordPress PHP code that includes translatable strings with placeholders, ALWAYS add translator comments following these strict requirements:
+
+### 1. Comment Format
+- Use multi-line comment syntax: `/* translators: ... */`
+- NEVER use single-line comments: `// translators: ...`
+- The comment MUST start with the word `translators:` (lowercase, with colon)
+
+### 2. Comment Placement
+- The translator comment MUST be the LAST PHP comment before the gettext function call
+- No blank lines between the comment and the function
+- The comment must be immediately before the line containing the gettext function (`__()`, `_e()`, `_n()`, `_x()`, etc.)
+
+### 3. Placeholder Documentation
+- Document ALL placeholders in the string
+- Use the format: `1: description, 2: description` for multiple placeholders
+- For sprintf placeholders like `%s`, `%d`, `%1$s`, describe what each represents
+
+### 4. Examples
+
+**Correct - Single placeholder:**
+```php
+/* translators: %s is the user's display name */
+$message = sprintf( __( 'Welcome back, %s!', 'text-domain' ), $user_name );
+```
+
+**Correct - Multiple placeholders:**
+```php
+/* translators: 1: post title, 2: publication date */
+$info = sprintf( __( 'The post "%1$s" was published on %2$s', 'text-domain' ), $title, $date );
+```
+
+**Correct - With _n() for plurals:**
+```php
+/* translators: %d is the number of items */
+$message = sprintf( _n( 'You have %d item', 'You have %d items', $count, 'text-domain' ), $count );
+```
+
+**Correct - Multi-line function call:**
+```php
+/* translators: %d is the HTTP response status code */
+$error = sprintf(
+    __( 'API request failed with status %d', 'text-domain' ),
+    $response_code
+);
+```
+
+**Incorrect - Using single-line comment:**
+```php
+// translators: %s is the username - WRONG!
+$msg = sprintf( __( 'Hello %s', 'text-domain' ), $name );
+```
+
+**Incorrect - Blank line between comment and function:**
+```php
+/* translators: %s is the username */
+
+$msg = sprintf( __( 'Hello %s', 'text-domain' ), $name ); // WRONG - no blank line allowed
+```
+
+### 5. Special Cases
+
+**Date/Time Formats:**
+```php
+/* translators: draft saved date format, see http://php.net/date */
+$saved_date_format = __( 'g:i:s a', 'text-domain' );
+```
+
+**Context with _x():**
+```php
+/* translators: %s is the category name */
+$label = sprintf( _x( 'In %s', 'category preposition', 'text-domain' ), $category );
+```
+
+### 6. PHPCS Compliance
+This format ensures compliance with WordPress.WP.I18n.MissingTranslatorsComment sniff in PHPCS.
+
+### 7. When Translator Comments Are Required
+Add translator comments when:
+- The string contains any placeholder (%s, %d, %1$s, etc.)
+- The string contains date/time format codes
+- The string's context might be unclear without explanation
+- Using `_n()` or `_nx()` with placeholders
+
+### 8. Quick Reference Checklist
+- [ ] Used `/* */` not `//`
+- [ ] Started with `translators:`
+- [ ] No blank lines before gettext function
+- [ ] Documented all placeholders
+- [ ] Comment is the last comment before the function

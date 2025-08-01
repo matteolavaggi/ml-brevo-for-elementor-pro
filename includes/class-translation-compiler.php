@@ -33,7 +33,7 @@ class ML_Brevo_Translation_Compiler {
             return;
         }
         
-        if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'compile_brevo_translations' ) ) {
+        if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'compile_brevo_translations' ) ) {
             return;
         }
         
@@ -79,6 +79,7 @@ class ML_Brevo_Translation_Compiler {
             $mo_file = $languages_dir . "ml-brevo-for-elementor-pro-{$lang}.mo";
             
             if ( ! file_exists( $po_file ) ) {
+                // translators: %s is the language code
                 $errors[] = sprintf( __( 'File PO non trovato: %s', 'ml-brevo-for-elementor-pro' ), $lang );
                 continue;
             }
@@ -86,6 +87,7 @@ class ML_Brevo_Translation_Compiler {
             if ( $this->compile_po_to_mo( $po_file, $mo_file ) ) {
                 $compiled++;
             } else {
+                // translators: %s is the language code
                 $errors[] = sprintf( __( 'Errore nella compilazione: %s', 'ml-brevo-for-elementor-pro' ), $lang );
             }
         }
@@ -99,6 +101,7 @@ class ML_Brevo_Translation_Compiler {
         
         return array(
             'success' => true,
+            // translators: %d is the number of compiled translation files
             'message' => sprintf( __( '%d file di traduzione compilati con successo!', 'ml-brevo-for-elementor-pro' ), $compiled )
         );
     }
@@ -107,49 +110,46 @@ class ML_Brevo_Translation_Compiler {
      * Compile a single PO file to MO
      */
     private function compile_po_to_mo( $po_file, $mo_file ) {
-        // Debug: Check if files are accessible
-        if ( ! is_readable( $po_file ) ) {
-            error_log( "Brevo Translation Compiler: PO file not readable: {$po_file}" );
-            return false;
-        }
-        
-        $mo_dir = dirname( $mo_file );
-        if ( ! is_writable( $mo_dir ) ) {
-            error_log( "Brevo Translation Compiler: MO directory not writable: {$mo_dir}" );
-            return false;
-        }
-        
-        // Load WordPress PO/MO classes
-        if ( ! class_exists( 'PO' ) ) {
-            require_once ABSPATH . WPINC . '/pomo/po.php';
-        }
-        
-        if ( ! class_exists( 'MO' ) ) {
-            require_once ABSPATH . WPINC . '/pomo/mo.php';
-        }
-        
-        // Import PO file
-        $po = new PO();
-        if ( ! $po->import_from_file( $po_file ) ) {
-            error_log( "Brevo Translation Compiler: Failed to import PO file: {$po_file}" );
-            return false;
-        }
-        
-        // Create MO file
-        $mo = new MO();
-        $mo->headers = $po->headers;
-        $mo->entries = $po->entries;
-        
-        $result = $mo->export_to_file( $mo_file );
-        
-        if ( $result ) {
-            error_log( "Brevo Translation Compiler: Successfully compiled {$po_file} to {$mo_file}" );
-        } else {
-            error_log( "Brevo Translation Compiler: Failed to export MO file: {$mo_file}" );
-        }
-        
-        return $result;
-    }
+		// Debug: Check if files are accessible
+		if ( ! is_readable( $po_file ) ) {
+			return false;
+		}
+		
+		$mo_dir = dirname( $mo_file );
+		global $wp_filesystem;
+		if ( empty( $wp_filesystem ) ) {
+			require_once ABSPATH . '/wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
+		
+		if ( ! $wp_filesystem->is_writable( $mo_dir ) ) {
+			return false;
+		}
+		
+		// Load WordPress PO/MO classes
+		if ( ! class_exists( 'PO' ) ) {
+			require_once ABSPATH . WPINC . '/pomo/po.php';
+		}
+		
+		if ( ! class_exists( 'MO' ) ) {
+			require_once ABSPATH . WPINC . '/pomo/mo.php';
+		}
+		
+		// Import PO file
+		$po = new PO();
+		if ( ! $po->import_from_file( $po_file ) ) {
+			return false;
+		}
+		
+		// Create MO file
+		$mo = new MO();
+		$mo->headers = $po->headers;
+		$mo->entries = $po->entries;
+		
+		$result = $mo->export_to_file( $mo_file );
+		
+		return $result;
+	}
     
     /**
      * Get translation statistics
@@ -175,8 +175,8 @@ class ML_Brevo_Translation_Compiler {
                 'mo_exists' => file_exists( $mo_file ),
                 'po_size' => file_exists( $po_file ) ? size_format( filesize( $po_file ) ) : 'N/A',
                 'mo_size' => file_exists( $mo_file ) ? size_format( filesize( $mo_file ) ) : 'N/A',
-                'po_modified' => file_exists( $po_file ) ? date( 'Y-m-d H:i:s', filemtime( $po_file ) ) : 'N/A',
-                'mo_modified' => file_exists( $mo_file ) ? date( 'Y-m-d H:i:s', filemtime( $mo_file ) ) : 'N/A',
+                'po_modified' => file_exists( $po_file ) ? gmdate( 'Y-m-d H:i:s', filemtime( $po_file ) ) : 'N/A',
+				'mo_modified' => file_exists( $mo_file ) ? gmdate( 'Y-m-d H:i:s', filemtime( $mo_file ) ) : 'N/A',
                 'needs_compile' => file_exists( $po_file ) && ( ! file_exists( $mo_file ) || filemtime( $po_file ) > filemtime( $mo_file ) )
             );
         }

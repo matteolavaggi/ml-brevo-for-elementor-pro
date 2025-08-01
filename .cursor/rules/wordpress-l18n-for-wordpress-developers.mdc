@@ -1,0 +1,304 @@
+---
+description: Guidelines for Text domains Internationalization for WordPress Developers
+globs: 
+alwaysApply: false
+---
+18n for WordPress Developers
+The plugin internationalization documentation is now located in the Plugin Developer Handbook.
+
+The plugin localization documentation is now located in the Plugin Developer Handbook.
+
+The theme internationalization documentation is now located in the Theme Developer Handbook.
+
+The theme localization documentation is now located in the Theme Developer Handbook.
+
+Contents
+1 What is I18n?
+2 Why is internationalization important?
+3 Introduction to Gettext
+4 Text Domains
+5 Strings for Translation
+5.1 Translatable strings
+5.2 Placeholders
+5.3 HTML
+5.4 Plurals
+5.5 Disambiguation by context
+5.6 Descriptions
+5.7 Newline characters
+5.8 Empty strings
+5.9 Handling JavaScript files
+5.10 I18n for widgets
+5.11 Best Practices
+5.12 Loading a Text Domain
+5.13 Marking strings with Text Domain
+6 Translating Plugins and Themes
+6.1 POT files
+6.1.1 Using WP-CLI
+6.1.2 Using Grunt
+6.1.3 Example content
+6.2 PO files
+6.3 MO files
+7 Resources
+What is I18n?
+Internationalization is the process of developing your plugin so it can easily be translated into other languages. Localization describes the subsequent process of translating an internationalized plugin. Internationalization is often abbreviated as i18n (because there are 18 letters between the i and the n) and localization is abbreviated as l10n (because there are 10 letters between the l and the n.)
+
+Why is internationalization important?
+Because WordPress is used all over the world, it is a good idea to prepare a WordPress plugin so that it can be easily translated into whatever language is needed. As a developer, you may not have an easy time providing localizations for all your users; you may not speak their language after all. However, any developer can successfully internationalize a theme to allow others to create a localization without the need to modify the source code itself.
+
+Introduction to Gettext
+WordPress uses the gettext libraries and tools for i18n. Gettext is an old and respectable piece of software, widely used in the open-source world.
+
+Here is how it works in a few sentences:
+
+Developers wrap translatable strings in special gettext functions
+Special tools parse the source code files and extract the translatable strings into POT (Portable Objects Template) files
+In the WordPress world, POT files are often fed to GlotPress, which is a collaboration tool for translators
+Translators translate the strings and the result is a PO file (POT file, but with translations inside)
+PO files are compiled to binary MO files, which give faster access to the strings at run-time
+If you need to remember one thing: translatable strings are parsed from special function calls in the source-code, they are not obtained at run-time.
+
+Note that if you look online, you'll see the _() function which refers to the native PHP gettext-compliant translation function, but instead with WordPress you should use the __() wordpress-defined PHP function.
+
+Text Domains
+If you're translating a plugin or a theme, you'll need to use a text domain to denote all text belonging to that plugin. This increases portability and plays better with already existing WordPress tools. The text domain must match the “slug” of the plugin.
+
+The Text Domain needs to be added to the plugin header. WordPress should internationalize your plugin or theme meta-data when it displays your plugin in the admin screens:
+
+/*
+ * Plugin Name: My Plugin
+ * Author: Otto
+ * Text Domain: my-plugin
+ */
+The text domain is a unique identifier, which makes sure WordPress can distinguish between all loaded translations. If your plugin is a single file called my-plugin.php or it is contained in a folder called my-plugin the domain name should be my-plugin. The text domain name must use dashes and not underscores.
+
+In general, an application may use more than one large logical translatable module and a different MO file accordingly. A text domain is a handle to each of these modules, which has a different MO file.
+
+Strings for Translation
+Translatable strings
+In order to make a string translatable in your application you have to just wrap the original string in a __() function:
+
+__( 'Hello, dear user!', 'my-text-domain' );
+If your code should echo the string to the browser, use the _e() function instead：
+
+_e( 'Your Ad here', 'my-text-domain' );
+The strings for translation are wrapped in a call to one of a set of special functions. The most commonly used one is esc_html__(). It escapes and returns the translation of its argument:
+
+echo '<h2>' . esc_html__( 'Blog Options', 'my-text-domain' ) . '</h2>';
+Another similar function is esc_html_e(), which escapes and echos the translation of its argument:
+
+esc_html_e( 'Using this option you will make a fortune!', 'my-text-domain' );
+Placeholders
+echo 'We deleted $count spam messages.'
+How would you i18n this line? Let's give it a try together:
+
+esc_html_e( "We deleted $count spam messages.", 'my-text-domain' );
+It won't work! Remember, the strings for translation are extracted from the sources, so the translators will see work on the phrase: "We deleted $count spam messages.". However in the application _e will be called with an argument like "We deleted 49494 spam messages." and gettext won't find a suitable translation of this one and will return its argument: "We deleted 49494 spam messages.". Unfortunately, it isn't translated correctly.
+
+The solution is to use the printf family of functions. Especially helpful are printf and sprintf. Here is what the right solution of the spams count problem will look like:
+
+printf( esc_html__( 'We deleted %d spam messages.', 'my-text-domain' ), $count );
+Notice that here the string for translation is just the template "We deleted %d spam messages.", which is the same both in the source and at run-time.
+
+If you have more than one placeholder in a string, it is recommended that you use argument swapping. In this case, single quotes (') are mandatory : double quotes (") will tell php to interpret the $s as the s variable, which is not what we want.
+
+printf( esc_html__( 'Your city is %1$s, and your zip code is %2$s.', 'my-text-domain' ), $city, $zipcode );
+Here the zip code is being displayed after the city name. In some languages displaying the zip code and city in reverse order would be more appropriate. A translation can thereby be written:
+
+Your zip code is %2$s, and your city is %1$s.
+HTML
+Including HTML in translatable strings depends on the context. Include HTML if the string is not separated from any text surrounding it. If the latter is unavoidable, and since translations should not be considered trusted strings, be sure to sanitize the result before echoing.
+
+Example of a link (separated from text surrounding it):
+
+<div class="site-info">
+  <a href="http://wordpress.org/" ><?php esc_html_e( 'Proudly powered by WordPress.', 'my-text-domain' ); ?></a>
+</div><!-- .site-info -->
+Example of a link in a paragraph (not separated from text surrounding it), using wp_kses() to ensure the safety of the resulting string:
+
+<p>
+<?php
+$url = 'http://example.com';
+$link = sprintf( wp_kses( __( 'Check out this link to my <a href="%s">website</a> made with WordPress.', 'my-text-domain' ), array(  'a' => array( 'href' => array() ) ) ), esc_url( $url ) );
+echo $link;
+?>
+</p>
+Plurals
+Let's get back to the spam comments example. What if we delete only one spam comment? The output will be: We deleted 1 spam messages., which is definitely not correct English, and would certainly be incorrect for many other languages as well.
+
+In WordPress you can use the _n() function.
+
+printf( esc_html( _n( 'We deleted %d spam message.', 'We deleted %d spam messages.', $count, 'my-text-domain'  ) ), $count );
+_n() accepts 4 arguments:
+
+singular — the singular form of the string
+plural — the plural form of the string
+count — the number of objects, which will determine whether the singular or the plural form should be returned (there are languages, which have far more than 2 forms)
+text domain
+The return value of the functions is the correct translated form, corresponding to the given count.
+
+Note that some languages use the singular form for other numbers (e.g. 21, 31 and so on, much like '21st', '31st' in English). If you would like to special case the singular, check for it specifically:
+
+if ( 1 === $count ) {
+	printf( esc_html__( 'Last thing!', 'my-text-domain' ), $count );
+} else {
+	printf( esc_html( _n( '%d thing.', '%d things.', $count, 'my-text-domain' ) ), $count );
+}
+Also note that the $count parameter is often used twice. First $count is passed to _n() to determine which translated string to use, and then $count is passed to printf() to substitute the number into the translated string.
+
+Disambiguation by context
+Sometimes a single term is used in several contexts. Although it is one and the same word in English, it may need to be translated differently in some languages. For example, the word "Post" can be used both as a verb ("Click here to post your comment") and as a noun ("Edit this post"). In such cases, the _x() function should be used. It is similar to __(), but it has an additional second argument -- the context:
+
+if ( false === $commenttxt ) $commenttxt = _x( 'Comment', 'noun', 'my-text-domain' );
+if ( false === $trackbacktxt ) $trackbacktxt = __( 'Trackback', 'my-text-domain' );
+if ( false === $pingbacktxt ) $pingbacktxt = __( 'Pingback', 'my-text-domain' );
+...
+// some other place in the code
+echo _x( 'Comment', 'column name', 'my-text-domain' );
+Using this method, we will see the string "Comment" for both of the original versions, but the translators will see two "Comment" strings for translation, each in the different contexts.
+
+If the translation needs escaping, use esc_attr_x() or esc_html_x().
+
+Note that similarly to __(), _x() has an 'echo' version: _ex(). The previous example could be written as:
+
+_ex( 'Comment', 'column name', 'my-text-domain' );
+Use whichever you feel enhances legibility and ease-of-coding.
+
+To add contexts to a string with plural form(s), use _nx().
+
+Descriptions
+Do you think translators will know how to translate the string below?
+
+esc_html__( 'g:i:s a', 'my-text-domain' )
+In this case you can add a clarifying comment in the source code. It has to start with the words translators: and be the last PHP comment before the gettext call (either in the same line or in the line immediately before). Here is an example:
+
+/* translators: draft saved date format, see http://php.net/date */
+$draft_saved_date_format = esc_html__( 'g:i:s a', 'my-text-domain' );
+By adding a translators: comment you can write a "personal" message to the translators, so that they know how to deal with the string.
+
+Newline characters
+Gettext doesn't like \r (ASCII code: 13) in translatable strings, so please avoid it and use \n instead.
+
+Empty strings
+The empty string is reserved for internal Gettext usage and you must not try to internationalize the empty string. It also doesn't make any sense, because the translators won't see any context.
+
+If you have a valid use-case to internationalize an empty string, add context to both help translators and be in peace with the Gettext system.
+
+Handling JavaScript files
+Use wp_localize_script() to add translated strings or other server-side data to a previously enqueued script.
+
+wp_enqueue_script( 'script-handle', … );
+wp_localize_script( 'script-handle', 'objectL10n', array(
+	'speed'  => $distance / $time,
+	'submit' => esc_html__( 'Submit', 'my-text-domain' ),
+) );
+Then in the JavaScript file, corresponding to script-handle you can use objectL10n.variable:
+
+$('#submit').val(objectL10n.submit);
+$('#speed').val('{speed} km/h'.replace('{speed}', objectL10n.speed));
+I18n for widgets
+WordPress 2.8+ uses a new Widget API, that only requires the widget developer to extend the standard widget class and some of its functions. With this API there is no init function. After the widget is coded using the widget(), form(), and update() methods, the widget must be registered. The textdomain is then loaded after the widget is registered.
+
+Example:
+
+// register Foo_Widget widget
+function Foo_Widget_init() {
+    return register_widget( 'Foo_Widget' );
+}
+add_action( 'widgets_init', 'Foo_Widget_init' );
+
+$plugin_dir = basename( dirname( __FILE__ ) );
+load_plugin_textdomain( 'foo_widget', null, $plugin_dir );
+This example registers a widget named Foo_Widget, then sets the plugin directory variable and attempts to load the foo_widget-locale.po file.
+
+Best Practices
+Until we gather some WordPress-specific examples, use your time to read the short, but excellent article in the gettext manual. Summarized, it looks like this:
+
+Decent English style—minimize slang and abbreviations.
+Entire sentences—in most languages word order is different than that in English.
+Split at paragraphs—merge related sentences, but do not include a whole page of text in one string.
+Use format strings instead of string concatenation—sprintf(__('Replace %1$s with %2$s'), $a, $b); is always better than __('Replace ').$a.__(' with ').$b; .
+Avoid unusual markup and unusual control characters—do not include tags that surround your text and do not leave URLs for translation, unless they could have a version in another language.
+Do not leave leading or trailing whitespace in a translatable phrase.
+Loading a Text Domain
+The text domain name is also used to form the name of the MO file for your plugin. You can load the file by calling the function load_plugin_textdomain as early as the plugins_loaded action.
+
+load_plugin_textdomain( $domain, $path_from_abspath, $path_from_plugins_folder )
+Example:
+
+function myplugin_init() {
+    $plugin_rel_path = basename( dirname( __FILE__ ) ) . '/languages'; /* Relative to WP_PLUGIN_DIR */
+    load_plugin_textdomain( 'my-plugin', false, $plugin_rel_path );
+}
+add_action('plugins_loaded', 'myplugin_init');
+This call tries to load my-plugin-{locale}.mo from your plugin directory. The locale is the language code and/or country code you defined in the constant WPLANG in the file wp-config.php.
+
+For example, the locale for German is 'de', and the locale for Danish is 'da_DK'. The MO files for 'my-plugin' should be named my-plugin-de.mo and my-plugin-da_DK.po. For more information about language and country codes, see Installing WordPress in Your Language.
+
+For WordPress 2.6 and up, the third parameter is the directory containing the .mo file, relative to the plugin directory. It must end with a trailing slash. If your plugin doesn't need compatibility with older versions of WordPress, you can leave the second parameter blank.
+For versions lower than 2.6, the second parameter should be the directory containing the .mo file, relative to ABSPATH. The third parameter should be blank.
+For themes the process is surprisingly similar:
+
+load_theme_textdomain('my_theme');
+Put this call in your functions.php and it will search your theme directory for locale.mo and load it (where locale is the current language, i.e. he_IL.mo).
+
+Watch Out
+
+DO name your MO file as locale.mo (e.g., he_IL.mo)
+DO NOT name your MO file as my_theme-he_IL.mo
+Marking strings with Text Domain
+You must add your domain as an argument to every __, _e and _n gettext call, otherwise your translations won't work.
+
+Adding the domain by hand is a burden and that's why you can do it automatically:
+
+If your plugin is registered in the official repository:
+
+Go to your Admin page there and scroll to Add Domain to Gettext Calls.
+Otherwise:
+
+Get the add-textdomain.php script and execute it like this:
+php add-textdomain.php -i domain phpfile phpfile ...
+After it's done, the domain will be added to all gettext calls in the files.
+
+Translating Plugins and Themes
+POT files
+The first stage is to generate a .pot for your plugin or theme. This is done by way of the xgettext utility as part of gettext. You will need to have the gettext package installed if you want to do this generation on-site.
+
+Using WP-CLI
+Install WP-CLI and use the wp i18n make-pot command according to the documentation.
+
+Using Grunt
+If you use Grunt with your theme or plugin, you can use the grunt-pot plugin by Stephen Harris to generate a .pot file. See his site for instructions on integrating it into your project.
+
+Example content
+Each translatable string is formatted like this:
+
+#: comments.php:28
+msgid "Comments:"
+msgstr ""
+PO files
+Every translator takes the WordPress .pot file and translates the msgstr sections to their own language. The result is a .po file with the same format as a .pot, but with translations and some specific headers.
+
+MO files
+From a resulting .po translation file a .mo file is compiled. This is a binary file which contains all the original strings and their translations in a format suitable for fast translation extraction. The conversion is done using the msgfmt tool:
+
+msgfmt -o <output>.mo <input>.po
+If you have a lot of .po files to convert at once, you can run it as a batch. For example, using a bash command:
+
+# Find PO files, process each with msgfmt and rename the result to MO
+for file in `find . -name "*.po"` ; do msgfmt -o ${file/.po/.mo} $file ; done
+Resources
+The text domain in WordPress internationalization
+Language Packs 101 – Prepwork
+How to internationalize your wordpress plugin
+Loading WordPress language files correctly
+Translating WordPress Plugins and Themes: Don’t Get Clever
+Internationalizing And Localizing Your WordPress Theme
+Internationalization: You’re probably doing it wrong
+More Internationalization Fun
+Github WP Pot Generator Action
+Categories:
+Advanced Topics
+Plugins
+Translating WordPress
+
+WordPress Development

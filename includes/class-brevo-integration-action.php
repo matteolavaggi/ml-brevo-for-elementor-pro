@@ -63,7 +63,8 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'brevo_use_global_api_key_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('You can set your global API key <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">here.</a> this means you only need to set your brevo API key once.', 'ml-brevo-for-elementor-pro'),
+				// translators: %s is the URL to the settings page
+				'raw' => sprintf( __('You can set your global API key <a href="%s" target="_blank">here.</a> this means you only need to set your brevo API key once.', 'ml-brevo-for-elementor-pro'), admin_url( 'options-general.php?page=ml-brevo-free' ) ),
 				'condition' => array(
 					'brevo_use_global_api_key' => 'yes',
     			),
@@ -190,7 +191,13 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'brevo_list_refresh_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __( '<p style="margin: 5px 0 0 0; font-size: 12px; color: #666;"><strong>💡 Tip:</strong> Don\'t see your list? <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">Refresh lists in Settings</a> or clear cache if you just created a new list in Brevo.</p>', 'ml-brevo-for-elementor-pro' ),
+				'raw' => '<p style="margin: 5px 0 0 0; font-size: 12px; color: #666;"><strong>💡 ' . esc_html__( 'Tip:', 'ml-brevo-for-elementor-pro' ) . '</strong> ' . 
+					sprintf( 
+						// translators: %1$s is the opening link tag, %2$s is the closing link tag
+						esc_html__( 'Don\'t see your list? %1$sRefresh lists in Settings%2$s or clear cache if you just created a new list in Brevo.', 'ml-brevo-for-elementor-pro' ), 
+						'<a href="' . esc_url( admin_url( 'options-general.php?page=ml-brevo-free' ) ) . '" target="_blank">', 
+						'</a>' 
+					) . '</p>',
 			]
 		);
 
@@ -216,7 +223,8 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'v2_upgrade_note',
 			[
 				'type' => \Elementor\Controls_Manager::RAW_HTML,
-				'raw' => __('<strong>✨ New in v2.0:</strong> Dynamic field mapping now supports ALL your Brevo contact attributes! Configure available fields in <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">Settings → Brevo</a>.', 'ml-brevo-for-elementor-pro'),
+				// translators: %s is the URL to the settings page
+				'raw' => sprintf( __('<strong>✨ New in v2.0:</strong> Dynamic field mapping now supports ALL your Brevo contact attributes! Configure available fields in <a href="%s" target="_blank">Settings → Brevo</a>.', 'ml-brevo-for-elementor-pro'), admin_url( 'options-general.php?page=ml-brevo-free' ) ),
 				'separator' => 'before',
 			]
 		);
@@ -246,7 +254,13 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 				'brevo_no_fields_notice',
 				[
 					'type' => \Elementor\Controls_Manager::RAW_HTML,
-					'raw' => __( '<div style="padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; color: #856404;"><strong>⚠️ No fields configured:</strong> Please configure your Brevo fields in <a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '" target="_blank">Settings → Brevo</a> to enable field mapping.</div>', 'ml-brevo-for-elementor-pro' ),
+					'raw' => '<div style="padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; color: #856404;"><strong>⚠️ ' . esc_html__( 'No fields configured:', 'ml-brevo-for-elementor-pro' ) . '</strong> ' . 
+						sprintf( 
+							// translators: %1$s is the opening link tag, %2$s is the closing link tag
+							esc_html__( 'Please configure your Brevo fields in %1$sSettings → Brevo%2$s to enable field mapping.', 'ml-brevo-for-elementor-pro' ), 
+							'<a href="' . esc_url( admin_url( 'options-general.php?page=ml-brevo-free' ) ) . '" target="_blank">', 
+							'</a>' 
+						) . '</div>',
 					'separator' => 'before',
 				]
 			);
@@ -333,10 +347,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			);
 		}
 
-		// Debug logging to see what Brevo returns
-		if ( WP_DEBUG === true ) {
-			error_log( 'Brevo Integration - Lists data for dropdown: ' . print_r( $lists, true ) );
-		}
+		
 
 		// Format lists for dropdown
 		$options = array( '' => __( 'Select a list...', 'ml-brevo-for-elementor-pro' ) );
@@ -389,10 +400,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		$attributes_manager = Brevo_Attributes_Manager::get_instance();
 		$all_attributes = $attributes_manager->fetch_attributes( $api_key );
 
-		if ( is_wp_error( $all_attributes ) ) {
-			error_log( 'Brevo Integration: Failed to fetch attributes - ' . $all_attributes->get_error_message() );
-			return array();
-		}
+		
 
 		$enabled_fields = array();
 		foreach ( $enabled_fields_settings as $field_name => $enabled ) {
@@ -595,13 +603,10 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			$ml_brevo_options = get_option( 'ml_brevo_option_name', array() );
 			$api_key = $ml_brevo_options['global_api_key_ml_brevo'] ?? '';
 			
-			if ( empty( $api_key ) ) {
-				$logger->error( 'Global API key not set in settings', 'FORM', 'get_api_key' );
-				if ( WP_DEBUG ) {
-					error_log( 'Brevo Integration: Global API Key not set.' );
+				if ( empty( $api_key ) ) {
+					$logger->error( 'Global API key not set in settings', 'FORM', 'get_api_key' );
+					return false;
 				}
-				return false;
-			}
 			
 			$logger->debug( 'Global API key retrieved successfully', 'FORM', 'get_api_key', array(
 				'api_key_hash' => md5( $api_key )
@@ -611,9 +616,6 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 
 		if ( empty( $settings['brevo_api'] ) ) {
 			$logger->error( 'Form-specific API key not set', 'FORM', 'get_api_key' );
-			if ( WP_DEBUG ) {
-				error_log( 'Brevo Integration: API Key not set.' );
-			}
 			return false;
 		}
 
@@ -631,17 +633,11 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 	 */
 	private function validate_required_settings( $settings ) {
 		if ( empty( $settings['brevo_list'] ) ) {
-			if ( WP_DEBUG ) {
-				error_log( 'Brevo Integration: List ID not set.' );
-			}
 			return false;
 		}
 
 		if ( $settings['brevo_double_optin'] === 'yes' ) {
 			if ( empty( $settings['brevo_double_optin_template'] ) ) {
-				if ( WP_DEBUG ) {
-					error_log( 'Brevo Integration: Double opt-in template ID not set.' );
-				}
 				return false;
 			}
 		}
@@ -660,9 +656,6 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		$email_field_id = $settings['brevo_email_field'];
 		
 		if ( empty( $email_field_id ) ) {
-			if ( WP_DEBUG ) {
-				error_log( 'Brevo Integration: Email field ID not set.' );
-			}
 			return false;
 		}
 
@@ -673,9 +666,6 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		}
 
 		if ( empty( $fields[ $email_field_id ] ) ) {
-			if ( WP_DEBUG ) {
-				error_log( 'Brevo Integration: Client did not enter an email.' );
-			}
 			return false;
 		}
 
@@ -695,17 +685,11 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 		}
 
 		if ( empty( $settings['brevo_gdpr_checkbox_field'] ) ) {
-			if ( WP_DEBUG ) {
-				error_log( 'Brevo Integration: GDPR checkbox field ID not set.' );
-			}
 			return false;
 		}
 
 		$gdpr_value = $fields[ $settings['brevo_gdpr_checkbox_field'] ] ?? '';
 		if ( $gdpr_value !== 'on' ) {
-			if ( WP_DEBUG ) {
-				error_log( 'Brevo Integration: GDPR checkbox was not checked.' );
-			}
 			return false;
 		}
 
@@ -789,7 +773,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			case 'date':
 				// Convert date to YYYY-MM-DD format if needed
 				if ( strtotime( $value ) ) {
-					return date( 'Y-m-d', strtotime( $value ) );
+					return gmdate( 'Y-m-d', strtotime( $value ) );
 				}
 				return $value;
 			default:
@@ -822,10 +806,6 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'endpoint' => $request_url,
 			'api_key_hash' => md5( $api_key )
 		) );
-		
-		if ( WP_DEBUG ) {
-			error_log( 'Brevo Integration: Checking email exists - ' . $request_url );
-		}
 
 		$start_time = microtime( true );
 		$response = wp_remote_get( $request_url, array(
@@ -848,10 +828,6 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'execution_time' => $execution_time,
 			'response_body' => $response_body
 		) );
-
-		if ( WP_DEBUG ) {
-			error_log( 'Brevo Integration: Email exists check - Code: ' . $response_code . ', Exists: ' . ( $exists ? 'yes' : 'no' ) );
-		}
 
 		return $exists;
 	}
@@ -888,10 +864,6 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'api_key_hash' => md5( $api_key )
 		) );
 
-		if ( WP_DEBUG ) {
-			error_log( 'Brevo Integration: Double opt-in request - ' . wp_json_encode( $body ) );
-		}
-
 		$start_time = microtime( true );
 		$response = wp_remote_post( 'https://api.brevo.com/v3/contacts/doubleOptinConfirmation', array(
 			'method' => 'POST',
@@ -924,10 +896,6 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 				'success' => $response_code >= 200 && $response_code < 300
 			) );
 		}
-
-		if ( WP_DEBUG ) {
-			error_log( 'Brevo Integration: Double opt-in response - Code: ' . $response_code . ', Body: ' . $response_body );
-		}
 	}
 
 	/**
@@ -956,10 +924,6 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 			'update_enabled' => true,
 			'api_key_hash' => md5( $api_key )
 		) );
-
-		if ( WP_DEBUG ) {
-			error_log( 'Brevo Integration: Contact creation request - ' . wp_json_encode( $body ) );
-		}
 
 		$start_time = microtime( true );
 		$response = wp_remote_post( 'https://api.brevo.com/v3/contacts', array(
@@ -992,10 +956,6 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 				'response_body' => $response_body,
 				'success' => $response_code >= 200 && $response_code < 300
 			) );
-		}
-
-		if ( WP_DEBUG ) {
-			error_log( 'Brevo Integration: Contact creation response - Code: ' . $response_code . ', Body: ' . $response_body );
 		}
 	}
 }

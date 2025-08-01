@@ -168,7 +168,7 @@ class Brevo_Debug_Logger {
 
 		// Add request context
 		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
-			$entry['request_uri'] = sanitize_text_field( $_SERVER['REQUEST_URI'] );
+			$entry['request_uri'] = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 		}
 
 		// Format log line
@@ -263,7 +263,12 @@ class Brevo_Debug_Logger {
 	private function rotate_logs() {
 		// Move current log to .1
 		if ( file_exists( $this->log_file ) ) {
-			rename( $this->log_file, $this->log_file . '.1' );
+			global $wp_filesystem;
+			if ( empty( $wp_filesystem ) ) {
+				require_once ABSPATH . '/wp-admin/includes/file.php';
+				WP_Filesystem();
+			}
+			$wp_filesystem->move( $this->log_file, $this->log_file . '.1' );
 		}
 
 		// Rotate existing numbered logs
@@ -274,10 +279,15 @@ class Brevo_Debug_Logger {
 			if ( file_exists( $old_file ) ) {
 				if ( $i + 1 > self::MAX_LOG_FILES ) {
 					// Delete old log
-					unlink( $old_file );
+					wp_delete_file( $old_file );
 				} else {
 					// Move to next number
-					rename( $old_file, $new_file );
+					global $wp_filesystem;
+					if ( empty( $wp_filesystem ) ) {
+						require_once ABSPATH . '/wp-admin/includes/file.php';
+						WP_Filesystem();
+					}
+					$wp_filesystem->move( $old_file, $new_file );
 				}
 			}
 		}
@@ -412,7 +422,7 @@ class Brevo_Debug_Logger {
 		$files = $this->get_log_files();
 		foreach ( $files as $file ) {
 			if ( file_exists( $file ) ) {
-				unlink( $file );
+				wp_delete_file( $file );
 			}
 		}
 	}
@@ -457,7 +467,7 @@ class Brevo_Debug_Logger {
 		$files = $this->get_log_files();
 		foreach ( $files as $file ) {
 			if ( filemtime( $file ) < $cutoff_time ) {
-				unlink( $file );
+				wp_delete_file( $file );
 			}
 		}
 	}

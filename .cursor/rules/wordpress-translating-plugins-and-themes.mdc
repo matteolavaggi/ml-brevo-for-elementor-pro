@@ -1,0 +1,38 @@
+---
+description: This rule define how wordpress plugins and themes must be translated.
+globs: 
+alwaysApply: false
+---
+Localization
+
+All text strings within plugin code should be in English. This is the WordPress default locale, and English should always be the first language. If your plugin is intended for a specific market (e.g., Spain or Italy), include appropriate translation files for those languages within your plugin package. Learn more at Using Makepot to translate your plugin.
+
+Translating Plugins and Themes
+POT files
+The first stage is to generate a .pot for your plugin or theme. This is done by way of the xgettext utility as part of gettext. You will need to have the gettext package installed if you want to do this generation on-site.
+
+Using WP-CLI
+Install WP-CLI and use the wp i18n make-pot command according to the documentation.
+
+Using Grunt
+If you use Grunt with your theme or plugin, you can use the grunt-pot plugin by Stephen Harris to generate a .pot file. See his site for instructions on integrating it into your project.
+
+Example content
+Each translatable string is formatted like this:
+
+#: comments.php:28
+msgid "Comments:"
+msgstr ""
+PO files
+Every translator takes the WordPress .pot file and translates the msgstr sections to their own language. The result is a .po file with the same format as a .pot, but with translations and some specific headers.
+
+MO files
+From a resulting .po translation file a .mo file is compiled. This is a binary file which contains all the original strings and their translations in a format suitable for fast translation extraction. The conversion is done using the msgfmt tool:
+
+msgfmt -o <output>.mo <input>.po
+If you have a lot of .po files to convert at once, you can run it as a batch. For example, using a bash command:
+
+# Find PO files, process each with msgfmt and rename the result to MO
+
+
+for file in `find . -name "*.po"` ; do msgfmt -o ${file/.po/.mo} $file ; done

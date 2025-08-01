@@ -56,9 +56,7 @@ class Brevo_Attributes_Manager {
 				'api_key_hash' => md5( $api_key )
 			) );
 			
-			if ( WP_DEBUG === true ) {
-				error_log( 'Brevo Attributes Manager - Using cached attributes' );
-			}
+
 			return $cached_attributes;
 		}
 
@@ -77,9 +75,7 @@ class Brevo_Attributes_Manager {
 			'api_key_hash' => md5( $api_key )
 		) );
 		
-		if ( WP_DEBUG === true ) {
-			error_log( 'Brevo Attributes Manager - Fetching attributes from API: ' . $endpoint );
-		}
+		
 
 		$response = wp_remote_get( $endpoint, array(
 			'timeout'     => 30,
@@ -98,22 +94,18 @@ class Brevo_Attributes_Manager {
 				'error_code' => $response->get_error_code()
 			) );
 			
-			if ( WP_DEBUG === true ) {
-				error_log( 'Brevo Attributes Manager - API request failed: ' . $response->get_error_message() );
-			}
+			
 			return $response;
 		}
 
 		$response_code = wp_remote_retrieve_response_code( $response );
 		$response_body = wp_remote_retrieve_body( $response );
 
-		if ( WP_DEBUG === true ) {
-			error_log( 'Brevo Attributes Manager - API response code: ' . $response_code );
-			error_log( 'Brevo Attributes Manager - API response body: ' . $response_body );
-		}
+		
 
 		// Handle HTTP errors
 		if ( $response_code < 200 || $response_code >= 300 ) {
+			/* translators: %d is the HTTP response status code */
 			$error_message = sprintf( 
 				__( 'Brevo API request failed with status %d', 'ml-brevo-for-elementor-pro' ), 
 				$response_code 
@@ -152,9 +144,7 @@ class Brevo_Attributes_Manager {
 			'api_key_hash' => md5( $api_key )
 		) );
 
-		if ( WP_DEBUG === true ) {
-			error_log( 'Brevo Attributes Manager - Successfully fetched and cached ' . count( $normalized_attributes ) . ' attributes' );
-		}
+		
 
 		return $normalized_attributes;
 	}
@@ -168,30 +158,18 @@ class Brevo_Attributes_Manager {
 	public function normalize_attributes( $raw_data ) {
 		$normalized = array();
 
-		if ( WP_DEBUG === true ) {
-			error_log( 'Brevo Attributes Manager - Raw data received: ' . print_r( $raw_data, true ) );
-		}
+		
 
 		if ( ! is_array( $raw_data ) ) {
-			if ( WP_DEBUG === true ) {
-				error_log( 'Brevo Attributes Manager - Raw data is not an array' );
-			}
+			
 			return $normalized;
 		}
 
-		if ( ! isset( $raw_data['attributes'] ) || ! is_array( $raw_data['attributes'] ) ) {
-			if ( WP_DEBUG === true ) {
-				error_log( 'Brevo Attributes Manager - No attributes found in API response' );
-			}
-			// If no attributes from API, return only default fields
-			return $this->get_default_fields();
-		}
+		
 
 		foreach ( $raw_data['attributes'] as $attribute ) {
 			if ( ! is_array( $attribute ) || ! isset( $attribute['name'] ) ) {
-				if ( WP_DEBUG === true ) {
-					error_log( 'Brevo Attributes Manager - Skipping invalid attribute: ' . print_r( $attribute, true ) );
-				}
+				
 				continue;
 			}
 
@@ -220,10 +198,7 @@ class Brevo_Attributes_Manager {
 			}
 		}
 
-		if ( WP_DEBUG === true ) {
-			error_log( 'Brevo Attributes Manager - Normalized ' . count( $normalized ) . ' attributes' );
-			error_log( 'Brevo Attributes Manager - Normalized field names: ' . implode( ', ', array_keys( $normalized ) ) );
-		}
+		
 
 		return $normalized;
 	}
@@ -278,6 +253,7 @@ class Brevo_Attributes_Manager {
 
 		// Generate description from field name
 		$formatted_name = ucwords( strtolower( str_replace( '_', ' ', $field_name ) ) );
+		/* translators: %s is the formatted field name */
 		return sprintf( __( 'Contact %s', 'ml-brevo-for-elementor-pro' ), $formatted_name );
 	}
 
@@ -403,15 +379,13 @@ class Brevo_Attributes_Manager {
 		$cache_prefix = '_transient_' . self::CACHE_PREFIX;
 		$sql = $wpdb->prepare(
 			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-			$cache_prefix . '%',
-			'_transient_timeout_' . self::CACHE_PREFIX . '%'
+			$wpdb->esc_like( $cache_prefix ) . '%',
+			$wpdb->esc_like( '_transient_timeout_' . self::CACHE_PREFIX ) . '%'
 		);
 		
 		$result = $wpdb->query( $sql );
 
-		if ( WP_DEBUG === true ) {
-			error_log( 'Brevo Attributes Manager - Cleared ' . intval( $result / 2 ) . ' cache entries' );
-		}
+		
 
 		return $result !== false;
 	}
@@ -488,6 +462,7 @@ class Brevo_Attributes_Manager {
 			return new WP_Error( 'invalid_api_key', __( 'Invalid API key', 'ml-brevo-for-elementor-pro' ) );
 		}
 
+		/* translators: %d is the HTTP response status code */
 		return new WP_Error( 
 			'api_validation_failed', 
 			sprintf( __( 'API validation failed with status %d', 'ml-brevo-for-elementor-pro' ), $response_code )
@@ -516,18 +491,14 @@ class Brevo_Attributes_Manager {
 				'api_key_hash' => md5( $api_key )
 			) );
 			
-			if ( WP_DEBUG === true ) {
-				error_log( 'Brevo Attributes Manager - Using cached lists' );
-			}
+			
 			return $cached_lists;
 		}
 
 		// Fetch from Brevo API
 		$endpoint = self::API_BASE_URL . '/contacts/lists';
 		
-		if ( WP_DEBUG === true ) {
-			error_log( 'Brevo Attributes Manager - Fetching lists from API: ' . $endpoint );
-		}
+		
 
 		$response = wp_remote_get( $endpoint, array(
 			'timeout'     => 30,
@@ -539,23 +510,16 @@ class Brevo_Attributes_Manager {
 			),
 		) );
 
-		// Handle request errors
-		if ( is_wp_error( $response ) ) {
-			if ( WP_DEBUG === true ) {
-				error_log( 'Brevo Attributes Manager - Lists API request failed: ' . $response->get_error_message() );
-			}
-			return $response;
-		}
+		
 
 		$response_code = wp_remote_retrieve_response_code( $response );
 		$response_body = wp_remote_retrieve_body( $response );
 
-		if ( WP_DEBUG === true ) {
-			error_log( 'Brevo Attributes Manager - Lists API response code: ' . $response_code );
-		}
+		
 
 		// Handle HTTP errors
 		if ( $response_code < 200 || $response_code >= 300 ) {
+			/* translators: %d is the HTTP response status code */
 			$error_message = sprintf( 
 				__( 'Brevo Lists API request failed with status %d', 'ml-brevo-for-elementor-pro' ), 
 				$response_code 
@@ -588,9 +552,7 @@ class Brevo_Attributes_Manager {
 			'api_key_hash' => md5( $api_key )
 		) );
 
-		if ( WP_DEBUG === true ) {
-			error_log( 'Brevo Attributes Manager - Successfully fetched and cached ' . count( $normalized_lists ) . ' lists' );
-		}
+		
 
 		return $normalized_lists;
 	}
@@ -604,29 +566,18 @@ class Brevo_Attributes_Manager {
 	public function normalize_lists( $raw_data ) {
 		$normalized = array();
 
-		if ( WP_DEBUG === true ) {
-			error_log( 'Brevo Attributes Manager - Raw lists data received: ' . print_r( $raw_data, true ) );
-		}
+		
 
 		if ( ! is_array( $raw_data ) ) {
-			if ( WP_DEBUG === true ) {
-				error_log( 'Brevo Attributes Manager - Raw lists data is not an array' );
-			}
+			
 			return $normalized;
 		}
 
-		if ( ! isset( $raw_data['lists'] ) || ! is_array( $raw_data['lists'] ) ) {
-			if ( WP_DEBUG === true ) {
-				error_log( 'Brevo Attributes Manager - No lists found in API response' );
-			}
-			return $normalized;
-		}
+		
 
 		foreach ( $raw_data['lists'] as $list ) {
 			if ( ! is_array( $list ) || ! isset( $list['id'] ) || ! isset( $list['name'] ) ) {
-				if ( WP_DEBUG === true ) {
-					error_log( 'Brevo Attributes Manager - Skipping invalid list: ' . print_r( $list, true ) );
-				}
+				
 				continue;
 			}
 
@@ -650,10 +601,7 @@ class Brevo_Attributes_Manager {
 			);
 		}
 
-		if ( WP_DEBUG === true ) {
-			error_log( 'Brevo Attributes Manager - Normalized ' . count( $normalized ) . ' lists' );
-			error_log( 'Brevo Attributes Manager - Normalized list IDs: ' . implode( ', ', array_keys( $normalized ) ) );
-		}
+		
 
 		return $normalized;
 	}
@@ -730,15 +678,13 @@ class Brevo_Attributes_Manager {
 		$cache_prefix = '_transient_' . self::LISTS_CACHE_PREFIX;
 		$sql = $wpdb->prepare(
 			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-			$cache_prefix . '%',
-			'_transient_timeout_' . self::LISTS_CACHE_PREFIX . '%'
+			$wpdb->esc_like( $cache_prefix ) . '%',
+			$wpdb->esc_like( '_transient_timeout_' . self::LISTS_CACHE_PREFIX ) . '%'
 		);
 		
 		$result = $wpdb->query( $sql );
 
-		if ( WP_DEBUG === true ) {
-			error_log( 'Brevo Attributes Manager - Cleared ' . intval( $result / 2 ) . ' lists cache entries' );
-		}
+		
 
 		return $result !== false;
 	}

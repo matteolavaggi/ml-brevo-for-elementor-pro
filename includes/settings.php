@@ -3,8 +3,8 @@
 // Link to support and pro page from plugins screen
 function ml_brevo_filter_action_links( $links ) {
 
-	$links['settings'] = '<a href="' . admin_url( 'options-general.php?page=ml-brevo-free' ) . '">' . __( 'Settings' ) . '</a>';
-	$links['support'] = '<a href="https://matteolavaggi.it/wordpress/ml-brevo-for-elementor-pro/" target="_blank">Support</a>';
+	$links['settings'] = '<a href="' . esc_url( admin_url( 'options-general.php?page=ml-brevo-free' ) ) . '">' . esc_html__( 'Settings', 'ml-brevo-for-elementor-pro' ) . '</a>';
+	$links['support'] = '<a href="https://www.matteolavaggi.it/wordpress/ml-brevo-for-elementor-pro/" target="_blank">Support</a>';
 	return $links;
 
 }
@@ -27,7 +27,7 @@ function brevo_handle_refresh_fields() {
 	$logger->info( 'Refresh fields request initiated', 'ADMIN', 'refresh_fields' );
 	
 	// Verify nonce
-	if ( ! wp_verify_nonce( $_POST['nonce'], 'brevo_admin_nonce' ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( wp_unslash( sanitize_text_field( $_POST['nonce'] ) ), 'brevo_admin_nonce' ) ) {
 		$logger->warning( 'Refresh fields: Security check failed', 'ADMIN', 'refresh_fields' );
 		wp_die( 'Security check failed' );
 	}
@@ -40,7 +40,7 @@ function brevo_handle_refresh_fields() {
 		wp_die( 'Insufficient permissions' );
 	}
 
-	$api_key = sanitize_text_field( $_POST['api_key'] );
+	$api_key = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : '';
 	
 	if ( empty( $api_key ) ) {
 		$logger->error( 'Refresh fields: API key is required', 'ADMIN', 'refresh_fields' );
@@ -74,7 +74,7 @@ function brevo_handle_refresh_fields() {
 
 function brevo_handle_field_settings_update() {
 	// Verify nonce
-	if ( ! wp_verify_nonce( $_POST['nonce'], 'brevo_admin_nonce' ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( wp_unslash( sanitize_text_field( $_POST['nonce'] ) ), 'brevo_admin_nonce' ) ) {
 		wp_die( 'Security check failed' );
 	}
 
@@ -85,7 +85,7 @@ function brevo_handle_field_settings_update() {
 
 	$enabled_fields = array();
 	if ( isset( $_POST['enabled_fields'] ) && is_array( $_POST['enabled_fields'] ) ) {
-		foreach ( $_POST['enabled_fields'] as $field ) {
+		foreach ( wp_unslash( $_POST['enabled_fields'] ) as $field ) {
 			$enabled_fields[ sanitize_text_field( $field ) ] = true;
 		}
 	}
@@ -97,7 +97,7 @@ function brevo_handle_field_settings_update() {
 
 function brevo_handle_clear_cache() {
 	// Verify nonce
-	if ( ! wp_verify_nonce( $_POST['nonce'], 'brevo_admin_nonce' ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( wp_unslash( sanitize_text_field( $_POST['nonce'] ) ), 'brevo_admin_nonce' ) ) {
 		wp_die( 'Security check failed' );
 	}
 
@@ -106,7 +106,7 @@ function brevo_handle_clear_cache() {
 		wp_die( 'Insufficient permissions' );
 	}
 
-	$api_key = sanitize_text_field( $_POST['api_key'] ?? '' );
+	$api_key = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : '';
 	
 	$attributes_manager = Brevo_Attributes_Manager::get_instance();
 	
@@ -125,7 +125,7 @@ function brevo_handle_clear_cache() {
 
 function brevo_handle_refresh_lists() {
 	// Verify nonce
-	if ( ! wp_verify_nonce( $_POST['nonce'], 'brevo_admin_nonce' ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( wp_unslash( sanitize_text_field( $_POST['nonce'] ) ), 'brevo_admin_nonce' ) ) {
 		wp_die( 'Security check failed' );
 	}
 
@@ -134,7 +134,7 @@ function brevo_handle_refresh_lists() {
 		wp_die( 'Insufficient permissions' );
 	}
 
-	$api_key = sanitize_text_field( $_POST['api_key'] );
+	$api_key = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : '';
 	
 	if ( empty( $api_key ) ) {
 		wp_send_json_error( array( 'message' => 'API key is required' ) );
@@ -160,7 +160,7 @@ function brevo_handle_refresh_lists() {
 
 function brevo_handle_clear_debug_logs() {
 	// Verify nonce
-	if ( ! wp_verify_nonce( $_POST['nonce'], 'brevo_admin_nonce' ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( wp_unslash( sanitize_text_field( $_POST['nonce'] ) ), 'brevo_admin_nonce' ) ) {
 		wp_die( 'Security check failed' );
 	}
 
@@ -177,7 +177,7 @@ function brevo_handle_clear_debug_logs() {
 
 function brevo_handle_download_debug_log() {
 	// Verify nonce
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'brevo_download_log' ) ) {
+	if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( wp_unslash( sanitize_text_field( $_GET['_wpnonce'] ) ), 'brevo_download_log' ) ) {
 		wp_die( 'Security check failed' );
 	}
 
@@ -186,7 +186,7 @@ function brevo_handle_download_debug_log() {
 		wp_die( 'Insufficient permissions' );
 	}
 
-	$filename = sanitize_file_name( $_GET['file'] ?? '' );
+	$filename = isset( $_GET['file'] ) ? sanitize_file_name( wp_unslash( $_GET['file'] ) ) : '';
 	if ( empty( $filename ) ) {
 		wp_die( 'No file specified' );
 	}
@@ -211,8 +211,17 @@ function brevo_handle_download_debug_log() {
 	header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 	header( 'Content-Length: ' . filesize( $file_path ) );
 
-	// Output file contents
-	readfile( $file_path );
+	// Output file contents using WP_Filesystem
+	global $wp_filesystem;
+	if ( empty( $wp_filesystem ) ) {
+		require_once ABSPATH . '/wp-admin/includes/file.php';
+		WP_Filesystem();
+	}
+	
+	$file_contents = $wp_filesystem->get_contents( $file_path );
+	if ( $file_contents !== false ) {
+		echo $file_contents; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- File contents are safe
+	}
 	exit;
 }
 
@@ -258,7 +267,7 @@ class MlbrevoFree {
 		$api_key = $this->ml_brevo_options['global_api_key_ml_brevo'] ?? '';
 		
 		// Get current tab
-		$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'settings';
+		$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'settings';
 		?>
 
 		<div class="wrap">
@@ -305,27 +314,27 @@ class MlbrevoFree {
 			'utm_campaign' => 'brevo_elementor_pro',
 			'utm_content' => 'admin_banner'
 		);
-		$contact_url = 'https://2wins.agency/help?' . http_build_query( $utm_params );
+		$contact_url = 'https://www.2wins.agency/help?' . http_build_query( $utm_params );
 		?>
 		<div class="brevo-promotional-banner">
 			<div class="brevo-promo-content">
 				<h3>
-					<?php _e( 'Need help with Brevo automations?', 'ml-brevo-for-elementor-pro' ); ?>
+					<?php esc_html_e( 'Need help with Brevo automations?', 'ml-brevo-for-elementor-pro' ); ?>
 				</h3>
 				<p>
-					<?php _e( 'Make the most of Brevo\'s (formerly Sendinblue) potential to optimize lead management, email campaigns, and the entire customer journey. With our custom automations and integration of the best artificial intelligence tools, we will help you:', 'ml-brevo-for-elementor-pro' ); ?>
+					<?php esc_html_e( 'Make the most of Brevo\'s (formerly Sendinblue) potential to optimize lead management, email campaigns, and the entire customer journey. With our custom automations and integration of the best artificial intelligence tools, we will help you:', 'ml-brevo-for-elementor-pro' ); ?>
 				</p>
 				<ul class="brevo-promo-benefits">
-					<li><?php _e( 'Reduce manual work and increase operational efficiency.', 'ml-brevo-for-elementor-pro' ); ?></li>
-					<li><?php _e( 'Centralize customer data for a unified and complete view.', 'ml-brevo-for-elementor-pro' ); ?></li>
-					<li><?php _e( 'Maximize conversions and improve customer engagement.', 'ml-brevo-for-elementor-pro' ); ?></li>
+										<li><?php esc_html_e( 'Reduce manual work and increase operational efficiency.', 'ml-brevo-for-elementor-pro' ); ?></li>
+										<li><?php esc_html_e( 'Centralize customer data for a unified and complete view.', 'ml-brevo-for-elementor-pro' ); ?></li>
+					<li><?php esc_html_e( 'Maximize conversions and improve customer engagement.', 'ml-brevo-for-elementor-pro' ); ?></li>
 				</ul>
 				<p>
-					<?php _e( 'Contact us today to discover how Twins Agency can support your business growth through Brevo automations and artificial intelligence.', 'ml-brevo-for-elementor-pro' ); ?>
+					<?php esc_html_e( 'Contact us today to discover how 2wins Agency can support your business growth through Brevo automations and artificial intelligence.', 'ml-brevo-for-elementor-pro' ); ?>
 				</p>
 				<div class="brevo-promo-cta">
 					<a href="<?php echo esc_url( $contact_url ); ?>" target="_blank" class="button button-primary button-hero">
-						<?php _e( 'Contact us now', 'ml-brevo-for-elementor-pro' ); ?>
+						<?php esc_html_e( 'Contact us now', 'ml-brevo-for-elementor-pro' ); ?>
 					</a>
 				</div>
 			</div>
@@ -588,15 +597,15 @@ class MlbrevoFree {
 			<?php endif; // End debug section ?>
 			
 			<div class="brevo-translations-header">
-				<h2><?php _e( 'Translation Management', 'ml-brevo-for-elementor-pro' ); ?></h2>
-				<p><?php _e( 'Manage and compile plugin translations for better performance.', 'ml-brevo-for-elementor-pro' ); ?></p>
+				<h2><?php esc_html_e( 'Translation Management', 'ml-brevo-for-elementor-pro' ); ?></h2>
+				<p><?php esc_html_e( 'Manage and compile plugin translations for better performance.', 'ml-brevo-for-elementor-pro' ); ?></p>
 			</div>
 
 			<?php if ( $needs_compilation ): ?>
 				<div class="notice notice-warning">
 					<p>
-						<strong>⚠️ <?php _e( 'Some translations need compilation!', 'ml-brevo-for-elementor-pro' ); ?></strong>
-						<?php _e( 'Click "Compile Translations" to improve performance.', 'ml-brevo-for-elementor-pro' ); ?>
+						<strong>⚠️ <?php esc_html_e( 'Some translations need compilation!', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<?php esc_html_e( 'Click "Compile Translations" to improve performance.', 'ml-brevo-for-elementor-pro' ); ?>
 					</p>
 				</div>
 			<?php endif; ?>
@@ -607,9 +616,9 @@ class MlbrevoFree {
 					<?php wp_nonce_field( 'compile_brevo_translations' ); ?>
 					<p>
 						<input type="submit" name="compile_brevo_translations" class="button button-primary" 
-							   value="<?php _e( 'Compile All Translations', 'ml-brevo-for-elementor-pro' ); ?>">
+							   value="<?php esc_attr_e( 'Compile All Translations', 'ml-brevo-for-elementor-pro' ); ?>">
 						<span class="description">
-							<?php _e( 'Converts .po files to optimized .mo files for better performance.', 'ml-brevo-for-elementor-pro' ); ?>
+							<?php esc_html_e( 'Converts .po files to optimized .mo files for better performance.', 'ml-brevo-for-elementor-pro' ); ?>
 						</span>
 					</p>
 				</form>
@@ -617,15 +626,15 @@ class MlbrevoFree {
 
 			<!-- Translation Statistics -->
 			<div class="brevo-translations-stats">
-				<h3><?php _e( 'Translation Status', 'ml-brevo-for-elementor-pro' ); ?></h3>
+				<h3><?php esc_html_e( 'Translation Status', 'ml-brevo-for-elementor-pro' ); ?></h3>
 				<table class="wp-list-table widefat fixed striped">
 					<thead>
 						<tr>
-							<th><?php _e( 'Language', 'ml-brevo-for-elementor-pro' ); ?></th>
-							<th><?php _e( 'PO File', 'ml-brevo-for-elementor-pro' ); ?></th>
-							<th><?php _e( 'MO File', 'ml-brevo-for-elementor-pro' ); ?></th>
-							<th><?php _e( 'Last Modified', 'ml-brevo-for-elementor-pro' ); ?></th>
-							<th><?php _e( 'Status', 'ml-brevo-for-elementor-pro' ); ?></th>
+							<th><?php esc_html_e( 'Language', 'ml-brevo-for-elementor-pro' ); ?></th>
+							<th><?php esc_html_e( 'PO File', 'ml-brevo-for-elementor-pro' ); ?></th>
+							<th><?php esc_html_e( 'MO File', 'ml-brevo-for-elementor-pro' ); ?></th>
+							<th><?php esc_html_e( 'Last Modified', 'ml-brevo-for-elementor-pro' ); ?></th>
+							<th><?php esc_html_e( 'Status', 'ml-brevo-for-elementor-pro' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -640,7 +649,7 @@ class MlbrevoFree {
 										<?php echo esc_html( $stat['po_size'] ); ?>
 									<?php else: ?>
 										<span class="dashicons dashicons-dismiss" style="color: red;"></span>
-										<?php _e( 'Missing', 'ml-brevo-for-elementor-pro' ); ?>
+										<?php esc_html_e( 'Missing', 'ml-brevo-for-elementor-pro' ); ?>
 									<?php endif; ?>
 								</td>
 								<td>
@@ -649,7 +658,7 @@ class MlbrevoFree {
 										<?php echo esc_html( $stat['mo_size'] ); ?>
 									<?php else: ?>
 										<span class="dashicons dashicons-dismiss" style="color: red;"></span>
-										<?php _e( 'Missing', 'ml-brevo-for-elementor-pro' ); ?>
+										<?php esc_html_e( 'Missing', 'ml-brevo-for-elementor-pro' ); ?>
 									<?php endif; ?>
 								</td>
 								<td>
@@ -676,45 +685,45 @@ class MlbrevoFree {
 
 			<!-- Translation Information -->
 			<div class="brevo-translations-info">
-				<h3><?php _e( 'About Translations', 'ml-brevo-for-elementor-pro' ); ?></h3>
+				<h3><?php esc_html_e( 'About Translations', 'ml-brevo-for-elementor-pro' ); ?></h3>
 				<div class="brevo-info-cards">
 					<div class="brevo-info-card">
-						<h4>📄 <?php _e( 'PO Files', 'ml-brevo-for-elementor-pro' ); ?></h4>
-						<p><?php _e( 'Human-readable translation files that you can edit with text editors or translation tools like Poedit.', 'ml-brevo-for-elementor-pro' ); ?></p>
+						<h4>📄 <?php esc_html_e( 'PO Files', 'ml-brevo-for-elementor-pro' ); ?></h4>
+						<p><?php esc_html_e( 'Human-readable translation files that you can edit with text editors or translation tools like Poedit.', 'ml-brevo-for-elementor-pro' ); ?></p>
 					</div>
 					<div class="brevo-info-card">
-						<h4>⚡ <?php _e( 'MO Files', 'ml-brevo-for-elementor-pro' ); ?></h4>
-						<p><?php _e( 'Compiled binary files that WordPress uses for faster translation loading. Generated from PO files.', 'ml-brevo-for-elementor-pro' ); ?></p>
+						<h4>⚡ <?php esc_html_e( 'MO Files', 'ml-brevo-for-elementor-pro' ); ?></h4>
+						<p><?php esc_html_e( 'Compiled binary files that WordPress uses for faster translation loading. Generated from PO files.', 'ml-brevo-for-elementor-pro' ); ?></p>
 					</div>
 					<div class="brevo-info-card">
-						<h4>🔄 <?php _e( 'Automatic Detection', 'ml-brevo-for-elementor-pro' ); ?></h4>
-						<p><?php _e( 'WordPress automatically loads the correct translation based on your site language setting.', 'ml-brevo-for-elementor-pro' ); ?></p>
+						<h4>🔄 <?php esc_html_e( 'Automatic Detection', 'ml-brevo-for-elementor-pro' ); ?></h4>
+						<p><?php esc_html_e( 'WordPress automatically loads the correct translation based on your site language setting.', 'ml-brevo-for-elementor-pro' ); ?></p>
 					</div>
 				</div>
 			</div>
 
 			<!-- Current Site Language -->
 			<div class="brevo-current-language">
-				<h3><?php _e( 'Current Site Settings', 'ml-brevo-for-elementor-pro' ); ?></h3>
+				<h3><?php esc_html_e( 'Current Site Settings', 'ml-brevo-for-elementor-pro' ); ?></h3>
 				<p>
-					<strong><?php _e( 'Site Language:', 'ml-brevo-for-elementor-pro' ); ?></strong>
-					<?php echo get_locale(); ?>
+					<strong><?php esc_html_e( 'Site Language:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+					<?php echo esc_html( get_locale() ); ?>
 					<?php 
 					$current_lang = get_locale();
 					if ( isset( $stats[$current_lang] ) ) {
 						echo ' - ' . esc_html( $stats[$current_lang]['name'] );
 						if ( $stats[$current_lang]['mo_exists'] ) {
-							echo ' <span class="dashicons dashicons-yes-alt" style="color: green;" title="' . __( 'Translation loaded', 'ml-brevo-for-elementor-pro' ) . '"></span>';
+							echo ' <span class="dashicons dashicons-yes-alt" style="color: green;" title="' . esc_attr__( 'Translation loaded', 'ml-brevo-for-elementor-pro' ) . '"></span>';
 						} else {
-							echo ' <span class="dashicons dashicons-warning" style="color: orange;" title="' . __( 'Translation not compiled', 'ml-brevo-for-elementor-pro' ) . '"></span>';
+							echo ' <span class="dashicons dashicons-warning" style="color: orange;" title="' . esc_attr__( 'Translation not compiled', 'ml-brevo-for-elementor-pro' ) . '"></span>';
 						}
 					} else {
-						echo ' - ' . __( 'English (default)', 'ml-brevo-for-elementor-pro' );
+						echo ' - ' . esc_html__( 'English (default)', 'ml-brevo-for-elementor-pro' );
 					}
 					?>
 				</p>
 				<p>
-					<em><?php _e( 'Change your site language in Settings > General > Site Language', 'ml-brevo-for-elementor-pro' ); ?></em>
+					<em><?php esc_html_e( 'Change your site language in Settings > General > Site Language', 'ml-brevo-for-elementor-pro' ); ?></em>
 				</p>
 			</div>
 		</div>
@@ -765,9 +774,9 @@ class MlbrevoFree {
 		$logger = Brevo_Debug_Logger::get_instance();
 		
 		// Get current parameters
-		$current_file = isset( $_GET['file'] ) ? sanitize_text_field( $_GET['file'] ) : '';
-		$current_level = isset( $_GET['level'] ) ? sanitize_text_field( $_GET['level'] ) : '';
-		$current_component = isset( $_GET['component'] ) ? sanitize_text_field( $_GET['component'] ) : '';
+		$current_file = isset( $_GET['file'] ) ? sanitize_text_field( wp_unslash( $_GET['file'] ) ) : '';
+		$current_level = isset( $_GET['level'] ) ? sanitize_text_field( wp_unslash( $_GET['level'] ) ) : '';
+		$current_component = isset( $_GET['component'] ) ? sanitize_text_field( wp_unslash( $_GET['component'] ) ) : '';
 		$current_page = isset( $_GET['paged'] ) ? max( 1, intval( $_GET['paged'] ) ) : 1;
 		$entries_per_page = 50;
 
@@ -797,9 +806,9 @@ class MlbrevoFree {
 			<?php if ( ! $logger->is_enabled() ): ?>
 				<div class="notice notice-warning">
 					<p>
-						<?php _e( 'Debug logging is currently disabled.', 'ml-brevo-for-elementor-pro' ); ?>
-						<a href="<?php echo admin_url( 'options-general.php?page=ml-brevo-free&tab=settings' ); ?>">
-							<?php _e( 'Enable it in settings tab', 'ml-brevo-for-elementor-pro' ); ?>
+						<?php esc_html_e( 'Debug logging is currently disabled.', 'ml-brevo-for-elementor-pro' ); ?>
+						<a href="<?php echo esc_url( admin_url( 'options-general.php?page=ml-brevo-free&tab=settings' ) ); ?>">
+							<?php esc_html_e( 'Enable it in settings tab', 'ml-brevo-for-elementor-pro' ); ?>
 						</a>
 					</p>
 				</div>
@@ -808,39 +817,39 @@ class MlbrevoFree {
 			<!-- Debug Log Controls -->
 			<div class="brevo-debug-controls">
 				<div class="brevo-debug-info">
-					<h3><?php _e( 'Log Information', 'ml-brevo-for-elementor-pro' ); ?></h3>
+					<h3><?php esc_html_e( 'Log Information', 'ml-brevo-for-elementor-pro' ); ?></h3>
 					<p>
-						<strong><?php _e( 'Debug Status:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<strong><?php esc_html_e( 'Debug Status:', 'ml-brevo-for-elementor-pro' ); ?></strong>
 						<?php echo $logger->is_enabled() ? 
-							'<span style="color: green;">' . __( 'Enabled', 'ml-brevo-for-elementor-pro' ) . '</span>' : 
-							'<span style="color: red;">' . __( 'Disabled', 'ml-brevo-for-elementor-pro' ) . '</span>'; ?>
+							'<span style="color: green;">' . esc_html__( 'Enabled', 'ml-brevo-for-elementor-pro' ) . '</span>' : 
+							'<span style="color: red;">' . esc_html__( 'Disabled', 'ml-brevo-for-elementor-pro' ) . '</span>'; ?>
 					</p>
 					<p>
-						<strong><?php _e( 'Debug Level:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<strong><?php esc_html_e( 'Debug Level:', 'ml-brevo-for-elementor-pro' ); ?></strong>
 						<?php echo esc_html( $logger->get_debug_level() ); ?>
 					</p>
 					<p>
-						<strong><?php _e( 'Total Log Size:', 'ml-brevo-for-elementor-pro' ); ?></strong>
-						<?php echo size_format( $logger->get_total_log_size() ); ?>
+						<strong><?php esc_html_e( 'Total Log Size:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<?php echo esc_html( size_format( $logger->get_total_log_size() ) ); ?>
 					</p>
 					<p>
-						<strong><?php _e( 'Log Files:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<strong><?php esc_html_e( 'Log Files:', 'ml-brevo-for-elementor-pro' ); ?></strong>
 						<?php echo count( $log_files ); ?>
 					</p>
 				</div>
 
 				<div class="brevo-debug-actions">
-					<h3><?php _e( 'Actions', 'ml-brevo-for-elementor-pro' ); ?></h3>
+					<h3><?php esc_html_e( 'Actions', 'ml-brevo-for-elementor-pro' ); ?></h3>
 					<p>
 						<button type="button" id="clear-debug-logs-btn" class="button button-secondary">
-							<?php _e( 'Clear All Logs', 'ml-brevo-for-elementor-pro' ); ?>
+							<?php esc_html_e( 'Clear All Logs', 'ml-brevo-for-elementor-pro' ); ?>
 						</button>
 						<?php if ( $selected_file ): ?>
-							<a href="<?php echo wp_nonce_url( 
-								admin_url( 'admin-ajax.php?action=brevo_download_debug_log&file=' . urlencode( basename( $selected_file ) ) ), 
-								'brevo_download_log' 
-							); ?>" class="button button-secondary">
-								<?php _e( 'Download Current Log', 'ml-brevo-for-elementor-pro' ); ?>
+													<a href="<?php echo esc_url( wp_nonce_url( 
+							admin_url( 'admin-ajax.php?action=brevo_download_debug_log&file=' . urlencode( basename( $selected_file ) ) ), 
+							'brevo_download_log' 
+						) ); ?>" class="button button-secondary">
+								<?php esc_html_e( 'Download Current Log', 'ml-brevo-for-elementor-pro' ); ?>
 							</a>
 						<?php endif; ?>
 					</p>
@@ -915,8 +924,8 @@ class MlbrevoFree {
 					$pagination_args = array(
 						'base' => add_query_arg( 'paged', '%#%', $base_url ),
 						'format' => '',
-						'prev_text' => __( '&laquo; Previous' ),
-						'next_text' => __( 'Next &raquo;' ),
+						'prev_text' => __( '&laquo; Previous', 'ml-brevo-for-elementor-pro' ),
+						'next_text' => __( 'Next &raquo;', 'ml-brevo-for-elementor-pro' ),
 						'total' => $total_pages,
 						'current' => $current_page,
 						'show_all' => false,
@@ -925,8 +934,10 @@ class MlbrevoFree {
 					echo paginate_links( $pagination_args );
 					?>
 					<p class="brevo-debug-pagination-info">
-						<?php printf( 
-							__( 'Showing %d-%d of %d entries', 'ml-brevo-for-elementor-pro' ),
+						<?php 
+						// translators: %1$d is the start entry number, %2$d is the end entry number, %3$d is the total number of entries
+						printf( 
+							__( 'Showing %1$d-%2$d of %3$d entries', 'ml-brevo-for-elementor-pro' ),
 							$offset + 1,
 							min( $offset + $entries_per_page, $total_entries ),
 							$total_entries
@@ -1097,25 +1108,25 @@ class MlbrevoFree {
 	public function render_field_management_section( $api_key ) {
 		?>
 		<div class="brevo-field-management">
-			<h2><?php _e( 'Available Brevo Fields', 'ml-brevo-for-elementor-pro' ); ?></h2>
-			<p><?php _e( 'Enable or disable fields that will be available for mapping in Elementor forms.', 'ml-brevo-for-elementor-pro' ); ?></p>
+			<h2><?php esc_html_e( 'Available Brevo Fields', 'ml-brevo-for-elementor-pro' ); ?></h2>
+			<p><?php esc_html_e( 'Enable or disable fields that will be available for mapping in Elementor forms.', 'ml-brevo-for-elementor-pro' ); ?></p>
 			
 			<div class="brevo-field-controls">
 				<button type="button" id="refresh-fields-btn" class="button button-secondary" 
 					<?php echo empty( $api_key ) ? 'disabled' : ''; ?>>
-					<?php _e( 'Refresh Fields from Brevo', 'ml-brevo-for-elementor-pro' ); ?>
+					<?php esc_html_e( 'Refresh Fields from Brevo', 'ml-brevo-for-elementor-pro' ); ?>
 				</button>
 				
 				<button type="button" id="enable-all-btn" class="button button-secondary">
-					<?php _e( 'Enable All', 'ml-brevo-for-elementor-pro' ); ?>
+					<?php esc_html_e( 'Enable All', 'ml-brevo-for-elementor-pro' ); ?>
 				</button>
 				
 				<button type="button" id="disable-all-btn" class="button button-secondary">
-					<?php _e( 'Disable All', 'ml-brevo-for-elementor-pro' ); ?>
+					<?php esc_html_e( 'Disable All', 'ml-brevo-for-elementor-pro' ); ?>
 				</button>
 				
 				<button type="button" id="reset-defaults-btn" class="button button-secondary">
-					<?php _e( 'Reset to Defaults', 'ml-brevo-for-elementor-pro' ); ?>
+					<?php esc_html_e( 'Reset to Defaults', 'ml-brevo-for-elementor-pro' ); ?>
 				</button>
 			</div>
 
@@ -1132,7 +1143,7 @@ class MlbrevoFree {
 	public function render_fields_table( $api_key ) {
 		if ( empty( $api_key ) ) {
 			echo '<p class="notice notice-warning inline">' . 
-				__( 'Please set your Global API Key above and save to manage fields.', 'ml-brevo-for-elementor-pro' ) . 
+				esc_html__( 'Please set your Global API Key above and save to manage fields.', 'ml-brevo-for-elementor-pro' ) . 
 				'</p>';
 			return;
 		}
@@ -1144,8 +1155,9 @@ class MlbrevoFree {
 
 		if ( is_wp_error( $attributes ) ) {
 			echo '<div class="notice notice-error inline">';
-			echo '<p>' . sprintf( __( 'Error fetching fields: %s', 'ml-brevo-for-elementor-pro' ), $attributes->get_error_message() ) . '</p>';
-			echo '<p><button type="button" id="clear-cache-btn" class="button button-secondary">' . __( 'Clear Cache and Retry', 'ml-brevo-for-elementor-pro' ) . '</button></p>';
+			// translators: %s is the error message
+			echo '<p>' . sprintf( esc_html__( 'Error fetching fields: %s', 'ml-brevo-for-elementor-pro' ), esc_html( $attributes->get_error_message() ) ) . '</p>';
+			echo '<p><button type="button" id="clear-cache-btn" class="button button-secondary">' . esc_html__( 'Clear Cache and Retry', 'ml-brevo-for-elementor-pro' ) . '</button></p>';
 			echo '</div>';
 			return;
 		}
@@ -1153,8 +1165,8 @@ class MlbrevoFree {
 		// Ensure we have a valid attributes array
 		if ( ! is_array( $attributes ) || empty( $attributes ) ) {
 			echo '<div class="notice notice-warning inline">';
-			echo '<p>' . __( 'No fields found. This could be due to an invalid API key or temporary API issues.', 'ml-brevo-for-elementor-pro' ) . '</p>';
-			echo '<p><button type="button" id="clear-cache-btn" class="button button-secondary">' . __( 'Clear Cache and Retry', 'ml-brevo-for-elementor-pro' ) . '</button></p>';
+			echo '<p>' . esc_html__( 'No fields found. This could be due to an invalid API key or temporary API issues.', 'ml-brevo-for-elementor-pro' ) . '</p>';
+			echo '<p><button type="button" id="clear-cache-btn" class="button button-secondary">' . esc_html__( 'Clear Cache and Retry', 'ml-brevo-for-elementor-pro' ) . '</button></p>';
 			echo '</div>';
 			return;
 		}
@@ -1163,10 +1175,12 @@ class MlbrevoFree {
 		<div class="brevo-cache-info">
 			<?php if ( $cache_info ): ?>
 				<small>
-					<?php printf( 
-						__( 'Last updated: %s (%d fields found)', 'ml-brevo-for-elementor-pro' ),
-						human_time_diff( $cache_info['cached_at'] ) . ' ago',
-						$cache_info['count']
+										<?php 
+					/* translators: %1$s is the time since last update, %2$d is the number of fields found */
+					printf( 
+						esc_html__( 'Last updated: %1$s (%2$d fields found)', 'ml-brevo-for-elementor-pro' ),
+						esc_html( human_time_diff( $cache_info['cached_at'] ) . ' ago' ),
+						esc_html( $cache_info['count'] )
 					); ?>
 				</small>
 			<?php endif; ?>
@@ -1178,10 +1192,10 @@ class MlbrevoFree {
 					<th class="check-column">
 						<input type="checkbox" id="select-all-fields">
 					</th>
-					<th><?php _e( 'Field Name', 'ml-brevo-for-elementor-pro' ); ?></th>
-					<th><?php _e( 'Type', 'ml-brevo-for-elementor-pro' ); ?></th>
-					<th><?php _e( 'Description', 'ml-brevo-for-elementor-pro' ); ?></th>
-					<th><?php _e( 'Status', 'ml-brevo-for-elementor-pro' ); ?></th>
+					<th><?php esc_html_e( 'Field Name', 'ml-brevo-for-elementor-pro' ); ?></th>
+					<th><?php esc_html_e( 'Type', 'ml-brevo-for-elementor-pro' ); ?></th>
+					<th><?php esc_html_e( 'Description', 'ml-brevo-for-elementor-pro' ); ?></th>
+					<th><?php esc_html_e( 'Status', 'ml-brevo-for-elementor-pro' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -1206,7 +1220,7 @@ class MlbrevoFree {
 					<td>
 						<strong><?php echo esc_html( $field_name ); ?></strong>
 						<?php if ( in_array( $field_name, array( 'FIRSTNAME', 'LASTNAME', 'SMS' ) ) ): ?>
-							<span class="brevo-field-badge brevo-default-field"><?php _e( 'Default', 'ml-brevo-for-elementor-pro' ); ?></span>
+							<span class="brevo-field-badge brevo-default-field"><?php esc_html_e( 'Default', 'ml-brevo-for-elementor-pro' ); ?></span>
 						<?php endif; ?>
 					</td>
 					<td>
@@ -1217,7 +1231,7 @@ class MlbrevoFree {
 					<td><?php echo esc_html( $field_description ); ?></td>
 					<td>
 						<span class="brevo-status <?php echo $is_enabled ? 'enabled' : 'disabled'; ?>">
-							<?php echo $is_enabled ? __( 'Enabled', 'ml-brevo-for-elementor-pro' ) : __( 'Disabled', 'ml-brevo-for-elementor-pro' ); ?>
+							<?php echo $is_enabled ? esc_html__( 'Enabled', 'ml-brevo-for-elementor-pro' ) : esc_html__( 'Disabled', 'ml-brevo-for-elementor-pro' ); ?>
 						</span>
 					</td>
 				</tr>
@@ -1233,13 +1247,13 @@ class MlbrevoFree {
 	public function render_lists_management_section( $api_key ) {
 		?>
 		<div class="brevo-lists-management">
-			<h2><?php _e( 'Available Brevo Lists', 'ml-brevo-for-elementor-pro' ); ?></h2>
-			<p><?php _e( 'This table shows all your Brevo contact lists for reference. You can select specific lists directly in your Elementor forms using the list dropdown selector.', 'ml-brevo-for-elementor-pro' ); ?></p>
+			<h2><?php esc_html_e( 'Available Brevo Lists', 'ml-brevo-for-elementor-pro' ); ?></h2>
+			<p><?php esc_html_e( 'This table shows all your Brevo contact lists for reference. You can select specific lists directly in your Elementor forms using the list dropdown selector.', 'ml-brevo-for-elementor-pro' ); ?></p>
 			
 			<div class="brevo-lists-controls">
 				<button type="button" id="refresh-lists-btn" class="button button-secondary" 
 					<?php echo empty( $api_key ) ? 'disabled' : ''; ?>>
-					<?php _e( 'Refresh Lists from Brevo', 'ml-brevo-for-elementor-pro' ); ?>
+					<?php esc_html_e( 'Refresh Lists from Brevo', 'ml-brevo-for-elementor-pro' ); ?>
 				</button>
 			</div>
 
@@ -1256,7 +1270,7 @@ class MlbrevoFree {
 	public function render_lists_table( $api_key ) {
 		if ( empty( $api_key ) ) {
 			echo '<p class="notice notice-warning inline">' . 
-				__( 'Please set your Global API Key above and save to manage lists.', 'ml-brevo-for-elementor-pro' ) . 
+				esc_html__( 'Please set your Global API Key above and save to manage lists.', 'ml-brevo-for-elementor-pro' ) . 
 				'</p>';
 			return;
 		}
@@ -1267,8 +1281,9 @@ class MlbrevoFree {
 
 		if ( is_wp_error( $lists ) ) {
 			echo '<div class="notice notice-error inline">';
-			echo '<p>' . sprintf( __( 'Error fetching lists: %s', 'ml-brevo-for-elementor-pro' ), $lists->get_error_message() ) . '</p>';
-			echo '<p><button type="button" id="clear-lists-cache-btn" class="button button-secondary">' . __( 'Clear Lists Cache and Retry', 'ml-brevo-for-elementor-pro' ) . '</button></p>';
+			// translators: %s is the error message
+			echo '<p>' . sprintf( esc_html__( 'Error fetching lists: %s', 'ml-brevo-for-elementor-pro' ), esc_html( $lists->get_error_message() ) ) . '</p>';
+			echo '<p><button type="button" id="clear-lists-cache-btn" class="button button-secondary">' . esc_html__( 'Clear Lists Cache and Retry', 'ml-brevo-for-elementor-pro' ) . '</button></p>';
 			echo '</div>';
 			return;
 		}
@@ -1276,8 +1291,8 @@ class MlbrevoFree {
 		// Ensure we have a valid lists array
 		if ( ! is_array( $lists ) || empty( $lists ) ) {
 			echo '<div class="notice notice-warning inline">';
-			echo '<p>' . __( 'No lists found. This could be due to an invalid API key or you may not have any lists created in your Brevo account.', 'ml-brevo-for-elementor-pro' ) . '</p>';
-			echo '<p><button type="button" id="clear-lists-cache-btn" class="button button-secondary">' . __( 'Clear Lists Cache and Retry', 'ml-brevo-for-elementor-pro' ) . '</button></p>';
+			echo '<p>' . esc_html__( 'No lists found. This could be due to an invalid API key or you may not have any lists created in your Brevo account.', 'ml-brevo-for-elementor-pro' ) . '</p>';
+			echo '<p><button type="button" id="clear-lists-cache-btn" class="button button-secondary">' . esc_html__( 'Clear Lists Cache and Retry', 'ml-brevo-for-elementor-pro' ) . '</button></p>';
 			echo '</div>';
 			return;
 		}
@@ -1286,10 +1301,12 @@ class MlbrevoFree {
 		<div class="brevo-lists-cache-info">
 			<?php if ( $cache_info ): ?>
 				<small>
-					<?php printf( 
-						__( 'Last updated: %s (%d lists found)', 'ml-brevo-for-elementor-pro' ),
-						human_time_diff( $cache_info['cached_at'] ) . ' ago',
-						$cache_info['count']
+										<?php 
+					/* translators: %1$s is the time since last update, %2$d is the number of lists found */
+					printf( 
+						esc_html__( 'Last updated: %1$s (%2$d lists found)', 'ml-brevo-for-elementor-pro' ),
+						esc_html( human_time_diff( $cache_info['cached_at'] ) . ' ago' ),
+						esc_html( $cache_info['count'] )
 					); ?>
 				</small>
 			<?php endif; ?>
@@ -1298,9 +1315,9 @@ class MlbrevoFree {
 		<table class="wp-list-table widefat fixed striped" id="brevo-lists-table">
 			<thead>
 				<tr>
-					<th><?php _e( 'List ID', 'ml-brevo-for-elementor-pro' ); ?></th>
-					<th><?php _e( 'List Name', 'ml-brevo-for-elementor-pro' ); ?></th>
-					<th><?php _e( 'Subscribers', 'ml-brevo-for-elementor-pro' ); ?></th>
+					<th><?php esc_html_e( 'List ID', 'ml-brevo-for-elementor-pro' ); ?></th>
+					<th><?php esc_html_e( 'List Name', 'ml-brevo-for-elementor-pro' ); ?></th>
+					<th><?php esc_html_e( 'Subscribers', 'ml-brevo-for-elementor-pro' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -1322,7 +1339,7 @@ class MlbrevoFree {
 						<strong><?php echo esc_html( $list_name ); ?></strong>
 					</td>
 					<td>
-						<?php echo number_format( $unique_subscribers ); ?>
+						<?php echo esc_html( number_format( $unique_subscribers ) ); ?>
 					</td>
 				</tr>
 				<?php endforeach; ?>
@@ -1409,7 +1426,7 @@ class MlbrevoFree {
 		// Handle field settings update
 		if ( isset( $_POST['brevo_fields'] ) && is_array( $_POST['brevo_fields'] ) ) {
 			$enabled_fields = array();
-			foreach ( $_POST['brevo_fields'] as $field ) {
+			foreach ( wp_unslash( $_POST['brevo_fields'] ) as $field ) {
 				$enabled_fields[ sanitize_text_field( $field ) ] = true;
 			}
 			update_option( 'brevo_enabled_fields', $enabled_fields );
@@ -1421,7 +1438,7 @@ class MlbrevoFree {
 		// Handle list settings update
 		if ( isset( $_POST['brevo_lists'] ) && is_array( $_POST['brevo_lists'] ) ) {
 			$selected_lists = array();
-			foreach ( $_POST['brevo_lists'] as $list_id ) {
+			foreach ( wp_unslash( $_POST['brevo_lists'] ) as $list_id ) {
 				$list_id = intval( $list_id );
 				if ( $list_id > 0 ) {
 					$selected_lists[] = $list_id;
@@ -2004,33 +2021,32 @@ class MlbrevoFree {
 		echo __( 'Here you can find all your ml Integration for Elementor Form - brevo settings', 'ml-brevo-for-elementor-pro' );
 	}
 
-	public function global_api_key_ml_brevo_callback() {
-		$api_key = isset( $this->ml_brevo_options['global_api_key_ml_brevo'] ) ? $this->ml_brevo_options['global_api_key_ml_brevo'] : '';
-		$has_key = !empty($api_key);
-		
+		public function global_api_key_ml_brevo_callback() {
+		$api_key = isset( $this->ml_brevo_options['global_api_key_ml_brevo'] ) ? esc_attr( $this->ml_brevo_options['global_api_key_ml_brevo'] ) : '';
+		$is_key_set = ! empty( $api_key );
 		?>
 		<div class="brevo-api-key-field">
-			<input class="regular-text" 
-				   type="<?php echo $has_key ? 'password' : 'text'; ?>" 
-				   name="ml_brevo_option_name[global_api_key_ml_brevo]" 
+			<input type="<?php echo $is_key_set ? 'password' : 'text'; ?>" 
 				   id="global_api_key_ml_brevo" 
-				   value="<?php echo esc_attr( $api_key ); ?>"
-				   placeholder="<?php echo $has_key ? '••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••' : 'Enter your Brevo API key'; ?>">
+				   name="ml_brevo_option_name[global_api_key_ml_brevo]" 
+				   value="<?php echo $api_key; ?>" 
+				   placeholder="<?php esc_attr_e( 'Enter your Brevo API key', 'ml-brevo-for-elementor-pro' ); ?>"
+				   autocomplete="off">
 			
-			<?php if ( $has_key ): ?>
-				<button type="button" id="clear-api-key-btn" class="button button-secondary" style="margin-left: 10px;">
-					<?php _e( 'Clear API Key', 'ml-brevo-for-elementor-pro' ); ?>
+			<?php if ( $is_key_set ): ?>
+				<button type="button" id="show-api-key-btn" class="button button-secondary">
+					<?php esc_html_e( 'Show', 'ml-brevo-for-elementor-pro' ); ?>
 				</button>
-				<button type="button" id="show-api-key-btn" class="button button-secondary" style="margin-left: 5px;">
-					<?php _e( 'Show', 'ml-brevo-for-elementor-pro' ); ?>
+				<button type="button" id="clear-api-key-btn" class="button button-secondary">
+					<?php esc_html_e( 'Clear', 'ml-brevo-for-elementor-pro' ); ?>
 				</button>
 			<?php endif; ?>
 			
 			<p class="description">
-				<?php _e( 'Enter your Brevo API key. You can find it in your Brevo account under Account Settings > API Keys.', 'ml-brevo-for-elementor-pro' ); ?>
-				<?php if ( $has_key ): ?>
-					<br><strong><?php _e( 'API key is currently set. Use "Clear API Key" to remove it.', 'ml-brevo-for-elementor-pro' ); ?></strong>
-				<?php endif; ?>
+				<?php esc_html_e( 'Enter your Brevo V3 API key. This key will be used for all forms unless overridden in the form settings.', 'ml-brevo-for-elementor-pro' ); ?>
+				<a href="https://account.brevo.com/advanced/api" target="_blank">
+					<?php esc_html_e( 'Get your API key here.', 'ml-brevo-for-elementor-pro' ); ?>
+				</a>
 			</p>
 		</div>
 		<?php
@@ -2073,16 +2089,15 @@ class MlbrevoFree {
 		<?php
 	}
 
-	public function debug_retention_ml_brevo_callback() {
-		$debug_retention = get_option( 'brevo_debug_retention', 7 );
-		$debug_enabled = get_option( 'brevo_debug_enabled', false );
+		public function debug_retention_ml_brevo_callback() {
+		$retention_days = get_option( 'brevo_debug_retention', 7 );
 		?>
-		<input type="number" name="ml_brevo_option_name[debug_retention_ml_brevo]" 
-			   value="<?php echo esc_attr( $debug_retention ); ?>" 
-			   min="1" max="90" 
-			   <?php echo $debug_enabled ? '' : 'disabled'; ?>>
+		<input type="number" id="debug_retention_ml_brevo" 
+			   name="ml_brevo_option_name[debug_retention_ml_brevo]" 
+			   value="<?php echo esc_attr( $retention_days ); ?>" 
+			   min="1" max="90" step="1">
 		<p class="description">
-			<?php _e( 'Number of days to keep log files. Older logs will be automatically deleted. Range: 1-90 days.', 'ml-brevo-for-elementor-pro' ); ?>
+			<?php esc_html_e( 'Number of days to keep log files (1-90). Older files will be automatically deleted.', 'ml-brevo-for-elementor-pro' ); ?>
 		</p>
 		<?php
 	}

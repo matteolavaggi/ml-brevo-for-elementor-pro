@@ -47,11 +47,18 @@ class Brevo_Debug_Viewer {
 		$logger = Brevo_Debug_Logger::get_instance();
 		
 		// Get current parameters
-		$current_file = isset( $_GET['file'] ) ? sanitize_text_field( $_GET['file'] ) : '';
-		$current_level = isset( $_GET['level'] ) ? sanitize_text_field( $_GET['level'] ) : '';
-		$current_component = isset( $_GET['component'] ) ? sanitize_text_field( $_GET['component'] ) : '';
+		$current_file = isset( $_GET['file'] ) ? sanitize_text_field( wp_unslash( $_GET['file'] ) ) : '';
+		$current_level = isset( $_GET['level'] ) ? sanitize_text_field( wp_unslash( $_GET['level'] ) ) : '';
+		$current_component = isset( $_GET['component'] ) ? sanitize_text_field( wp_unslash( $_GET['component'] ) ) : '';
 		$current_page = isset( $_GET['paged'] ) ? max( 1, intval( $_GET['paged'] ) ) : 1;
 		$entries_per_page = 50;
+
+		// Nonce verification for actions
+		if ( isset( $_GET['action'] ) && $_GET['action'] === 'brevo_download_debug_log' ) {
+			if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( wp_unslash( $_GET['_wpnonce'] ), 'brevo_download_log' ) ) {
+				wp_die( 'Security check failed' );
+			}
+		}
 
 		// Get log files
 		$log_files = $logger->get_log_files();
@@ -76,14 +83,14 @@ class Brevo_Debug_Viewer {
 
 		?>
 		<div class="wrap">
-			<h1><?php _e( 'ML Brevo Debug Logs', 'ml-brevo-for-elementor-pro' ); ?></h1>
+			<h1><?php esc_html_e( 'ML Brevo Debug Logs', 'ml-brevo-for-elementor-pro' ); ?></h1>
 
 			<?php if ( ! $logger->is_enabled() ): ?>
 				<div class="notice notice-warning">
 					<p>
-						<?php _e( 'Debug logging is currently disabled.', 'ml-brevo-for-elementor-pro' ); ?>
-						<a href="<?php echo admin_url( 'options-general.php?page=ml-brevo-free' ); ?>">
-							<?php _e( 'Enable it in settings', 'ml-brevo-for-elementor-pro' ); ?>
+						<?php esc_html_e( 'Debug logging is currently disabled.', 'ml-brevo-for-elementor-pro' ); ?>
+						<a href="<?php echo esc_url( admin_url( 'options-general.php?page=ml-brevo-free' ) ); ?>">
+							<?php esc_html_e( 'Enable it in settings', 'ml-brevo-for-elementor-pro' ); ?>
 						</a>
 					</p>
 				</div>
@@ -94,39 +101,39 @@ class Brevo_Debug_Viewer {
 			<!-- Debug Log Controls -->
 			<div class="brevo-debug-controls">
 				<div class="brevo-debug-info">
-					<h3><?php _e( 'Log Information', 'ml-brevo-for-elementor-pro' ); ?></h3>
+					<h3><?php esc_html_e( 'Log Information', 'ml-brevo-for-elementor-pro' ); ?></h3>
 					<p>
-						<strong><?php _e( 'Debug Status:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<strong><?php esc_html_e( 'Debug Status:', 'ml-brevo-for-elementor-pro' ); ?></strong>
 						<?php echo $logger->is_enabled() ? 
-							'<span style="color: green;">' . __( 'Enabled', 'ml-brevo-for-elementor-pro' ) . '</span>' : 
-							'<span style="color: red;">' . __( 'Disabled', 'ml-brevo-for-elementor-pro' ) . '</span>'; ?>
+							'<span style="color: green;">' . esc_html__( 'Enabled', 'ml-brevo-for-elementor-pro' ) . '</span>' : 
+							'<span style="color: red;">' . esc_html__( 'Disabled', 'ml-brevo-for-elementor-pro' ) . '</span>'; ?>
 					</p>
 					<p>
-						<strong><?php _e( 'Debug Level:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<strong><?php esc_html_e( 'Debug Level:', 'ml-brevo-for-elementor-pro' ); ?></strong>
 						<?php echo esc_html( $logger->get_debug_level() ); ?>
 					</p>
 					<p>
-						<strong><?php _e( 'Total Log Size:', 'ml-brevo-for-elementor-pro' ); ?></strong>
-						<?php echo size_format( $logger->get_total_log_size() ); ?>
+						<strong><?php esc_html_e( 'Total Log Size:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<?php echo esc_html( size_format( $logger->get_total_log_size() ) ); ?>
 					</p>
 					<p>
-						<strong><?php _e( 'Log Files:', 'ml-brevo-for-elementor-pro' ); ?></strong>
+						<strong><?php esc_html_e( 'Log Files:', 'ml-brevo-for-elementor-pro' ); ?></strong>
 						<?php echo count( $log_files ); ?>
 					</p>
 				</div>
 
 				<div class="brevo-debug-actions">
-					<h3><?php _e( 'Actions', 'ml-brevo-for-elementor-pro' ); ?></h3>
+					<h3><?php esc_html_e( 'Actions', 'ml-brevo-for-elementor-pro' ); ?></h3>
 					<p>
 						<button type="button" id="clear-debug-logs-btn" class="button button-secondary">
-							<?php _e( 'Clear All Logs', 'ml-brevo-for-elementor-pro' ); ?>
+							<?php esc_html_e( 'Clear All Logs', 'ml-brevo-for-elementor-pro' ); ?>
 						</button>
 						<?php if ( $selected_file ): ?>
-							<a href="<?php echo wp_nonce_url( 
+							<a href="<?php echo esc_url( wp_nonce_url( 
 								admin_url( 'admin-ajax.php?action=brevo_download_debug_log&file=' . urlencode( basename( $selected_file ) ) ), 
 								'brevo_download_log' 
-							); ?>" class="button button-secondary">
-								<?php _e( 'Download Current Log', 'ml-brevo-for-elementor-pro' ); ?>
+							) ); ?>" class="button button-secondary">
+								<?php esc_html_e( 'Download Current Log', 'ml-brevo-for-elementor-pro' ); ?>
 							</a>
 						<?php endif; ?>
 					</p>
@@ -139,32 +146,32 @@ class Brevo_Debug_Viewer {
 					<input type="hidden" name="page" value="ml-brevo-debug-viewer">
 					
 					<div class="filter-group">
-						<label for="file-filter"><?php _e( 'Log File:', 'ml-brevo-for-elementor-pro' ); ?></label>
+						<label for="file-filter"><?php esc_html_e( 'Log File:', 'ml-brevo-for-elementor-pro' ); ?></label>
 						<select name="file" id="file-filter">
 							<?php foreach ( $log_files as $file ): ?>
 								<option value="<?php echo esc_attr( $file ); ?>" <?php selected( $selected_file, $file ); ?>>
 									<?php echo esc_html( basename( $file ) ); ?>
-									(<?php echo size_format( filesize( $file ) ); ?>)
+									(<?php echo esc_html( size_format( filesize( $file ) ) ); ?>)
 								</option>
 							<?php endforeach; ?>
 						</select>
 					</div>
 
 					<div class="filter-group">
-						<label for="level-filter"><?php _e( 'Level:', 'ml-brevo-for-elementor-pro' ); ?></label>
+						<label for="level-filter"><?php esc_html_e( 'Level:', 'ml-brevo-for-elementor-pro' ); ?></label>
 						<select name="level" id="level-filter">
-							<option value=""><?php _e( 'All Levels', 'ml-brevo-for-elementor-pro' ); ?></option>
-							<option value="ERROR" <?php selected( $current_level, 'ERROR' ); ?>><?php _e( 'ERROR', 'ml-brevo-for-elementor-pro' ); ?></option>
-							<option value="WARNING" <?php selected( $current_level, 'WARNING' ); ?>><?php _e( 'WARNING', 'ml-brevo-for-elementor-pro' ); ?></option>
-							<option value="INFO" <?php selected( $current_level, 'INFO' ); ?>><?php _e( 'INFO', 'ml-brevo-for-elementor-pro' ); ?></option>
-							<option value="DEBUG" <?php selected( $current_level, 'DEBUG' ); ?>><?php _e( 'DEBUG', 'ml-brevo-for-elementor-pro' ); ?></option>
+							<option value=""><?php esc_html_e( 'All Levels', 'ml-brevo-for-elementor-pro' ); ?></option>
+							<option value="ERROR" <?php selected( $current_level, 'ERROR' ); ?>><?php esc_html_e( 'ERROR', 'ml-brevo-for-elementor-pro' ); ?></option>
+							<option value="WARNING" <?php selected( $current_level, 'WARNING' ); ?>><?php esc_html_e( 'WARNING', 'ml-brevo-for-elementor-pro' ); ?></option>
+							<option value="INFO" <?php selected( $current_level, 'INFO' ); ?>><?php esc_html_e( 'INFO', 'ml-brevo-for-elementor-pro' ); ?></option>
+							<option value="DEBUG" <?php selected( $current_level, 'DEBUG' ); ?>><?php esc_html_e( 'DEBUG', 'ml-brevo-for-elementor-pro' ); ?></option>
 						</select>
 					</div>
 
 					<div class="filter-group">
-						<label for="component-filter"><?php _e( 'Component:', 'ml-brevo-for-elementor-pro' ); ?></label>
+						<label for="component-filter"><?php esc_html_e( 'Component:', 'ml-brevo-for-elementor-pro' ); ?></label>
 						<select name="component" id="component-filter">
-							<option value=""><?php _e( 'All Components', 'ml-brevo-for-elementor-pro' ); ?></option>
+							<option value=""><?php esc_html_e( 'All Components', 'ml-brevo-for-elementor-pro' ); ?></option>
 							<?php
 							$components = $this->get_unique_components( $all_entries );
 							foreach ( $components as $component ):
@@ -177,9 +184,9 @@ class Brevo_Debug_Viewer {
 					</div>
 
 					<div class="filter-group">
-						<input type="submit" class="button button-primary" value="<?php _e( 'Filter', 'ml-brevo-for-elementor-pro' ); ?>">
-						<a href="<?php echo admin_url( 'options-general.php?page=ml-brevo-debug-viewer' ); ?>" class="button button-secondary">
-							<?php _e( 'Reset', 'ml-brevo-for-elementor-pro' ); ?>
+						<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Filter', 'ml-brevo-for-elementor-pro' ); ?>">
+						<a href="<?php echo esc_url( admin_url( 'options-general.php?page=ml-brevo-debug-viewer' ) ); ?>" class="button button-secondary">
+							<?php esc_html_e( 'Reset', 'ml-brevo-for-elementor-pro' ); ?>
 						</a>
 					</div>
 				</form>
@@ -192,8 +199,8 @@ class Brevo_Debug_Viewer {
 					$pagination_args = array(
 						'base' => add_query_arg( 'paged', '%#%' ),
 						'format' => '',
-						'prev_text' => __( '&laquo; Previous' ),
-						'next_text' => __( 'Next &raquo;' ),
+						'prev_text' => esc_html__( '<&laquo; Previous', 'ml-brevo-for-elementor-pro' ),
+						'next_text' => esc_html__( 'Next &raquo;>', 'ml-brevo-for-elementor-pro' ),
 						'total' => $total_pages,
 						'current' => $current_page,
 						'show_all' => false,
@@ -202,8 +209,10 @@ class Brevo_Debug_Viewer {
 					echo paginate_links( $pagination_args );
 					?>
 					<p class="pagination-info">
-						<?php printf( 
-							__( 'Showing %d-%d of %d entries', 'ml-brevo-for-elementor-pro' ),
+						<?php 
+						/* translators: %1$d is the start entry number, %2$d is the end entry number, %3$d is the total number of entries */
+						printf( 
+							esc_html__( 'Showing %1$d-%2$d of %3$d entries', 'ml-brevo-for-elementor-pro' ),
 							$offset + 1,
 							min( $offset + $entries_per_page, $total_entries ),
 							$total_entries
@@ -216,25 +225,25 @@ class Brevo_Debug_Viewer {
 			<div class="brevo-debug-entries">
 				<?php if ( empty( $entries ) ): ?>
 					<div class="notice notice-info inline">
-						<p><?php _e( 'No log entries found.', 'ml-brevo-for-elementor-pro' ); ?></p>
+						<p><?php esc_html_e( 'No log entries found.', 'ml-brevo-for-elementor-pro' ); ?></p>
 					</div>
 				<?php else: ?>
 					<table class="wp-list-table widefat fixed striped">
 						<thead>
 							<tr>
-								<th style="width: 150px;"><?php _e( 'Timestamp', 'ml-brevo-for-elementor-pro' ); ?></th>
-								<th style="width: 80px;"><?php _e( 'Level', 'ml-brevo-for-elementor-pro' ); ?></th>
-								<th style="width: 100px;"><?php _e( 'Component', 'ml-brevo-for-elementor-pro' ); ?></th>
-								<th style="width: 100px;"><?php _e( 'Action', 'ml-brevo-for-elementor-pro' ); ?></th>
-								<th><?php _e( 'Message', 'ml-brevo-for-elementor-pro' ); ?></th>
+								<th style="width: 150px;"><?php esc_html_e( 'Timestamp', 'ml-brevo-for-elementor-pro' ); ?></th>
+								<th style="width: 80px;"><?php esc_html_e( 'Level', 'ml-brevo-for-elementor-pro' ); ?></th>
+								<th style="width: 100px;"><?php esc_html_e( 'Component', 'ml-brevo-for-elementor-pro' ); ?></th>
+								<th style="width: 100px;"><?php esc_html_e( 'Action', 'ml-brevo-for-elementor-pro' ); ?></th>
+								<th><?php esc_html_e( 'Message', 'ml-brevo-for-elementor-pro' ); ?></th>
 							</tr>
 						</thead>
 						<tbody>
 							<?php foreach ( $entries as $entry ): ?>
-								<tr class="debug-entry debug-level-<?php echo strtolower( $entry['level'] ); ?>">
+								<tr class="debug-entry debug-level-<?php echo strtolower( esc_attr( $entry['level'] ) ); ?>">
 									<td><?php echo esc_html( $entry['timestamp'] ); ?></td>
 									<td>
-										<span class="debug-level-badge debug-level-<?php echo strtolower( $entry['level'] ); ?>">
+										<span class="debug-level-badge debug-level-<?php echo strtolower( esc_attr( $entry['level'] ) ); ?>">
 											<?php echo esc_html( $entry['level'] ); ?>
 										</span>
 									</td>
@@ -245,7 +254,7 @@ class Brevo_Debug_Viewer {
 											<?php echo esc_html( $entry['message'] ); ?>
 											<?php if ( ! empty( $entry['context'] ) ): ?>
 												<details class="debug-context">
-													<summary><?php _e( 'Context', 'ml-brevo-for-elementor-pro' ); ?></summary>
+													<summary><?php esc_html_e( 'Context', 'ml-brevo-for-elementor-pro' ); ?></summary>
 													<pre><?php echo esc_html( json_encode( $entry['context'], JSON_PRETTY_PRINT ) ); ?></pre>
 												</details>
 											<?php endif; ?>
@@ -373,29 +382,29 @@ class Brevo_Debug_Viewer {
 			jQuery(document).ready(function($) {
 				// Clear logs button
 				$('#clear-debug-logs-btn').on('click', function() {
-					if (!confirm('<?php _e( 'Are you sure you want to clear all debug logs? This action cannot be undone.', 'ml-brevo-for-elementor-pro' ); ?>')) {
+					if (!confirm('<?php esc_attr_e( 'Are you sure you want to clear all debug logs? This action cannot be undone.', 'ml-brevo-for-elementor-pro' ); ?>')) {
 						return;
 					}
 
 					var button = $(this);
-					button.prop('disabled', true).text('<?php _e( 'Clearing...', 'ml-brevo-for-elementor-pro' ); ?>');
+					button.prop('disabled', true).text('<?php esc_attr_e( 'Clearing...', 'ml-brevo-for-elementor-pro' ); ?>');
 
 					$.post(ajaxurl, {
 						action: 'brevo_clear_debug_logs',
-						nonce: '<?php echo wp_create_nonce( 'brevo_clear_logs' ); ?>'
+						nonce: '<?php echo esc_js( wp_create_nonce( 'brevo_clear_logs' ) ); ?>'
 					})
 					.done(function(response) {
 						if (response.success) {
 							location.reload();
 						} else {
-							alert('<?php _e( 'Error clearing logs:', 'ml-brevo-for-elementor-pro' ); ?> ' + response.data.message);
+							alert('<?php esc_attr_e( 'Error clearing logs:', 'ml-brevo-for-elementor-pro' ); ?> ' + response.data.message);
 						}
 					})
 					.fail(function() {
-						alert('<?php _e( 'Request failed. Please try again.', 'ml-brevo-for-elementor-pro' ); ?>');
+						alert('<?php esc_attr_e( 'Request failed. Please try again.', 'ml-brevo-for-elementor-pro' ); ?>');
 					})
 					.always(function() {
-						button.prop('disabled', false).text('<?php _e( 'Clear All Logs', 'ml-brevo-for-elementor-pro' ); ?>');
+						button.prop('disabled', false).text('<?php esc_attr_e( 'Clear All Logs', 'ml-brevo-for-elementor-pro' ); ?>');
 					});
 				});
 			});
@@ -448,7 +457,7 @@ class Brevo_Debug_Viewer {
 	 */
 	public function handle_clear_logs() {
 		// Verify nonce
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'brevo_clear_logs' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( wp_unslash( sanitize_text_field( $_POST['nonce'] ) ), 'brevo_clear_logs' ) ) {
 			wp_die( 'Security check failed' );
 		}
 
@@ -468,7 +477,7 @@ class Brevo_Debug_Viewer {
 	 */
 	public function handle_download_log() {
 		// Verify nonce
-		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'brevo_download_log' ) ) {
+		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( wp_unslash( sanitize_text_field( $_GET['_wpnonce'] ) ), 'brevo_download_log' ) ) {
 			wp_die( 'Security check failed' );
 		}
 
@@ -477,7 +486,7 @@ class Brevo_Debug_Viewer {
 			wp_die( 'Insufficient permissions' );
 		}
 
-		$filename = sanitize_file_name( $_GET['file'] );
+		$filename = isset( $_GET['file'] ) ? sanitize_file_name( wp_unslash( $_GET['file'] ) ) : '';
 		$logger = Brevo_Debug_Logger::get_instance();
 		$log_files = $logger->get_log_files();
 		
@@ -498,7 +507,18 @@ class Brevo_Debug_Viewer {
 		header( 'Content-Type: text/plain' );
 		header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 		header( 'Content-Length: ' . filesize( $file_path ) );
-		readfile( $file_path );
+		
+		// Output file contents using WP_Filesystem
+		global $wp_filesystem;
+		if ( empty( $wp_filesystem ) ) {
+			require_once ABSPATH . '/wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
+		
+		$file_contents = $wp_filesystem->get_contents( $file_path );
+		if ( $file_contents !== false ) {
+			echo $file_contents; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- File contents are safe
+		}
 		exit;
 	}
 }

@@ -8,6 +8,8 @@
  * Author URI: https://matteolavaggi.it/
  * Text Domain: ml-brevo-for-elementor-pro
  * Domain Path: /languages
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 // Exit if accessed directly
@@ -20,11 +22,7 @@ define( 'BREVO_ELEMENTOR_VERSION', '2.2.0' );
 define( 'BREVO_ELEMENTOR_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BREVO_ELEMENTOR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-// Load text domain for translations
-function brevo_elementor_load_textdomain() {
-    load_plugin_textdomain( 'ml-brevo-for-elementor-pro', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-}
-add_action( 'plugins_loaded', 'brevo_elementor_load_textdomain' );
+// Text domain is automatically loaded by WordPress for plugins hosted on WordPress.org
 
 //load plugins functionallity and settings
 require dirname(__FILE__).'/includes/class-brevo-attributes-manager.php';
