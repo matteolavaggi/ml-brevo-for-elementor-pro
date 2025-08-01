@@ -569,17 +569,22 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 
 		// Process double opt-in or direct contact creation
 		if ( $settings['brevo_double_optin'] === 'yes' && ! $email_exists ) {
-			$logger->info( 'Processing double opt-in', 'FORM', 'submit', array(
-				'email' => $email,
-				'template_id' => $settings['brevo_double_optin_template']
-			) );
+					$logger->info( 'Processing double opt-in', 'FORM', 'submit', array(
+			'email' => $email,
+			'list_id' => $settings['brevo_list'],
+			'list_id_type' => gettype( $settings['brevo_list'] ),
+			'list_id_int' => (int) $settings['brevo_list'],
+			'template_id' => $settings['brevo_double_optin_template']
+		) );
 			$this->process_double_optin( $settings, $email, $attributes, $api_key );
 		} else {
-			$logger->info( 'Processing direct contact creation', 'FORM', 'submit', array(
-				'email' => $email,
-				'list_id' => $settings['brevo_list'],
-				'email_exists' => $email_exists
-			) );
+					$logger->info( 'Processing direct contact creation', 'FORM', 'submit', array(
+			'email' => $email,
+			'list_id' => $settings['brevo_list'],
+			'list_id_type' => gettype( $settings['brevo_list'] ),
+			'list_id_int' => (int) $settings['brevo_list'],
+			'email_exists' => $email_exists
+		) );
 			$this->process_contact_creation( $settings, $email, $attributes, $api_key );
 		}
 

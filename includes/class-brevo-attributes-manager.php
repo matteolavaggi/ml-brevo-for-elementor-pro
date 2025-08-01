@@ -503,6 +503,20 @@ class Brevo_Attributes_Manager {
 			);
 		}
 
+		// Debug logging to verify list IDs are correct
+		$logger = Brevo_Debug_Logger::get_instance();
+		$logger->info(
+			'Normalized lists data',
+			'API',
+			'normalize_lists',
+			array(
+				'raw_count' => isset( $raw_data['lists'] ) ? count( $raw_data['lists'] ) : 0,
+				'normalized_count' => count( $normalized ),
+				'normalized_keys' => array_keys( $normalized ),
+				'sample_lists' => array_slice( $normalized, 0, 3, true ),
+			)
+		);
+
 		return $normalized;
 	}
 
@@ -531,13 +545,16 @@ class Brevo_Attributes_Manager {
 				break; // No more data
 			}
 
-			$all_attributes = array_merge( $all_attributes, $attributes );
+			// CRITICAL: Use + operator to preserve attribute names as keys
+			// array_merge() would re-index and destroy the real attribute names!
+			$all_attributes = $all_attributes + $attributes;
 			$fetched_count += $batch_count;
 			$offset        += $limit;
 
 			// Check if we've reached the maximum items limit
 			if ( $max_items > 0 && $fetched_count >= $max_items ) {
-				$all_attributes = array_slice( $all_attributes, 0, $max_items );
+				// Use array_slice with preserve_keys=true to maintain attribute names
+				$all_attributes = array_slice( $all_attributes, 0, $max_items, true );
 				break;
 			}
 
@@ -549,10 +566,11 @@ class Brevo_Attributes_Manager {
 
 	/**
 	 * Fetch all lists with automatic pagination
+	 * IMPORTANT: Preserves Brevo list IDs as array keys
 	 *
 	 * @param string $api_key Brevo API key
 	 * @param int    $max_items Maximum items to fetch (0 = unlimited)
-	 * @return array|WP_Error Array of all lists or WP_Error on failure
+	 * @return array|WP_Error Array of all lists with Brevo IDs as keys or WP_Error on failure
 	 */
 	public function fetch_all_lists( $api_key, $max_items = 0 ) {
 		$all_lists     = array();
@@ -572,13 +590,16 @@ class Brevo_Attributes_Manager {
 				break; // No more data
 			}
 
-			$all_lists     = array_merge( $all_lists, $lists );
+			// CRITICAL: Use + operator to preserve Brevo list IDs as keys
+			// array_merge() would re-index and destroy the real Brevo IDs!
+			$all_lists     = $all_lists + $lists;
 			$fetched_count += $batch_count;
 			$offset        += $limit;
 
 			// Check if we've reached the maximum items limit
 			if ( $max_items > 0 && $fetched_count >= $max_items ) {
-				$all_lists = array_slice( $all_lists, 0, $max_items );
+				// Use array_slice with preserve_keys=true to maintain Brevo IDs
+				$all_lists = array_slice( $all_lists, 0, $max_items, true );
 				break;
 			}
 

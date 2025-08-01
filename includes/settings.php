@@ -1301,13 +1301,26 @@ class MlbrevoFree {
 		<table class="wp-list-table widefat fixed striped" id="brevo-lists-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'List ID', 'ml-brevo-for-elementor-pro' ); ?></th>
+					<th><?php esc_html_e( 'Brevo List ID', 'ml-brevo-for-elementor-pro' ); ?></th>
 					<th><?php esc_html_e( 'List Name', 'ml-brevo-for-elementor-pro' ); ?></th>
 					<th><?php esc_html_e( 'Subscribers', 'ml-brevo-for-elementor-pro' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php
+				// Debug logging to see actual list structure
+				$logger = Brevo_Debug_Logger::get_instance();
+				$logger->info(
+					'Displaying lists in admin table',
+					'ADMIN',
+					'render_lists_table',
+					array(
+						'total_lists' => count( $lists ),
+						'list_keys' => array_keys( $lists ),
+						'first_list_sample' => !empty( $lists ) ? array_slice( $lists, 0, 1, true ) : array(),
+					)
+				);
+
 				foreach ( $lists as $list_id => $list_data ) :
 					// Ensure list_data is an array and has required keys
 					if ( ! is_array( $list_data ) ) {
@@ -1321,6 +1334,9 @@ class MlbrevoFree {
 				<tr>
 					<td>
 						<strong><?php echo esc_html( $list_id ); ?></strong>
+						<?php if ( isset( $list_data['id'] ) && $list_data['id'] != $list_id ) : ?>
+							<br><small style="color: #d63638;">⚠️ Mismatch: Internal ID = <?php echo esc_html( $list_data['id'] ); ?></small>
+						<?php endif; ?>
 					</td>
 					<td>
 						<strong><?php echo esc_html( $list_name ); ?></strong>
