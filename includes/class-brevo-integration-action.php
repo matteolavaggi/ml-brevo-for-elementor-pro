@@ -339,7 +339,7 @@ class brevo_Integration_Action_After_Submit extends \ElementorPro\Modules\Forms\
 
 		// Get lists from cache/API
 		$attributes_manager = Brevo_Attributes_Manager::get_instance();
-		$lists = $attributes_manager->fetch_lists( $api_key );
+		$lists = $attributes_manager->fetch_all_lists( $api_key );
 		
 		if ( is_wp_error( $lists ) || empty( $lists ) ) {
 			return array(

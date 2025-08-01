@@ -14,20 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Brevo_Attributes_Manager {
 
-	/**
-	 * Cache expiration time (1 hour)
-	 */
-	const CACHE_EXPIRATION = HOUR_IN_SECONDS;
 
-	/**
-	 * Cache key prefix
-	 */
-	const CACHE_PREFIX = 'brevo_attributes_';
-
-	/**
-	 * Lists cache key prefix
-	 */
-	const LISTS_CACHE_PREFIX = 'brevo_lists_';
 
 	/**
 	 * Brevo API base URL
@@ -38,44 +25,30 @@ class Brevo_Attributes_Manager {
 	 * Fetch all contact attributes from Brevo API
 	 *
 	 * @param string $api_key Brevo API key
+	 * @param int    $limit   Maximum number of attributes to fetch (default: 50, max: 100)
+	 * @param int    $offset  Starting point for pagination (default: 0)
 	 * @return array|WP_Error Array of attributes or WP_Error on failure
 	 */
-	public function fetch_attributes( $api_key ) {
+	public function fetch_attributes( $api_key, $limit = 50, $offset = 0 ) {
 		$start_time = microtime( true );
 
 		if ( empty( $api_key ) ) {
 			return new WP_Error( 'invalid_api_key', __( 'API key is required', 'ml-brevo-for-elementor-pro' ) );
 		}
 
-		// Check cache first
-		$cached_attributes = $this->get_cached_attributes( $api_key );
-		if ( $cached_attributes !== false ) {
-			$logger = Brevo_Debug_Logger::get_instance();
-			$logger->debug(
-				'Using cached attributes',
-				'CACHE',
-				'fetch_attributes',
-				array(
-					'attributes_count' => count( $cached_attributes ),
-					'api_key_hash'     => md5( $api_key ),
-				)
-			);
+		// Validate pagination parameters
+		$limit  = max( 1, min( 100, intval( $limit ) ) ); // Ensure limit is between 1 and 100
+		$offset = max( 0, intval( $offset ) ); // Ensure offset is not negative
 
-			return $cached_attributes;
-		}
-
-		// Cache miss - fetch from Brevo API
-		$logger = Brevo_Debug_Logger::get_instance();
-		$logger->info(
-			'Cache miss - fetching attributes from API',
-			'CACHE',
-			'fetch_attributes',
-			array(
-				'api_key_hash' => md5( $api_key ),
-			)
-		);
-
+		// Build endpoint with pagination parameters
 		$endpoint = self::API_BASE_URL . '/contacts/attributes';
+		$endpoint = add_query_arg(
+			array(
+				'limit'  => $limit,
+				'offset' => $offset,
+			),
+			$endpoint
+		);
 
 		// Debug logging
 		$logger = Brevo_Debug_Logger::get_instance();
@@ -85,6 +58,8 @@ class Brevo_Attributes_Manager {
 			'fetch_attributes',
 			array(
 				'endpoint'     => $endpoint,
+				'limit'        => $limit,
+				'offset'       => $offset,
 				'api_key_hash' => md5( $api_key ),
 			)
 		);
@@ -154,11 +129,8 @@ class Brevo_Attributes_Manager {
 		// Normalize attributes
 		$normalized_attributes = $this->normalize_attributes( $data );
 
-		// Cache the results
-		$this->cache_attributes( $api_key, $normalized_attributes );
-
 		$logger->info(
-			'Successfully fetched and cached attributes',
+			'Successfully fetched attributes',
 			'API',
 			'fetch_attributes',
 			array(
@@ -323,124 +295,7 @@ class Brevo_Attributes_Manager {
 		);
 	}
 
-	/**
-	 * Get cached attributes
-	 *
-	 * @param string $api_key API key for cache key generation
-	 * @return array|false Cached attributes or false if not found
-	 */
-	private function get_cached_attributes( $api_key ) {
-		$cache_key  = $this->generate_cache_key( $api_key );
-		$cache_data = get_transient( $cache_key );
 
-		if ( $cache_data === false ) {
-			return false;
-		}
-
-		// Handle new cache format with metadata
-		if ( is_array( $cache_data ) && isset( $cache_data['attributes'] ) ) {
-			return $cache_data['attributes'];
-		}
-
-		// Handle old cache format (direct attributes array)
-		return $cache_data;
-	}
-
-	/**
-	 * Cache attributes
-	 *
-	 * @param string $api_key    API key for cache key generation
-	 * @param array  $attributes Attributes to cache
-	 * @return bool True on success, false on failure
-	 */
-	private function cache_attributes( $api_key, $attributes ) {
-		$cache_key = $this->generate_cache_key( $api_key );
-
-		// Also store metadata about the cache
-		$cache_data = array(
-			'attributes'   => $attributes,
-			'cached_at'    => current_time( 'timestamp' ),
-			'api_key_hash' => md5( $api_key ),
-		);
-
-		return set_transient( $cache_key, $cache_data, self::CACHE_EXPIRATION );
-	}
-
-	/**
-	 * Generate cache key from API key
-	 *
-	 * @param string $api_key API key
-	 * @return string Cache key
-	 */
-	private function generate_cache_key( $api_key ) {
-		return self::CACHE_PREFIX . md5( $api_key );
-	}
-
-	/**
-	 * Clear attributes cache
-	 *
-	 * @param string $api_key API key (optional)
-	 * @return bool True on success
-	 */
-	public function clear_cache( $api_key = null ) {
-		if ( $api_key ) {
-			// Clear specific cache
-			$cache_key = $this->generate_cache_key( $api_key );
-			return delete_transient( $cache_key );
-		}
-
-		// Clear all attribute caches (this is expensive, use sparingly)
-		global $wpdb;
-
-		$cache_prefix = '_transient_' . self::CACHE_PREFIX;
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk transient deletion requires direct query for efficiency
-		$result = $wpdb->query(
-			$wpdb->prepare(
-				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-				$wpdb->esc_like( $cache_prefix ) . '%',
-				$wpdb->esc_like( '_transient_timeout_' . self::CACHE_PREFIX ) . '%'
-			)
-		);
-
-		return $result !== false;
-	}
-
-	/**
-	 * Get cache information
-	 *
-	 * @param string $api_key API key
-	 * @return array|null Cache info or null if no cache
-	 */
-	public function get_cache_info( $api_key ) {
-		$cache_key  = $this->generate_cache_key( $api_key );
-		$cache_data = get_transient( $cache_key );
-
-		if ( $cache_data === false ) {
-			return null;
-		}
-
-		$timeout_key = '_transient_timeout_' . $cache_key;
-		$expires_at  = get_option( $timeout_key, 0 );
-
-		// Handle both new cache format (with metadata) and old format (direct array)
-		if ( is_array( $cache_data ) && isset( $cache_data['attributes'] ) ) {
-			// New format with metadata
-			$attributes = $cache_data['attributes'];
-			$cached_at  = $cache_data['cached_at'] ?? 0;
-		} else {
-			// Old format - direct attributes array
-			$attributes = is_array( $cache_data ) ? $cache_data : array();
-			$cached_at  = 0; // Unknown for old format
-		}
-
-		return array(
-			'cached_at'  => $cached_at,
-			'expires_at' => $expires_at,
-			'is_expired' => $expires_at < time(),
-			'count'      => count( $attributes ),
-		);
-	}
 
 	/**
 	 * Validate API key by making a test request
@@ -489,34 +344,44 @@ class Brevo_Attributes_Manager {
 	 * Fetch all contact lists from Brevo API
 	 *
 	 * @param string $api_key Brevo API key
+	 * @param int    $limit   Maximum number of lists to fetch (default: 50, max: 100)
+	 * @param int    $offset  Starting point for pagination (default: 0)
 	 * @return array|WP_Error Array of lists or WP_Error on failure
 	 */
-	public function fetch_lists( $api_key ) {
+	public function fetch_lists( $api_key, $limit = 50, $offset = 0 ) {
 		$start_time = microtime( true );
 
 		if ( empty( $api_key ) ) {
 			return new WP_Error( 'invalid_api_key', __( 'API key is required', 'ml-brevo-for-elementor-pro' ) );
 		}
 
-		// Check cache first
-		$cached_lists = $this->get_cached_lists( $api_key );
-		if ( $cached_lists !== false ) {
-			$logger = Brevo_Debug_Logger::get_instance();
-			$logger->debug(
-				'Using cached lists',
-				'CACHE',
-				'fetch_lists',
-				array(
-					'lists_count'  => count( $cached_lists ),
-					'api_key_hash' => md5( $api_key ),
-				)
-			);
+		// Validate pagination parameters for lists (try smaller limit first)
+		$limit  = max( 1, min( 50, intval( $limit ) ) ); // Ensure limit is between 1 and 50 for lists
+		$offset = max( 0, intval( $offset ) ); // Ensure offset is not negative
 
-			return $cached_lists;
-		}
-
-		// Fetch from Brevo API
+		// Build endpoint with pagination parameters
 		$endpoint = self::API_BASE_URL . '/contacts/lists';
+		$endpoint = add_query_arg(
+			array(
+				'limit'  => $limit,
+				'offset' => $offset,
+			),
+			$endpoint
+		);
+
+		// Debug logging
+		$logger = Brevo_Debug_Logger::get_instance();
+		$logger->info(
+			'Fetching lists from API',
+			'API',
+			'fetch_lists',
+			array(
+				'endpoint'     => $endpoint,
+				'limit'        => $limit,
+				'offset'       => $offset,
+				'api_key_hash' => md5( $api_key ),
+			)
+		);
 
 		$response = wp_remote_get(
 			$endpoint,
@@ -530,6 +395,21 @@ class Brevo_Attributes_Manager {
 				),
 			)
 		);
+
+		// Handle request errors
+		if ( is_wp_error( $response ) ) {
+			$logger->error(
+				'API request failed: ' . $response->get_error_message(),
+				'API',
+				'fetch_lists',
+				array(
+					'endpoint'   => $endpoint,
+					'error_code' => $response->get_error_code(),
+				)
+			);
+
+			return $response;
+		}
 
 		$response_code = wp_remote_retrieve_response_code( $response );
 		$response_body = wp_remote_retrieve_body( $response );
@@ -545,6 +425,18 @@ class Brevo_Attributes_Manager {
 				$error_message .= ': ' . $decoded_body['message'];
 			}
 
+			$logger->error(
+				'API HTTP error: ' . $error_message,
+				'API',
+				'fetch_lists',
+				array(
+					'response_code' => $response_code,
+					'response_body' => $response_body,
+					'decoded_body'  => $decoded_body,
+					'endpoint'      => $endpoint,
+				)
+			);
+
 			return new WP_Error( 'api_request_failed', $error_message );
 		}
 
@@ -557,11 +449,8 @@ class Brevo_Attributes_Manager {
 		// Normalize lists
 		$normalized_lists = $this->normalize_lists( $data );
 
-		// Cache the results
-		$this->cache_lists( $api_key, $normalized_lists );
-
 		$logger->info(
-			'Successfully fetched and cached lists',
+			'Successfully fetched lists',
 			'API',
 			'fetch_lists',
 			array(
@@ -618,121 +507,85 @@ class Brevo_Attributes_Manager {
 	}
 
 	/**
-	 * Get cached lists
+	 * Fetch all attributes with automatic pagination
 	 *
-	 * @param string $api_key API key for cache key generation
-	 * @return array|false Cached lists or false if not found
+	 * @param string $api_key Brevo API key
+	 * @param int    $max_items Maximum items to fetch (0 = unlimited)
+	 * @return array|WP_Error Array of all attributes or WP_Error on failure
 	 */
-	private function get_cached_lists( $api_key ) {
-		$cache_key  = $this->generate_lists_cache_key( $api_key );
-		$cache_data = get_transient( $cache_key );
+	public function fetch_all_attributes( $api_key, $max_items = 0 ) {
+		$all_attributes = array();
+		$offset         = 0;
+		$limit          = 100; // Use maximum limit for efficiency
+		$fetched_count  = 0;
 
-		if ( $cache_data === false ) {
-			return false;
-		}
+		do {
+			$attributes = $this->fetch_attributes( $api_key, $limit, $offset );
 
-		// Handle new cache format with metadata
-		if ( is_array( $cache_data ) && isset( $cache_data['lists'] ) ) {
-			return $cache_data['lists'];
-		}
+			if ( is_wp_error( $attributes ) ) {
+				return $attributes;
+			}
 
-		// Handle old cache format (direct lists array)
-		return $cache_data;
+			$batch_count = count( $attributes );
+			if ( $batch_count === 0 ) {
+				break; // No more data
+			}
+
+			$all_attributes = array_merge( $all_attributes, $attributes );
+			$fetched_count += $batch_count;
+			$offset        += $limit;
+
+			// Check if we've reached the maximum items limit
+			if ( $max_items > 0 && $fetched_count >= $max_items ) {
+				$all_attributes = array_slice( $all_attributes, 0, $max_items );
+				break;
+			}
+
+			// If we got less than the limit, we've reached the end
+		} while ( $batch_count === $limit );
+
+		return $all_attributes;
 	}
 
 	/**
-	 * Cache lists
+	 * Fetch all lists with automatic pagination
 	 *
-	 * @param string $api_key API key for cache key generation
-	 * @param array  $lists   Lists to cache
-	 * @return bool True on success, false on failure
+	 * @param string $api_key Brevo API key
+	 * @param int    $max_items Maximum items to fetch (0 = unlimited)
+	 * @return array|WP_Error Array of all lists or WP_Error on failure
 	 */
-	private function cache_lists( $api_key, $lists ) {
-		$cache_key = $this->generate_lists_cache_key( $api_key );
+	public function fetch_all_lists( $api_key, $max_items = 0 ) {
+		$all_lists     = array();
+		$offset        = 0;
+		$limit         = 50; // Use safe limit for lists API
+		$fetched_count = 0;
 
-		// Store metadata about the cache
-		$cache_data = array(
-			'lists'        => $lists,
-			'cached_at'    => current_time( 'timestamp' ),
-			'api_key_hash' => md5( $api_key ),
-		);
+		do {
+			$lists = $this->fetch_lists( $api_key, $limit, $offset );
 
-		return set_transient( $cache_key, $cache_data, self::CACHE_EXPIRATION );
-	}
+			if ( is_wp_error( $lists ) ) {
+				return $lists;
+			}
 
-	/**
-	 * Generate lists cache key from API key
-	 *
-	 * @param string $api_key API key
-	 * @return string Cache key
-	 */
-	private function generate_lists_cache_key( $api_key ) {
-		return self::LISTS_CACHE_PREFIX . md5( $api_key );
-	}
+			$batch_count = count( $lists );
+			if ( $batch_count === 0 ) {
+				break; // No more data
+			}
 
-	/**
-	 * Clear lists cache
-	 *
-	 * @param string $api_key API key (optional)
-	 * @return bool True on success
-	 */
-	public function clear_lists_cache( $api_key = null ) {
-		if ( $api_key ) {
-			// Clear specific cache
-			$cache_key = $this->generate_lists_cache_key( $api_key );
-			return delete_transient( $cache_key );
-		}
+			$all_lists     = array_merge( $all_lists, $lists );
+			$fetched_count += $batch_count;
+			$offset        += $limit;
 
-		// Clear all lists caches
-		global $wpdb;
+			// Check if we've reached the maximum items limit
+			if ( $max_items > 0 && $fetched_count >= $max_items ) {
+				$all_lists = array_slice( $all_lists, 0, $max_items );
+				break;
+			}
 
-		$cache_prefix = '_transient_' . self::LISTS_CACHE_PREFIX;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk transient deletion requires direct query for efficiency
-		$result = $wpdb->query(
-			$wpdb->prepare(
-				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-				$wpdb->esc_like( $cache_prefix ) . '%',
-				$wpdb->esc_like( '_transient_timeout_' . self::LISTS_CACHE_PREFIX ) . '%'
-			)
-		);
+			// If we got less than the limit, we've reached the end
+		} while ( $batch_count === $limit );
 
-		return $result !== false;
-	}
-
-	/**
-	 * Get lists cache information
-	 *
-	 * @param string $api_key API key
-	 * @return array|null Cache info or null if no cache
-	 */
-	public function get_lists_cache_info( $api_key ) {
-		$cache_key  = $this->generate_lists_cache_key( $api_key );
-		$cache_data = get_transient( $cache_key );
-
-		if ( $cache_data === false ) {
-			return null;
-		}
-
-		$timeout_key = '_transient_timeout_' . $cache_key;
-		$expires_at  = get_option( $timeout_key, 0 );
-
-		// Handle both new cache format (with metadata) and old format (direct array)
-		if ( is_array( $cache_data ) && isset( $cache_data['lists'] ) ) {
-			// New format with metadata
-			$lists     = $cache_data['lists'];
-			$cached_at = $cache_data['cached_at'] ?? 0;
-		} else {
-			// Old format - direct lists array
-			$lists     = is_array( $cache_data ) ? $cache_data : array();
-			$cached_at = 0; // Unknown for old format
-		}
-
-		return array(
-			'cached_at'  => $cached_at,
-			'expires_at' => $expires_at,
-			'is_expired' => $expires_at < time(),
-			'count'      => count( $lists ),
-		);
+		return $all_lists;
 	}
 
 	/**

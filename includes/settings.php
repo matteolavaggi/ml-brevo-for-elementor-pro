@@ -12,7 +12,7 @@ add_filter( 'plugin_action_links_ml-brevo-for-elementor-pro/ml-brevo-for-element
 // Handle AJAX requests for field management
 add_action( 'wp_ajax_brevo_refresh_fields', 'brevo_handle_refresh_fields' );
 add_action( 'wp_ajax_brevo_update_field_settings', 'brevo_handle_field_settings_update' );
-add_action( 'wp_ajax_brevo_clear_cache', 'brevo_handle_clear_cache' );
+
 
 // Handle AJAX requests for lists management
 add_action( 'wp_ajax_brevo_refresh_lists', 'brevo_handle_refresh_lists' );
@@ -53,9 +53,8 @@ function brevo_handle_refresh_fields() {
 
 	$attributes_manager = Brevo_Attributes_Manager::get_instance();
 
-	// Clear cache and fetch fresh data
-	$attributes_manager->clear_cache( $api_key );
-	$attributes = $attributes_manager->fetch_attributes( $api_key );
+	// Fetch fresh data from API
+	$attributes = $attributes_manager->fetch_all_attributes( $api_key );
 
 	if ( is_wp_error( $attributes ) ) {
 		$logger->error(
@@ -113,33 +112,7 @@ function brevo_handle_field_settings_update() {
 	wp_send_json_success( array( 'message' => 'Field settings updated successfully' ) );
 }
 
-function brevo_handle_clear_cache() {
-	// Verify nonce
-	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'brevo_admin_nonce' ) ) {
-		wp_die( 'Security check failed' );
-	}
 
-	// Check permissions
-	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( 'Insufficient permissions' );
-	}
-
-	$api_key = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : '';
-
-	$attributes_manager = Brevo_Attributes_Manager::get_instance();
-
-	if ( empty( $api_key ) ) {
-		// Clear all cache
-		$attributes_manager->clear_cache();
-		$attributes_manager->clear_lists_cache();
-		wp_send_json_success( array( 'message' => 'All cache cleared successfully' ) );
-	} else {
-		// Clear specific API key cache
-		$attributes_manager->clear_cache( $api_key );
-		$attributes_manager->clear_lists_cache( $api_key );
-		wp_send_json_success( array( 'message' => 'Cache cleared successfully for the current API key' ) );
-	}
-}
 
 function brevo_handle_refresh_lists() {
 	// Verify nonce
@@ -160,9 +133,8 @@ function brevo_handle_refresh_lists() {
 
 	$attributes_manager = Brevo_Attributes_Manager::get_instance();
 
-	// Clear cache and fetch fresh data
-	$attributes_manager->clear_lists_cache( $api_key );
-	$lists = $attributes_manager->fetch_lists( $api_key );
+	// Fetch fresh data from API
+	$lists = $attributes_manager->fetch_all_lists( $api_key );
 
 	if ( is_wp_error( $lists ) ) {
 		wp_send_json_error( array( 'message' => $lists->get_error_message() ) );
@@ -311,6 +283,7 @@ class MlbrevoFree {
 					
 					<?php $this->render_lists_management_section( $api_key ); ?>
 					
+					<?php wp_nonce_field( 'brevo_admin_nonce', 'brevo_nonce' ); ?>
 					<?php submit_button(); ?>
 				</form>
 			<?php elseif ( $current_tab === 'translations' ) : ?>
@@ -321,8 +294,6 @@ class MlbrevoFree {
 				<?php $this->render_docs_tab(); ?>
 			<?php endif; ?>
 		</div>
-		
-		<?php wp_nonce_field( 'brevo_admin_nonce', 'brevo_nonce' ); ?>
 		<?php
 	}
 
@@ -1185,15 +1156,13 @@ class MlbrevoFree {
 		}
 
 		$attributes_manager = Brevo_Attributes_Manager::get_instance();
-		$attributes         = $attributes_manager->fetch_attributes( $api_key );
+		$attributes         = $attributes_manager->fetch_all_attributes( $api_key );
 		$enabled_fields     = get_option( 'brevo_enabled_fields', array() );
-		$cache_info         = $attributes_manager->get_cache_info( $api_key );
 
 		if ( is_wp_error( $attributes ) ) {
 			echo '<div class="notice notice-error inline">';
 			// translators: %s is the error message
 			echo '<p>' . sprintf( esc_html__( 'Error fetching fields: %s', 'ml-brevo-for-elementor-pro' ), esc_html( $attributes->get_error_message() ) ) . '</p>';
-			echo '<p><button type="button" id="clear-cache-btn" class="button button-secondary">' . esc_html__( 'Clear Cache and Retry', 'ml-brevo-for-elementor-pro' ) . '</button></p>';
 			echo '</div>';
 			return;
 		}
@@ -1202,22 +1171,11 @@ class MlbrevoFree {
 		if ( ! is_array( $attributes ) || empty( $attributes ) ) {
 			echo '<div class="notice notice-warning inline">';
 			echo '<p>' . esc_html__( 'No fields found. This could be due to an invalid API key or temporary API issues.', 'ml-brevo-for-elementor-pro' ) . '</p>';
-			echo '<p><button type="button" id="clear-cache-btn" class="button button-secondary">' . esc_html__( 'Clear Cache and Retry', 'ml-brevo-for-elementor-pro' ) . '</button></p>';
 			echo '</div>';
 			return;
 		}
 
 		?>
-		<div class="brevo-cache-info">
-			<?php if ( $cache_info ) : ?>
-				<small>
-																					<?php
-																					/* translators: %1$s is the time since last update, %2$d is the number of fields found */
-																					printf( esc_html__( 'Last updated: %1$s (%2$d fields found)', 'ml-brevo-for-elementor-pro' ), esc_html( human_time_diff( $cache_info['cached_at'] ) . ' ago' ), esc_html( $cache_info['count'] ) );
-																					?>
-				</small>
-			<?php endif; ?>
-		</div>
 
 		<table class="wp-list-table widefat fixed striped" id="brevo-fields-table">
 			<thead>
@@ -1310,14 +1268,12 @@ class MlbrevoFree {
 		}
 
 		$attributes_manager = Brevo_Attributes_Manager::get_instance();
-		$lists              = $attributes_manager->fetch_lists( $api_key );
-		$cache_info         = $attributes_manager->get_lists_cache_info( $api_key );
+		$lists              = $attributes_manager->fetch_all_lists( $api_key );
 
 		if ( is_wp_error( $lists ) ) {
 			echo '<div class="notice notice-error inline">';
 			// translators: %s is the error message
 			echo '<p>' . sprintf( esc_html__( 'Error fetching lists: %s', 'ml-brevo-for-elementor-pro' ), esc_html( $lists->get_error_message() ) ) . '</p>';
-			echo '<p><button type="button" id="clear-lists-cache-btn" class="button button-secondary">' . esc_html__( 'Clear Lists Cache and Retry', 'ml-brevo-for-elementor-pro' ) . '</button></p>';
 			echo '</div>';
 			return;
 		}
@@ -1326,22 +1282,11 @@ class MlbrevoFree {
 		if ( ! is_array( $lists ) || empty( $lists ) ) {
 			echo '<div class="notice notice-warning inline">';
 			echo '<p>' . esc_html__( 'No lists found. This could be due to an invalid API key or you may not have any lists created in your Brevo account.', 'ml-brevo-for-elementor-pro' ) . '</p>';
-			echo '<p><button type="button" id="clear-lists-cache-btn" class="button button-secondary">' . esc_html__( 'Clear Lists Cache and Retry', 'ml-brevo-for-elementor-pro' ) . '</button></p>';
 			echo '</div>';
 			return;
 		}
 
 		?>
-		<div class="brevo-lists-cache-info">
-			<?php if ( $cache_info ) : ?>
-				<small>
-																					<?php
-																					/* translators: %1$s is the time since last update, %2$d is the number of lists found */
-																					printf( esc_html__( 'Last updated: %1$s (%2$d lists found)', 'ml-brevo-for-elementor-pro' ), esc_html( human_time_diff( $cache_info['cached_at'] ) . ' ago' ), esc_html( $cache_info['count'] ) );
-																					?>
-				</small>
-			<?php endif; ?>
-		</div>
 
 		<table class="wp-list-table widefat fixed striped" id="brevo-lists-table">
 			<thead>
@@ -1612,33 +1557,7 @@ class MlbrevoFree {
 				}
 			});
 
-			// Clear cache button
-			$(document).on('click', '#clear-cache-btn', function() {
-				var button = $(this);
-				var apiKey = $('#global_api_key_ml_brevo').val();
-				
-				button.prop('disabled', true).text('Clearing Cache...');
 
-				$.post(ajaxUrl, {
-					action: 'brevo_clear_cache',
-					api_key: apiKey,
-					nonce: nonce
-				})
-				.done(function(response) {
-					if (response.success) {
-						showNotice(response.data.message, 'success');
-						location.reload(); // Reload to show updated fields
-					} else {
-						showNotice(response.data.message, 'error');
-					}
-				})
-				.fail(function() {
-					showNotice('Cache clear request failed. Please try again.', 'error');
-				})
-				.always(function() {
-					button.prop('disabled', false).text('Clear Cache and Retry');
-				});
-			});
 
 			// Refresh lists button
 			$('#refresh-lists-btn').on('click', function() {
@@ -1673,33 +1592,7 @@ class MlbrevoFree {
 				});
 			});
 
-			// Clear lists cache button
-			$(document).on('click', '#clear-lists-cache-btn', function() {
-				var button = $(this);
-				var apiKey = $('#global_api_key_ml_brevo').val();
-				
-				button.prop('disabled', true).text('Clearing Lists Cache...');
 
-				$.post(ajaxUrl, {
-					action: 'brevo_clear_cache',
-					api_key: apiKey,
-					nonce: nonce
-				})
-				.done(function(response) {
-					if (response.success) {
-						showNotice(response.data.message, 'success');
-						location.reload(); // Reload to show updated lists
-					} else {
-						showNotice(response.data.message, 'error');
-					}
-				})
-				.fail(function() {
-					showNotice('Lists cache clear request failed. Please try again.', 'error');
-				})
-				.always(function() {
-					button.prop('disabled', false).text('Clear Lists Cache and Retry');
-				});
-			});
 
 
 
